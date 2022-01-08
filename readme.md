@@ -1,4 +1,4 @@
-=== Download List with Icons ===
+# Download List with Icons
 Contributors: threadi
 Tags: list, download, icons
 Requires at least: 5.8
@@ -8,7 +8,7 @@ License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 1.0
 
-== Description ==
+## Description
 
 This plugins provides a Gutenberg block to manage a download list with file type specific icons.
 
@@ -32,7 +32,7 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 
 ---
 
-== Installation ==
+## Installation
 
 ### English
 
@@ -46,7 +46,7 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 2. Aktivieren Sie das Plugin über das Menü \"Plugins\" in WordPress.
 3. Fügen Sie den Download List Block zu dem Beitrag oder der Seite hinzu, auf der Sie die Downloadliste anzeigen möchten. Wählen Sie die Datei(en) aus, die Sie bereitstellen möchten.
 
-== Screenshots ==
+## Screenshots
 
 ### English
 
@@ -60,7 +60,7 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 2. Nach dem Hinzufügen der Dateien werden diese angezeigt.
 3. Im Frontend sieht man die ausgewählten Dateien.
 
-== Changelog ==
+## Changelog
 
-= 1.0
+### 1.0
 * Initial commit
