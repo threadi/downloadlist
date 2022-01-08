@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Download List Block with Icons for Gutenberg
+ * Plugin Name:       Download List Block with Icons
  * Description:       Provides a Gutenberg block for capturing a download list with file type specific icons.
  * Requires at least: 5.8
  * Requires PHP:      7.4
