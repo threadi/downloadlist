@@ -3,7 +3,7 @@
 	"apiVersion": 2,
 	"name": "downloadlist/list",
 	"version": "1.0.0",
-	"title": "Download List Block for Gutenberg with Icons",
+	"title": "Download List Block with Icons",
 	"category": "widgets",
 	"icon": "list-view",
 	"description": "Provides a Gutenberg block for capturing a download list with file type specific icons.",
