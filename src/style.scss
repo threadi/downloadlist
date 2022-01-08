@@ -1,0 +1,33 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+ul.downloadlist-list {
+  li:before {
+	content: "\f497";
+	display: inline-block;
+	font-family: dashicons;
+	font-size: 24px;
+	margin-left: -32px;
+	margin-right: 8px;
+	vertical-align: middle;
+	width: 24px;
+  }
+  li.file_pdf:before {
+	content: "\f190";
+  }
+  li.file_audio:before {
+	content: "\f500";
+  }
+  li.file_video:before {
+	content: "\f126";
+  }
+  li.file_application:before {
+	content: "\f497";
+  }
+}
+
+
