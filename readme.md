@@ -36,14 +36,14 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 
 ### English
 
-1. Upload \"downloadlist\" to the \"/wp-content/plugins/\" directory.
-2. Activate the plugin through the \"Plugins\" menu in WordPress.
+1. Upload "downloadlist" to the "/wp-content/plugins/" directory.
+2. Activate the plugin through the "Plugins" menu in WordPress.
 3. Add the Download List Block to the post or page where you want to show the downloadlist. Choose the file(s) you wish to present.
 
 ### Deutsch
 
-1. Lade \"downloadlist\" in das Verzeichnis \"/wp-content/plugins/\" hoch.
-2. Aktivieren Sie das Plugin über das Menü \"Plugins\" in WordPress.
+1. Lade "downloadlist" in das Verzeichnis "/wp-content/plugins/\" hoch.
+2. Aktivieren Sie das Plugin über das Menü "Plugins" in WordPress.
 3. Fügen Sie den Download List Block zu dem Beitrag oder der Seite hinzu, auf der Sie die Downloadliste anzeigen möchten. Wählen Sie die Datei(en) aus, die Sie bereitstellen möchten.
 
 ## Screenshots
@@ -64,3 +64,7 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 
 ### 1.0
 * Initial commit
+
+### 1.0.1
+* Fixed issue with 3rd-party depency
+* Updated format for Changelog

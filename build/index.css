@@ -1,1 +1,74 @@
-.wp-block-downloadlist-list{background-color:#fff;padding:8px}.wp-block-downloadlist-list button>svg{width:24px}.wp-block-downloadlist-list-draggable{--wp--typography--line-height:var(--global--line-height-body);background:transparent;color:var(--global--color-primary);font-family:var(--global--font-secondary);font-size:var(--global--font-size-base);font-weight:400;list-style:none;padding-left:32px}.wp-block-downloadlist-list-draggable>button{float:right}.wp-block-downloadlist-list-draggable:before{content:"";display:inline-block;font-family:dashicons;font-size:24px;margin-left:-32px;margin-right:8px;vertical-align:middle;width:24px}.wp-block-downloadlist-list-draggable.file_pdf:before{content:""}.wp-block-downloadlist-list-draggable.file_audio:before{content:""}.wp-block-downloadlist-list-draggable.file_video:before{content:""}.wp-block-downloadlist-list-draggable.file_application:before{content:""}body .edit-post-visual-editor .components-sortable>*{cursor:-webkit-grab;cursor:grab;margin-bottom:8px!important;overflow:hidden;padding-left:32px!important}button.downloadlist-list-trash:before{content:"";display:inline-block;font-family:dashicons;font-size:24px;vertical-align:middle}
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/editor.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-downloadlist-list {
+  background-color: #fff;
+  padding: 8px;
+}
+.wp-block-downloadlist-list button > svg {
+  width: 24px;
+}
+
+.wp-block-downloadlist-list-draggable {
+  background: transparent;
+  --wp--typography--line-height: var(--global--line-height-body);
+  color: var(--global--color-primary);
+  font-family: var(--global--font-secondary);
+  font-size: var(--global--font-size-base);
+  font-weight: normal;
+  list-style: none;
+  padding-left: 32px;
+}
+.wp-block-downloadlist-list-draggable > button {
+  float: right;
+}
+
+.wp-block-downloadlist-list-draggable:before {
+  content: "\f497";
+  display: inline-block;
+  font-family: dashicons;
+  font-size: 24px;
+  margin-left: -32px;
+  margin-right: 8px;
+  vertical-align: middle;
+  width: 24px;
+}
+
+.wp-block-downloadlist-list-draggable.file_pdf:before {
+  content: "\f190";
+}
+
+.wp-block-downloadlist-list-draggable.file_audio:before {
+  content: "\f500";
+}
+
+.wp-block-downloadlist-list-draggable.file_video:before {
+  content: "\f126";
+}
+
+.wp-block-downloadlist-list-draggable.file_application:before {
+  content: "\f497";
+}
+
+body .edit-post-visual-editor .components-sortable > * {
+  cursor: -webkit-grab;
+  cursor: grab;
+  margin-bottom: 8px !important;
+  overflow: hidden;
+  padding-left: 32px !important;
+}
+
+button.downloadlist-list-trash:before {
+  content: "\f182";
+  display: inline-block;
+  font-family: dashicons;
+  font-size: 24px;
+  vertical-align: middle;
+}
+
+/*# sourceMappingURL=index.css.map*/
