@@ -62,5 +62,9 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.0 =
 * Initial commit
+
+= 1.0.1 =
+* Fixed issue with 3rd-party depency
+* Updated format for Changelog
