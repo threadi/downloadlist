@@ -66,5 +66,8 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 * Initial commit
 
 = 1.0.1 =
-* Fixed issue with 3rd-party depency
+* Fixed issue with 3rd-party dependency
 * Updated format for Changelog
+
+= 1.0.2 =
+* Updated dependencies
