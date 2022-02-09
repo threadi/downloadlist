@@ -4,7 +4,7 @@
  * Description:       Provides a Gutenberg block for capturing a download list with file type specific icons.
  * Requires at least: 5.8
  * Requires PHP:      7.4
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Thomas Zwirner
  * Author URI:		  https://www.thomaszwirner.de
  * License:           GPL-2.0-or-later
