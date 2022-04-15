@@ -6,7 +6,7 @@ Tested up to: 5.9
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 
 == Description ==
 
@@ -70,4 +70,7 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 * Updated format for Changelog
 
 = 1.0.2 =
+* Updated dependencies
+
+= 1.0.3 =
 * Updated dependencies
