@@ -6,7 +6,7 @@ Tested up to: 6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 ## Description
 
@@ -77,3 +77,6 @@ Dieses Plugin bietet einen Gutenberg-Block für die Erfassung einer Download-Lis
 
 ### 1.0.4
 * Updated compatibility-flag for Wordpress 6.0
+
+= 1.0.5 =
+* replace serialize_block in favor of render_block for better compatibility with other blocks
