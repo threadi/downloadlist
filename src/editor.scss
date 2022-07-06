@@ -23,14 +23,16 @@
   }
 }
 .wp-block-downloadlist-list-draggable:before {
-  content: "\f497";
+  transform: none !important;
+  position: static !important;
+  content: "\f497" !important;
   display: inline-block;
   font-family: dashicons;
   font-size: 24px;
   margin-left: -32px;
   margin-right: 8px;
   vertical-align: middle;
-  width: 24px;
+  width: 24px !important;
 }
 .wp-block-downloadlist-list-draggable.file_pdf:before {
   content: "\f190";
