@@ -48,8 +48,6 @@ add_action( 'init', 'downloadlist_init' );
  */
 function downloadlist_get_content( $content ): string
 {
-	$content = get_the_content();
-
 	// check if content has Blocks
 	if( has_blocks( $content )) {
 		// get the Blocks to parse
@@ -62,12 +60,12 @@ function downloadlist_get_content( $content ): string
 	}
 	return $content;
 }
-add_filter( 'the_content', 'downloadlist_get_content', 20 );
+add_filter( 'the_content', 'downloadlist_get_content', 5, 1 );
 
 /**
  * Loop through each Block.
  *
- * @param $block
+ * @param $blocks
  * @return array
  * @noinspection PhpUnused
  */

@@ -26,8 +26,26 @@ import './editor.scss';
  */
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { plus, dragHandle } from '@wordpress/icons';
-import Sortable from 'gutenberg-sortable';
+import { plus } from '@wordpress/icons';
+import {
+	DndContext,
+	TouchSensor,
+	MouseSensor,
+	useSensor,
+	useSensors,
+	KeyboardSensor
+} from "@dnd-kit/core";
+import {
+	restrictToVerticalAxis,
+	restrictToWindowEdges,
+} from '@dnd-kit/modifiers';
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { SortableItem } from "./SortableItem";
 
 const ALLOWED_MEDIA_TYPES = [ 'application', 'audio', 'video' ];
 
@@ -44,13 +62,46 @@ export default function Edit( object ) {
 	let files = ( !object.attributes.files ? [] : object.attributes.files )
 
 	/**
-	 * Remote an item from the list.
-	 *
-	 * @param index
+	 * Define sensors for sortable via dnd-kit.
 	 */
-	function removeListItem(index) {
-		files.splice(index, 1);
-		object.setAttributes( { files: files, date: new Date } );
+	const sensors = useSensors(
+		useSensor(MouseSensor, {
+			// Require the mouse to move by 10 pixels before activating
+			activationConstraint: {
+				distance: 10
+			}
+		}),
+		useSensor(TouchSensor, {
+			// Press delay of 250ms, with tolerance of 5px of movement
+			activationConstraint: {
+				delay: 250,
+				tolerance: 5
+			}
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates
+		})
+	);
+
+	/**
+	 * Save the new position on drag end
+	 *
+	 * @param event
+	 */
+	const handleDragEnd = (event) => {
+		const { active, over } = event;
+		if (active?.id !== over?.id) {
+			let active_index = files.findIndex(function(slide) {
+				return slide.id === active.id
+			});
+			let over_index = files.findIndex(function(slide) {
+				return slide.id === over.id
+			});
+			let _files = arrayMove(files, active_index, over_index);
+			object.setAttributes({
+				files: _files,
+			})
+		}
 	};
 
 	/**
@@ -60,52 +111,49 @@ export default function Edit( object ) {
 		<div { ...useBlockProps() }>
 			{files &&
 				<div>
-					<Sortable
-						className="list"
-						items={files}
-						axis="y"
-						onSortEnd={(files) => {object.setAttributes({ files: files })}}
+					<DndContext
+						sensors={sensors}
+						onDragEnd={handleDragEnd}
+						modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
 					>
-						{files.map((file, index) => (
-							<div id={`file${file.id}`} className={`editor-styles-wrapper wp-block-downloadlist-list-draggable file_${file.type} file_${file.subtype}`}>
-								<Button className="downloadlist-list-trash" onClick={() => removeListItem(index)} title={__('remove from list', 'downloadlist')}/>
-								<Button title={__( 'hold to pull', 'downloadlist' )}>{dragHandle}</Button>
-								<a href={file.url}>{file.title}</a> ({file.filesizeHumanReadable})<br/>{file.description}
-							</div>
-						))}
-					</Sortable>
+						<SortableContext items={ files } strategy={verticalListSortingStrategy}>
+							{files.map((file, index) => (
+								<SortableItem key={index} file={file} index={index} files={files} object={object} />
+							))}
+						</SortableContext>
+					</DndContext>
 				</div>
 			}
 			<MediaUploadCheck>
 				<MediaUpload
 					onSelect={ ( newFiles ) => {
-							{newFiles.map((newFile) => {
-								let doNotAdd = false;
-								{files.map((file, index) => {
-									if( file.id === newFile.id ) {
-										// do not add
-										doNotAdd = true;
-										// but update it
-										files[index].alt = newFile.alt
-										files[index].description = newFile.description
-										files[index].title = newFile.title
-									}
-								})};
-								if( !doNotAdd ) {
-									files.push({
-										id: newFile.id,
-										alt: newFile.alt,
-										description: newFile.description,
-										filesizeHumanReadable: newFile.filesizeHumanReadable,
-										type: newFile.type,
-										subtype: newFile.subtype,
-										title: newFile.title,
-										url: newFile.url
-									})
+						{newFiles.map((newFile) => {
+							let doNotAdd = false;
+							{files.map((file, index) => {
+								if( file.id === newFile.id ) {
+									// do not add
+									doNotAdd = true;
+									// but update it
+									files[index].alt = newFile.alt
+									files[index].description = newFile.description
+									files[index].title = newFile.title
 								}
-							})}
-							object.setAttributes({files: files, date: new Date})
-						}
+							})};
+							if( !doNotAdd ) {
+								files.push({
+									id: newFile.id,
+									alt: newFile.alt,
+									description: newFile.description,
+									filesizeHumanReadable: newFile.filesizeHumanReadable,
+									type: newFile.type,
+									subtype: newFile.subtype,
+									title: newFile.title,
+									url: newFile.url
+								})
+							}
+						})}
+						object.setAttributes({files: files, date: new Date})
+					}
 					}
 					multiple={true}
 					allowedTypes={ ALLOWED_MEDIA_TYPES }
