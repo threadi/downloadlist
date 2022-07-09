@@ -12,5 +12,5 @@ node_modules/
 
 # local build-file
 build/build.properties
-
 languages/*.json
+block/
