@@ -1,0 +1,8 @@
+# Plugin-Slug
+plugin.slug=download-list-block-with-icons
+
+# version number to use
+plugin.version=
+
+# set path to npm-binary
+npm.path=

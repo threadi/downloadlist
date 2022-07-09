@@ -4,7 +4,7 @@
  * Description:       Provides a Gutenberg block for capturing a download list with file type specific icons.
  * Requires at least: 5.8
  * Requires PHP:      7.4
- * Version:           1.0.6
+ * Version:           @@VersionNumber@@
  * Author:            Thomas Zwirner
  * Author URI:		  https://www.thomaszwirner.de
  * License:           GPL-2.0-or-later
@@ -32,7 +32,7 @@ function downloadlist_init() {
 	if ( function_exists( 'register_block_type' ) ) {
 		register_block_type(__DIR__);
 		wp_set_script_translations('downloadlist-list-editor-script', 'downloadlist', plugin_dir_path(__FILE__) . '/languages/');
-		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/build/style-index.css', __FILE__ ));
+		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/block/style-index.css', __FILE__ ));
 		wp_enqueue_style('dashicons');
 	}
 }

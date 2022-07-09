@@ -1,36 +1,68 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Download List\n"
-"POT-Creation-Date: \n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/"
+"downloadlist\n"
+"POT-Creation-Date: 2022-07-09T15:06:58+02:00\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Zwirner <info@thomaszwirner.de>\n"
 "Language-Team: Thomas Zwirner\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de_DE\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 3.0.1\n"
 
-#: build/index.js:1
-msgid "Add files to list"
-msgstr "Dateien zur Liste hinzufügen"
+#. Plugin Name of the plugin
+msgid "Download List Block with Icons"
+msgstr "Download Liste mit Icons"
 
-#: build/index.js:1
+#. Description of the plugin
+#: block/index.js:1
+msgid ""
+"Provides a Gutenberg block for capturing a download list with file type "
+"specific icons."
+msgstr ""
+"Bietet einen Gutenberg-Block für die Erfassung einer Download-Liste mit "
+"Dateityp-spezifischen Icons."
+
+#. Author of the plugin
+msgid "Thomas Zwirner"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.thomaszwirner.de"
+msgstr ""
+
+#: block/index.js:1
 msgid "remove from list"
-msgstr "von Liste entfernen"
+msgstr "Entfernen von der Liste"
 
-#: build/index.js:1
+#: block/index.js:1
 msgid "hold to pull"
-msgstr "halten um zu ziehen"
+msgstr "festhalten zum Ziehen"
 
-#: build/index.js:1
+#: block/index.js:1
 msgid "Download List with Icons"
 msgstr "Download Liste mit Icons"
 
-#: build/index.js:1
-msgid "Download List Block with Icons for Gutenberg"
-msgstr "Download Liste Block mit Icons für Gutenberg"
+#: block/index.js:1
+msgid "Add files to list"
+msgstr "Dateien hinzufügen"
 
-#: build/index.js:1
-msgid "Provides a Gutenberg block for capturing a download list with file type specific icons."
-msgstr "Bietet einen Gutenberg-Block für die Erfassung einer Download-Liste mit Dateityp-spezifischen Icons."
+#: block.json
+msgctxt "block title"
+msgid "Download List Block with Icons"
+msgstr "Download Liste mit Icons"
+
+#: block.json
+msgctxt "block description"
+msgid ""
+"Provides a Gutenberg block for capturing a download list with file type "
+"specific icons."
+msgstr ""
+"Bietet einen Gutenberg-Block für die Erfassung einer Download-Liste mit "
+"Dateityp-spezifischen Icons."
+
+#~ msgid "Download List Block with Icons for Gutenberg"
+#~ msgstr "Download Liste Block mit Icons für Gutenberg"
