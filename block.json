@@ -12,6 +12,6 @@
 	  	"anchor": true
 	},
 	"textdomain": "downloadlist",
-	"editorScript": "file:build/index.js",
-	"editorStyle": "file:build/index.css"
+	"editorScript": "file:block/index.js",
+	"editorStyle": "file:block/index.css"
 }

@@ -6,3 +6,11 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# any zip
+*.zip
+
+# local build-file
+build/build.properties
+languages/*.json
+block/
