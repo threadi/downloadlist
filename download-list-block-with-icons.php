@@ -38,6 +38,12 @@ function downloadlist_init() {
 }
 add_action( 'init', 'downloadlist_init' );
 
+add_action( 'admin_enqueue_scripts', function() {
+	wp_enqueue_media();
+	wp_enqueue_script( 'media-grid' );
+	wp_enqueue_script( 'media' );
+});
+
 /**
  * Parse the post_content to replace the blocks HTML-comment with its actual output.
  * This is done here to get the actual media-file data.
@@ -79,15 +85,28 @@ function downloadlist_get_content_block_loop($blocks): array
 			}
 			if ($block['blockName'] === 'downloadlist/list') {
 				if (!empty($block['attrs']['files'])) {
-					$output = '<div><ul class="downloadlist-list">';
+					// hide icon if set
+					$hide_icon = '';
+					if(!empty($block['attrs']['hideIcon'])) {
+						$hide_icon = ' hideIcon';
+					}
+
+					$output = '<div><ul class="downloadlist-list'.esc_attr($hide_icon).'">';
 
 					// get the configured files for this Block
 					foreach ($block['attrs']['files'] as $file) {
 						// get the file-id
 						$fileId = $file['id'];
 
-						// get the mimetype and split it
+						// get the mimetype
 						$mimetype = get_post_mime_type($fileId);
+
+						// if nothing could be loaded do not output anything
+						if( empty($mimetype) ) {
+							continue;
+						}
+
+						// split the mimetype to get type and subtype
 						$mimetypeArray = explode("/", $mimetype);
 						$type = $mimetypeArray[0];
 						$subtype = $mimetypeArray[1];
@@ -98,8 +117,28 @@ function downloadlist_get_content_block_loop($blocks): array
 						// get the meta-data like JS (like human-readable filesize)
 						$file_meta = wp_prepare_attachment_for_js($fileId);
 
+						// get the file size
+						$fileSize =  ' (' . $file_meta['filesizeHumanReadable'] . ')';
+						if(!empty($block['attrs']['hideFileSize'])) {
+							$fileSize = '';
+						}
+
+						// get the description
+						$description =  '<br />'.$attachment->post_content;
+						if(!empty($block['attrs']['hideDescription'])) {
+							$description = '';
+						}
+
+						// get download URL
+						$url = wp_get_attachment_url($fileId);
+						$downloadAttribute = " download";
+						if(!empty($block['attrs']['linkTarget']) && $block['attrs']['linkTarget'] == 'attachmentpage' ) {
+							$url = get_permalink($fileId);
+							$downloadAttribute = "";
+						}
+
 						// add it to output
-						$output .= '<li class="file_' . $type . ' file_' . $subtype . '"><a href="' . wp_get_attachment_url($file['id']) . '" download>' . $attachment->post_title . '</a> (' . $file_meta['filesizeHumanReadable'] . ')<br />' . $attachment->post_content . '</li>';
+						$output .= '<li class="file_' . esc_attr($type) . ' file_' . esc_attr($subtype) . '"><a href="' . esc_url($url) . '"'.esc_attr($downloadAttribute).'>' . esc_html($attachment->post_title) . '</a>'.wp_kses_post($fileSize).wp_kses_post($description).'</li>';
 					}
 					$output .= '</ul></div>';
 
@@ -112,3 +151,76 @@ function downloadlist_get_content_block_loop($blocks): array
 	}
 	return $updatedBlocks;
 }
+
+/**
+ * Filter query from media library to show single attachment.
+ *
+ * @param $query
+ * @return mixed
+ * @noinspection PhpUnused
+ */
+function downloadlist_ajax_query_attachments_args($query) {
+	if( !empty($_REQUEST['query']['downloadlist_post_id']) ) {
+		$query['p'] = absint($_REQUEST['query']['downloadlist_post_id']);
+	}
+	return $query;
+}
+add_filter( 'ajax_query_attachments_args', 'downloadlist_ajax_query_attachments_args');
+
+/**
+ * Add endpoint for requests from our own Block.
+ *
+ * @return void
+ * @noinspection PhpUnused
+ */
+function downloadlist_add_rest_api() {
+	register_rest_route( 'downloadlist/v1', '/files/', array(
+		'methods' => WP_REST_SERVER::READABLE,
+		'callback' => 'downloadlist_api_return_file_data',
+		'permission_callback' => function () {
+			return current_user_can( 'edit_posts' );
+		}
+	) );
+}
+add_action( 'rest_api_init', 'downloadlist_add_rest_api');
+
+/**
+ * Return file data depending on postIds in request.
+ *
+ * @param WP_REST_Request $request
+ * @return string[]
+ * @noinspection PhpUnused
+ */
+function downloadlist_api_return_file_data( WP_REST_Request $request ): array
+{
+	// get the post_ids from request
+	$postIds = $request->get_param( 'post_id' );
+	if( !empty($postIds) ) {
+		// get the file data
+		$array = [];
+		foreach( $postIds as $postId ) {
+			$js = wp_prepare_attachment_for_js($postId);
+			if( !empty($js) ) {
+				$array[] = $js;
+			}
+		}
+
+		// return the collected file data
+		return $array;
+	}
+	return [];
+}
+
+/**
+ * Return the block-content for widgets which use our block.
+ *
+ * @param $content
+ * @param $instance
+ * @return string
+ * @noinspection PhpUnused
+ */
+function downloadlist_get_widget_block_content($content, $instance): string
+{
+	return downloadlist_get_content($instance['content']);
+}
+add_filter( 'widget_block_content', 'downloadlist_get_widget_block_content', 10, 2);

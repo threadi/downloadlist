@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Download List\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/"
 "downloadlist\n"
-"POT-Creation-Date: 2022-07-09T15:06:58+02:00\n"
+"POT-Creation-Date: 2022-07-10T16:18:19+02:00\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Zwirner <info@thomaszwirner.de>\n"
 "Language-Team: Thomas Zwirner\n"
@@ -18,7 +18,7 @@ msgid "Download List Block with Icons"
 msgstr "Download Liste mit Icons"
 
 #. Description of the plugin
-#: block/index.js:1
+#: block/index.js:5906 block/index.js:5599
 msgid ""
 "Provides a Gutenberg block for capturing a download list with file type "
 "specific icons."
@@ -34,21 +34,70 @@ msgstr ""
 msgid "https://www.thomaszwirner.de"
 msgstr ""
 
-#: block/index.js:1
-msgid "remove from list"
-msgstr "Entfernen von der Liste"
+#: block/index.js:5582 block/index.js:5332
+msgid "Loading .."
+msgstr "Lade .."
 
-#: block/index.js:1
-msgid "hold to pull"
-msgstr "festhalten zum Ziehen"
+#: block/index.js:5757 block/index.js:5475
+msgid "Sort files by title"
+msgstr "Sortieren nach Titel"
 
-#: block/index.js:1
+#: block/index.js:5772 block/index.js:5480
+msgid "Sort files by filesize"
+msgstr "Sortieren nach Dateigröße"
+
+#: block/index.js:5775 block/index.js:5487
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: block/index.js:5777 block/index.js:5489
+msgid "Hide icon"
+msgstr "Icon verstecken"
+
+#: block/index.js:5781 block/index.js:5494
+msgid "Hide file size"
+msgstr "Dateigröße verstecken"
+
+#: block/index.js:5785 block/index.js:5499
+msgid "Hide description"
+msgstr "Beschreibung verstecken"
+
+#: block/index.js:5789 block/index.js:5504
+msgid "Choose link target"
+msgstr "Wähle das Linkziel"
+
+#: block/index.js:5792 block/index.js:5507
+msgid "direct link"
+msgstr "Direktlink"
+
+#: block/index.js:5795 block/index.js:5508
+msgid "attachment page"
+msgstr "Anhangseite"
+
+#: block/index.js:5849 block/index.js:5554
+msgid "Add files to list"
+msgstr "Dateien hinzufügen"
+
+#: block/index.js:5905 block/index.js:5598
 msgid "Download List with Icons"
 msgstr "Download Liste mit Icons"
 
-#: block/index.js:1
-msgid "Add files to list"
-msgstr "Dateien hinzufügen"
+#: block/index.js:6054 block/index.js:6149 block/index.js:5701
+#: block/index.js:5776
+msgid "Edit file"
+msgstr "Datei bearbeiten"
+
+#: block/index.js:6056 block/index.js:5703
+msgid "Save"
+msgstr "Speichern"
+
+#: block/index.js:6145 block/index.js:5775
+msgid "Remove from list"
+msgstr "Entfernen von der Liste"
+
+#: block/index.js:6153 block/index.js:5777
+msgid "hold to pull"
+msgstr "festhalten zum Ziehen"
 
 #: block.json
 msgctxt "block title"

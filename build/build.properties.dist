@@ -6,3 +6,10 @@ plugin.version=
 
 # set path to npm-binary
 npm.path=
+
+# set path to svn-binary
+svn.path=
+
+# set login for wordpress svn
+svn.username=
+svn.password=

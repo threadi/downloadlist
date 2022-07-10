@@ -48,6 +48,22 @@ registerBlockType( 'downloadlist/list', {
 	attributes: {
 		files: {
 			type: 'array'
+		},
+		hideFileSize: {
+			type: 'boolean',
+			default: false
+		},
+		hideDescription: {
+			type: 'boolean',
+			default: false
+		},
+		hideIcon: {
+			type: 'boolean',
+			default: false
+		},
+		linkTarget: {
+			type: 'string',
+			default: 'direct'
 		}
 	},
 

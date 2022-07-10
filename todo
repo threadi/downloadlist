@@ -1,0 +1,7 @@
+ToDo-List for this plugin
+=========================
+
+* add possibility to set icons for file-types
+* set default settings for all blocks (e.g. hide things) incl. auto-update them in one task
+* add custom title and description per file in block
+* use overridable templates for html-output

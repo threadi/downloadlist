@@ -35,17 +35,19 @@
   width: 24px !important;
 }
 .wp-block-downloadlist-list-draggable.file_pdf:before {
-  content: "\f190";
+  content: "\f190" !important;
 }
 .wp-block-downloadlist-list-draggable.file_audio:before {
-  content: "\f500";
+  content: "\f500" !important;
 }
 .wp-block-downloadlist-list-draggable.file_video:before {
-  content: "\f126";
+  content: "\f126" !important;
 }
 .wp-block-downloadlist-list-draggable.file_application:before {
-  content: "\f497";
+  content: "\f497" !important;
 }
+.wp-block-downloadlist-list-draggable.hideIcons { padding-left: 12px; }
+.wp-block-downloadlist-list-draggable.hideIcons:before { display: none }
 body .edit-post-visual-editor .components-sortable > * {
   cursor: grab;
   margin-bottom: 8px !important;

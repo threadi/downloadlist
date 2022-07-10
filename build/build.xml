@@ -66,6 +66,37 @@
 		<delete file="${src.dir}/${plugin.slug}-release.php"/>
 	</target>
 
+	<!-- upload release-zip to WordPress Repository -->
+	<target name="release" description="builds and upload a new release">
+		<delete file="${log.dir}/svn1.log"/>
+		<fail unless="svn.path" />
+		<fail unless="svn.username" />
+		<fail unless="svn.password" />
+		<exec executable="${svn.path}">
+			<arg value="co" />
+			<arg value="https://plugins.svn.wordpress.org/${plugin.slug}" />
+			<arg value="${src.dir}/svn/" />
+		</exec>
+		<delete quiet="false">
+			<fileset dir="${src.dir}/svn/trunk/" includes="**/*" />
+			<dirset dir="${src.dir}/svn/trunk/" includes="**" />
+		</delete>
+		<mkdir dir="${src.dir}/svn/trunk/" />
+		<unzip src="${build.dir}/${plugin.slug}_${plugin.version}.zip" dest="${src.dir}/svn/trunk/">
+			<globmapper from="${plugin.slug}/*" to="*"/>
+		</unzip>
+		<exec executable="${svn.path}" error="${log.dir}/svn1.log">
+			<arg value="add" />
+			<arg value="${src.dir}/svn/trunk/" />
+		</exec>
+		<exec executable="${svn.path}">
+			<arg value="ci ${src.dir}/svn/" />
+			<arg value='-m "Release ${plugin.version}"' />
+			<arg value="--username '${svn.username}'" />
+			<arg value="--password '${svn.password}'" />
+		</exec>
+	</target>
+
 	<!-- show help -->
 	<target name="help">
 		<java classname="org.apache.tools.ant.Main">

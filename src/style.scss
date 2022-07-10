@@ -30,4 +30,9 @@ ul.downloadlist-list {
   }
 }
 
+ul.downloadlist-list.hideIcon {
+  padding-left: 0;
+  li { list-style: none }
+  li:before { display: none }
+}
 
