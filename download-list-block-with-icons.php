@@ -221,6 +221,9 @@ function downloadlist_api_return_file_data( WP_REST_Request $request ): array
  */
 function downloadlist_get_widget_block_content($content, $instance): string
 {
+	if( false === strpos($instance['content'], 'wp:downloadlist/list') ) {
+		return $content;
+	}
 	return downloadlist_get_content($instance['content']);
 }
 add_filter( 'widget_block_content', 'downloadlist_get_widget_block_content', 10, 2);
