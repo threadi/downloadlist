@@ -114,3 +114,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Changed loading of file-data in Block in Gutenberg: they are now loaded live from Media Library as the front page
 * Fixed icon-visibility (only default icon was visible)
 * Updated compatibility-flag for WordPress 6.0.1
+
+= 2.0.1 =
+* Fixed release-upload problem
+
+= 2.0.2 =
+* Fixed widget-handling: all other widgets were not visible
