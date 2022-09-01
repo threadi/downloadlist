@@ -99,7 +99,8 @@ export default function Edit( object ) {
 	let attachments = useSelect( ( select ) => {
 		return select('core').getEntityRecords('downloadlist/v1', 'files', {
 			post_id: fileIds,
-			date: object.attributes.date
+			date: object.attributes.date,
+			per_page: fileIds.length
 		}, [] ) || null;
 	});
 	if( attachments ) {
