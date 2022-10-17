@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-10T16:18:19+02:00\n"
+"POT-Creation-Date: 2022-10-17T20:36:45+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: downloadlist\n"
@@ -19,8 +19,8 @@ msgid "Download List Block with Icons"
 msgstr ""
 
 #. Description of the plugin
-#: block/index.js:5906
-#: block/index.js:5599
+#: block/index.js:5917
+#: block/index.js:5606
 msgid "Provides a Gutenberg block for capturing a download list with file type specific icons."
 msgstr ""
 
@@ -32,85 +32,85 @@ msgstr ""
 msgid "https://www.thomaszwirner.de"
 msgstr ""
 
-#: block/index.js:5582
-#: block/index.js:5332
-msgid "Loading .."
-msgstr ""
-
-#: block/index.js:5757
-#: block/index.js:5475
+#: block/index.js:5768
+#: block/index.js:5482
 msgid "Sort files by title"
 msgstr ""
 
-#: block/index.js:5772
-#: block/index.js:5480
+#: block/index.js:5783
+#: block/index.js:5487
 msgid "Sort files by filesize"
 msgstr ""
 
-#: block/index.js:5775
-#: block/index.js:5487
+#: block/index.js:5786
+#: block/index.js:5494
 msgid "Settings"
 msgstr ""
 
-#: block/index.js:5777
-#: block/index.js:5489
+#: block/index.js:5788
+#: block/index.js:5496
 msgid "Hide icon"
 msgstr ""
 
-#: block/index.js:5781
-#: block/index.js:5494
+#: block/index.js:5792
+#: block/index.js:5501
 msgid "Hide file size"
 msgstr ""
 
-#: block/index.js:5785
-#: block/index.js:5499
+#: block/index.js:5796
+#: block/index.js:5506
 msgid "Hide description"
 msgstr ""
 
-#: block/index.js:5789
-#: block/index.js:5504
+#: block/index.js:5800
+#: block/index.js:5511
 msgid "Choose link target"
 msgstr ""
 
-#: block/index.js:5792
-#: block/index.js:5507
+#: block/index.js:5803
+#: block/index.js:5514
 msgid "direct link"
 msgstr ""
 
-#: block/index.js:5795
-#: block/index.js:5508
+#: block/index.js:5806
+#: block/index.js:5515
 msgid "attachment page"
 msgstr ""
 
-#: block/index.js:5849
-#: block/index.js:5554
+#: block/index.js:5860
+#: block/index.js:5561
 msgid "Add files to list"
 msgstr ""
 
-#: block/index.js:5905
-#: block/index.js:5598
+#: block/index.js:5916
+#: block/index.js:5605
 msgid "Download List with Icons"
 msgstr ""
 
-#: block/index.js:6054
-#: block/index.js:6149
-#: block/index.js:5701
-#: block/index.js:5776
+#: block/index.js:6065
+#: block/index.js:6170
+#: block/index.js:5708
+#: block/index.js:5791
 msgid "Edit file"
 msgstr ""
 
-#: block/index.js:6056
-#: block/index.js:5703
+#: block/index.js:6067
+#: block/index.js:5710
 msgid "Save"
 msgstr ""
 
-#: block/index.js:6145
-#: block/index.js:5775
+#: block/index.js:6150
+#: block/index.js:5783
+msgid "Loading .."
+msgstr ""
+
+#: block/index.js:6166
+#: block/index.js:5790
 msgid "Remove from list"
 msgstr ""
 
-#: block/index.js:6153
-#: block/index.js:5777
+#: block/index.js:6174
+#: block/index.js:5792
 msgid "hold to pull"
 msgstr ""
 
