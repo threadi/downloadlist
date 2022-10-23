@@ -127,3 +127,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 = 2.0.4 =
 * Add some german translations
 * Updated compatibility-flag for WordPress 6.1
+
+= 2.1.0 =
+* Added support for templates via theme

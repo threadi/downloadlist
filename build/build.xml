@@ -60,6 +60,7 @@
 		<zip destfile="${build.dir}/${plugin.slug}_${plugin.version}.zip">
 			<zipfileset dir="${src.dir}/block" prefix="${plugin.slug}/block" />
 			<zipfileset dir="${src.dir}/languages" prefix="${plugin.slug}/languages" />
+			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
 			<zipfileset dir="${src.dir}" includes="uninstall.php,readme.txt,block.json" prefix="${plugin.slug}" />
 			<zipfileset dir="${src.dir}" includes="${plugin.slug}-release.php" fullpath="${plugin.slug}/${plugin.slug}.php" />
 		</zip>
