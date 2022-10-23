@@ -91,7 +91,9 @@ function downloadlist_get_content_block_loop($blocks): array
 						$hide_icon = ' hideIcon';
 					}
 
-					$output = '<div><ul class="downloadlist-list'.esc_attr($hide_icon).'">';
+					ob_start();
+					include downloadlist_get_template('list-start.php');
+					$output = ob_get_clean();
 
 					// get the configured files for this Block
 					foreach ($block['attrs']['files'] as $file) {
@@ -138,9 +140,13 @@ function downloadlist_get_content_block_loop($blocks): array
 						}
 
 						// add it to output
-						$output .= '<li class="file_' . esc_attr($type) . ' file_' . esc_attr($subtype) . '"><a href="' . esc_url($url) . '"'.esc_attr($downloadAttribute).'>' . esc_html($attachment->post_title) . '</a>'.wp_kses_post($fileSize).wp_kses_post($description).'</li>';
+						ob_start();
+						include downloadlist_get_template('list-item.php');
+						$output .= ob_get_clean();
 					}
-					$output .= '</ul></div>';
+					ob_start();
+					include downloadlist_get_template('list-end.php');
+					$output .= ob_get_clean();
 
 					$block['innerHTML'] = $output;
 					$block['innerContent'] = [$output];
@@ -227,3 +233,22 @@ function downloadlist_get_widget_block_content($content, $instance): string
 	return downloadlist_get_content($instance['content']);
 }
 add_filter( 'widget_block_content', 'downloadlist_get_widget_block_content', 10, 2);
+
+/**
+ * Get template from own plugin or theme.
+ *
+ * @param $template
+ * @return mixed|string
+ */
+function downloadlist_get_template( $template )
+{
+	if (is_embed()) {
+		return $template;
+	}
+
+	$themeTemplate = locate_template(trailingslashit(basename(dirname(__FILE__))) . $template);
+	if ($themeTemplate) {
+		return $themeTemplate;
+	}
+	return plugin_dir_path(__FILE__) . 'templates/' . $template;
+}
