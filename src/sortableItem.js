@@ -57,12 +57,13 @@ export function SortableItem(props) {
 		myFrame.on( 'open', function() {
 			let selection = myFrame.state().get( 'selection' );
 			selection.reset( postId ? [ wp.media.attachment( postId ) ] : [] );
-			jQuery(".attachments-browser > .media-toolbar, #menu-item-upload, .load-more-count").remove();
+			jQuery(".attachments-browser > .media-toolbar, #menu-item-upload, .load-more-count").hide();
 		});
 
 		// reload the file list on close
 		myFrame.on( 'close', function() {
 			props.object.setAttributes( { files: props.files, date: getActualDate() } );
+			jQuery(".attachments-browser > .media-toolbar, #menu-item-upload, .load-more-count").show();
 		});
 
 		// Finally, open the modal on click
