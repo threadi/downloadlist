@@ -42,6 +42,7 @@ add_action( 'admin_enqueue_scripts', function() {
 	wp_enqueue_media();
 	wp_enqueue_script( 'media-grid' );
 	wp_enqueue_script( 'media' );
+	//wp_enqueue_script( 'add-media-js', plugin_dir_url( __FILE__ ) . '/test.js', array( 'jquery' ), '', true );
 });
 
 /**

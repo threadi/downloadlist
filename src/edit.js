@@ -221,6 +221,85 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * Create our own media library window.
+	 *
+	 * @param value
+	 * @param object
+	 * @param files
+	 */
+	function openMediaLibrary( value, object, files ) {
+		// add our own tab
+		wp.media.view.MediaFrame.Select.prototype.browseRouter = function( routerView ) {
+			routerView.set({
+				upload: {
+					text:     wp.media.view.l10n.uploadFilesTitle,
+					priority: 20
+				},
+				browse: {
+					text:     wp.media.view.l10n.mediaLibraryTitle,
+					priority: 40
+				},
+				my_tab: {
+					text:     "My tab",
+					priority: 60
+				}
+			});
+		};
+
+		// Create a new media frame
+		let frame = wp.media({
+			frame: 'select',
+			title: __('Choose files for list', 'downloadlist'),
+			button: {
+				text: __('Choose this files', 'downloadlist')
+			},
+			multiple: true,
+			library: {
+				type: ALLOWED_MEDIA_TYPES
+			}
+		});
+
+		/**
+		 * Preselect already chosen files in media library.
+		 */
+		frame.on('open',function() {
+			let selection = frame.state().get('selection');
+			object.attributes.files.forEach(function(obj) {
+				let attachment = wp.media.attachment(obj.id);
+				selection.add( attachment ? [ attachment ] : [] );
+			});
+		});
+
+		// When an image is selected in the media frame...
+		frame.on('select', function() {
+
+			// Get media attachment details from the frame state
+			var attachment = frame.state().get('selection');
+			console.log(attachment, files);
+			// TODO ausgewählte Bilder in attribut-liste ergänzen
+		});
+
+		frame.on('close', function() {
+			// remove our own tab
+			wp.media.view.MediaFrame.Select.prototype.browseRouter = function( routerView ) {
+				routerView.set({
+					upload: {
+						text:     wp.media.view.l10n.uploadFilesTitle,
+						priority: 20
+					},
+					browse: {
+						text:     wp.media.view.l10n.mediaLibraryTitle,
+						priority: 40
+					}
+				});
+			};
+		})
+
+			// Finally, open the modal on click
+		frame.open();
+	}
+
+	/**
 	 * Collect return for the edit-function
 	 */
 	return (
@@ -308,7 +387,7 @@ export default function Edit( object ) {
 					allowedTypes={ ALLOWED_MEDIA_TYPES }
 					value={ object.attributes.files }
 					render={ ( { open } ) => (
-						<Button isPrimary onClick={ open }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
+						<Button isPrimary onClick={ value => openMediaLibrary(value, object, files) }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
 					) }
 				/>
 			</MediaUploadCheck>

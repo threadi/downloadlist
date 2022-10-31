@@ -130,3 +130,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 2.1.0 =
 * Added support for templates via theme
+* Fix visibility of file upload after file edit was used
