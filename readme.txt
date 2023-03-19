@@ -2,11 +2,11 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 5.8
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 2.0.4
+Stable tag: 2.1.0
 
 == Description ==
 
@@ -130,3 +130,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 2.1.0 =
 * Added support for templates via theme
+* Updated dependencies
+* Updated compatibility-flag for WordPress 6.2
