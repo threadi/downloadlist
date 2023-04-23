@@ -108,13 +108,21 @@ export default function Edit( object ) {
 		files = [];
 		let objectFiles = [];
 		attachments.map((newFile) => {
+			let objectFilesEntry = { id: newFile.id };
+			if( newFile.id < 0 ) {
+				let file = object.attributes.files.filter(obj => {
+					return parseInt(obj.id) === parseInt(newFile.id)
+				});
+				newFile = file[0];
+				objectFilesEntry = file[0];
+			}
 			// collect the file-data for @SortableItem
 			files.push(newFile)
 			// and save the actual list in the block-settings
-			objectFiles.push({ id: newFile.id })
+			objectFiles.push(objectFilesEntry)
 		});
 		// save a clean file list only with the id-property per file
-		// -> case 1: update from version 1.x from this plugin
+		// -> case 1: update from version 1.x of this plugin
 		// -> case 2: a file is not available anymore
 		if( JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
 			object.setAttributes( { files: objectFiles } );
@@ -213,11 +221,29 @@ export default function Edit( object ) {
 	}
 
 	/**
-	 * Sort files in list by their filesizes (int-compare).
+	 * Sort files in list by their file-sizes (int-compare).
 	 */
 	function sortFilesByFileSize() {
 		files.sort((a, b) => a.filesizeInBytes - b.filesizeInBytes)
 		object.setAttributes({files: files, date: getActualDate()})
+	}
+
+	/**
+	 * Set events in external file list.
+	 */
+	function setEventsForExternalFileList() {
+		// set event to delete single file from list
+		jQuery('a.downloadlist-delete-entry').off('click').on('click', function(e) {
+			e.preventDefault();
+			jQuery(this).parents('li').remove();
+		});
+
+		// reset numbering of the files
+		let i = 0;
+		jQuery('span.downloadlist-file-number').each(function() {
+			i = i + 1;
+			jQuery(this).html(i)
+		});
 	}
 
 	/**
@@ -228,7 +254,13 @@ export default function Edit( object ) {
 	 * @param files
 	 */
 	function openMediaLibrary( value, object, files ) {
-		// add our own tab
+		// secure the default media router config
+		const defaultMediaRouterConfig = wp.media.view.MediaFrame.Select.prototype.browseRouter;
+
+		// generate item list for external files
+		let htmlListForExternalFiles = getHtmlListForExternalFiles( object );
+
+		// add our own tab to the router for our own media library
 		wp.media.view.MediaFrame.Select.prototype.browseRouter = function( routerView ) {
 			routerView.set({
 				upload: {
@@ -239,21 +271,25 @@ export default function Edit( object ) {
 					text:     wp.media.view.l10n.mediaLibraryTitle,
 					priority: 40
 				},
-				my_tab: {
-					text:     "My tab",
+				external_fields: {
+					text:     __('external files', 'downloadlist'),
 					priority: 60
 				}
 			});
 		};
 
-		// Create a new media frame
+		/**
+		 * Create our own media library window.
+		 *
+		 * @type {wp.media.view.MediaFrame}
+		 */
 		let frame = wp.media({
 			frame: 'select',
 			title: __('Choose files for list', 'downloadlist'),
 			button: {
 				text: __('Choose this files', 'downloadlist')
 			},
-			multiple: true,
+			multiple: 'add',
 			library: {
 				type: ALLOWED_MEDIA_TYPES
 			}
@@ -264,39 +300,180 @@ export default function Edit( object ) {
 		 */
 		frame.on('open',function() {
 			let selection = frame.state().get('selection');
-			object.attributes.files.forEach(function(obj) {
+			object.attributes.files.forEach(function (obj) {
 				let attachment = wp.media.attachment(obj.id);
-				selection.add( attachment ? [ attachment ] : [] );
+				selection.add(attachment ? [attachment] : []);
 			});
 		});
 
-		// When an image is selected in the media frame...
-		frame.on('select', function() {
+		/**
+		 * Show our own content if external_fields-tab is active
+		 * TODO Formular in Sitzung speichern und wieder hervorholen statt es jedes Mal neu zu erzeugen
+		 * TODO sollte auch beim Aufruf des Fensters ausgeführt werden
+		 */
+		wp.media.frame.on('content:activate:external_fields',function() {
+			// add the output
+			jQuery('.media-modal-content .media-frame-content').html(htmlListForExternalFiles);
 
-			// Get media attachment details from the frame state
-			var attachment = frame.state().get('selection');
-			console.log(attachment, files);
-			// TODO ausgewählte Bilder in attribut-liste ergänzen
+			// add event to add a new file-entry
+			jQuery('a.downloadlist-add-external-file').on('click', function(e) {
+				e.preventDefault();
+				jQuery('.downloadlist-external-list li').last().clone(false).appendTo('.downloadlist-external-list');
+				setEventsForExternalFileList();
+			});
+
+			// set events to file list
+			setEventsForExternalFileList();
 		});
 
+		/**
+		 * Save selected files to the list.
+		 */
+		frame.on('select', function() {
+			// get the selected files
+			const attachments = frame.state().get('selection').map(function (attachment) {
+				return attachment.toJSON();
+			});
+
+			// get the external files
+			const external_files = [];
+			let i = 0;
+			jQuery('.downloadlist-external-list li').each(function() {
+				// TODO Pflichtangaben prüfen
+				if( jQuery(this).find("input.downloadlist-title").val().length > 0 ) {
+					i = i - 1;
+					let entry = {
+						'id': i,
+						'title': jQuery(this).find('input.downloadlist-title').val(),
+						'filename': jQuery(this).find('input.downloadlist-url').val(),
+						'description': jQuery(this).find('input.downloadlist-description').val(),
+						'url': jQuery(this).find('input.downloadlist-url').val(),
+						'link': jQuery(this).find('input.downloadlist-url').val(),
+						'filesizeHumanReadable': jQuery(this).find('input.downloadlist-filesize').val(),
+						'filesizeInBytes': jQuery(this).find('input.downloadlist-filesize').val()
+					};
+					external_files.push(entry);
+				}
+			});
+
+			// merge them
+			let results = [...attachments, ...external_files];
+
+			// update the list
+			object.setAttributes({files: results, date: getActualDate()})
+		});
+
+		/**
+		 * Revert the media setting to default if our own media library is closed.
+		 */
 		frame.on('close', function() {
 			// remove our own tab
-			wp.media.view.MediaFrame.Select.prototype.browseRouter = function( routerView ) {
-				routerView.set({
-					upload: {
-						text:     wp.media.view.l10n.uploadFilesTitle,
-						priority: 20
-					},
-					browse: {
-						text:     wp.media.view.l10n.mediaLibraryTitle,
-						priority: 40
-					}
-				});
-			};
-		})
+			wp.media.view.MediaFrame.Select.prototype.browseRouter = defaultMediaRouterConfig;
+		});
 
-			// Finally, open the modal on click
+		// Finally, open the modal on click
 		frame.open();
+	}
+
+	/**
+	 * Create output for our own list of external files.
+	 *
+	 * @returns {string}
+	 */
+	function getHtmlListForExternalFiles( object ) {
+		// define fields per external file
+		let fields = {
+			'heading': {
+				'type': 'h3',
+				'title': __('File #', 'downloadlist')
+			},
+			'url': {
+				'type': 'text',
+				'name': 'url',
+				'title': __('URL', 'downloadlist'),
+				'value': '[URL]'
+			},
+			'filesize': {
+				'type': 'text',
+				'name': 'filesize',
+				'title': __('filesize in bytes', 'downloadlist'),
+				'value': '[FILESIZE]'
+			},
+			'mimetype': {
+				'type': 'select',
+				'name': 'mimetype',
+				'title': __('filetype', 'downloadlist'),
+				'options': [
+					'<option value="file">' + __('file', 'downloadlist') + '</option>',
+					'<option value="pdf">' + __('PDF', 'downloadlist') + '</option>'
+				]
+			},
+			'title': {
+				'type': 'text',
+				'name': 'title',
+				'title': __('title', 'downloadlist'),
+				'value': '[TITLE]'
+			},
+			'description': {
+				'type': 'textarea',
+				'name': 'description',
+				'title': __('description', 'downloadlist'),
+				'value': '[DESC]'
+			}
+		};
+
+		// create list-item from fields
+		let listitem = '<li>';
+		for (const [key, value] of Object.entries(fields)) {
+			switch( value.type ) {
+				case 'h3':
+					listitem = listitem + '<h3>' + value.title + '<span class="downloadlist-file-number">[NUMBER]</span> <a href="#" class="downloadlist-delete-entry">' + __('delete entry', 'downloadlist') + '</a></h3>';
+					break;
+				case 'text':
+					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><input type="text" id="' + value.name + '[NUMBER]" name="' + value.name + '" value="' + value.value + '" class="downloadlist-' + value.name + '"></span>';
+					break;
+				case 'select':
+					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><select id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + value.options + '</select></span>';
+					break;
+				case 'textarea':
+					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><textarea id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + value.value + '</textarea></span>';
+					break;
+			}
+		}
+		listitem = listitem + '</li>';
+
+		// create html-output
+		let html = '<div class="downloadlist-external-wrapper"><h2>' + __('External files for this list', 'downloadlist') + '</h2>';
+		html = html + '<ul class="downloadlist-external-list">';
+		let i = 0;
+		for (const [key, value] of Object.entries(object.attributes.files)) {
+			if( value.id < 0 ) {
+				i = i + 1;
+				// replace number
+				let item = listitem;
+
+				// replace title
+				item = item.replace('[TITLE]', value.title);
+
+				// replace description
+				item = item.replace('[DESC]', value.description);
+
+				// replace url
+				item = item.replace('[URL]', value.url);
+
+				// replace filesize
+				item = item.replace('[FILESIZE]', value.filesizeInBytes);
+
+				// add to list
+				html = html + item.replace(/\[NUMBER\]/g, i + '');
+			}
+		}
+
+		// add field for new entry
+		html = html + listitem.replace(/\[NUMBER\]/g, (i+1) + '').replace('[TITLE]', '').replace('[TITLE]', '').replace('[DESC]', '').replace('[URL]', '').replace('[FILESIZE]', '');
+
+		// return completed string
+		return html + '</ul><a href="#" class="downloadlist-add-external-file button media-button button-primary button-large media-button-select">' + __('Add additional external file', 'downloadlist') + '</a></div>';
 	}
 
 	/**

@@ -42,7 +42,13 @@ add_action( 'admin_enqueue_scripts', function() {
 	wp_enqueue_media();
 	wp_enqueue_script( 'media-grid' );
 	wp_enqueue_script( 'media' );
-	//wp_enqueue_script( 'add-media-js', plugin_dir_url( __FILE__ ) . '/test.js', array( 'jquery' ), '', true );
+
+	// admin-specific styles
+	wp_enqueue_style('downloadlist-admin-css',
+		plugin_dir_url(__FILE__) . '/admin/style.css',
+		[],
+		filemtime(plugin_dir_path(__FILE__) . '/admin/style.css'),
+	);
 });
 
 /**
@@ -105,8 +111,12 @@ function downloadlist_get_content_block_loop($blocks): array
 						$mimetype = get_post_mime_type($fileId);
 
 						// if nothing could be loaded do not output anything
-						if( empty($mimetype) ) {
+						if( empty($mimetype) && $fileId > 0 ) {
 							continue;
+						}
+
+						if( $fileId < 0 ) {
+							$mimetype = '/';
 						}
 
 						// split the mimetype to get type and subtype
@@ -114,16 +124,25 @@ function downloadlist_get_content_block_loop($blocks): array
 						$type = $mimetypeArray[0];
 						$subtype = $mimetypeArray[1];
 
-						// get the Post
-						$attachment = get_post($fileId);
-
 						// get the meta-data like JS (like human-readable filesize)
 						$file_meta = wp_prepare_attachment_for_js($fileId);
+						if( $fileId < 0 ) {
+							$file_meta = $file;
+						}
 
 						// get the file size
-						$fileSize =  ' (' . $file_meta['filesizeHumanReadable'] . ')';
+						$fileSize =  ' (' . !empty($file_meta['filesizeHumanReadable']) ?? $file_meta['filesizeHumanReadable'] . ')';
 						if(!empty($block['attrs']['hideFileSize'])) {
 							$fileSize = '';
+						}
+
+						// get the Post
+						$attachment = get_post($fileId);
+						if( $fileId < 0 ) {
+							$attachment = (object)[
+								'post_title' => !empty($file['title']) ?? $file['title'],
+								'post_content' => !empty($file['description']) ?? $file['description']
+							];
 						}
 
 						// get the description
@@ -134,6 +153,10 @@ function downloadlist_get_content_block_loop($blocks): array
 
 						// get download URL
 						$url = wp_get_attachment_url($fileId);
+						if( $fileId < 0 ) {
+							$url = !empty($file['link']) ?? $file['link'];
+						}
+
 						$downloadAttribute = " download";
 						if(!empty($block['attrs']['linkTarget']) && $block['attrs']['linkTarget'] == 'attachmentpage' ) {
 							$url = get_permalink($fileId);
@@ -206,6 +229,12 @@ function downloadlist_api_return_file_data( WP_REST_Request $request ): array
 		// get the file data
 		$array = [];
 		foreach( $postIds as $postId ) {
+			// if id is < 0 it's an external file
+			// -> set only its id
+			if( $postId < 0 ) {
+				$array[] = ['id' => $postId];
+				continue;
+			}
 			$js = wp_prepare_attachment_for_js($postId);
 			if( !empty($js) ) {
 				$array[] = $js;

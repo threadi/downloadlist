@@ -1,0 +1,26 @@
+.downloadlist-external-wrapper {
+	padding: 6px 16px;
+}
+
+.downloadlist-external-wrapper h3 { font-size: 1.1em }
+
+.downloadlist-external-list li > span {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.downloadlist-external-list label {
+	display: inline-block;
+	font-weight: normal;
+	padding: 4px 8px 0 0;
+	text-align: right;
+	vertical-align: top;
+	width: 120px;
+}
+
+.downloadlist-external-list input, .downloadlist-external-list select, .downloadlist-external-list textarea {
+	display: inline-block;
+	font-weight: normal;
+	max-width: 240px;
+	width: 100%;
+}
