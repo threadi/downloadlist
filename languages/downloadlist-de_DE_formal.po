@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Download List\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/"
 "downloadlist\n"
-"POT-Creation-Date: 2022-10-17T20:36:45+02:00\n"
+"POT-Creation-Date: 2023-03-19T11:04:10-05:00\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Zwirner <info@thomaszwirner.de>\n"
 "Language-Team: Thomas Zwirner\n"
@@ -18,7 +18,7 @@ msgid "Download List Block with Icons"
 msgstr "Download Liste mit Icons"
 
 #. Description of the plugin
-#: block/index.js:5917 block/index.js:5606
+#: block/index.js:5929 block/index.js:5630
 msgid ""
 "Provides a Gutenberg block for capturing a download list with file type "
 "specific icons."
@@ -34,68 +34,68 @@ msgstr "Thomas Zwirner"
 msgid "https://www.thomaszwirner.de"
 msgstr "https://www.thomaszwirner.de"
 
-#: block/index.js:5768 block/index.js:5482
+#: block/index.js:5781 block/index.js:5506
 msgid "Sort files by title"
 msgstr "Sortieren nach Titel"
 
-#: block/index.js:5783 block/index.js:5487
+#: block/index.js:5796 block/index.js:5511
 msgid "Sort files by filesize"
 msgstr "Sortieren nach Dateigröße"
 
-#: block/index.js:5786 block/index.js:5494
+#: block/index.js:5799 block/index.js:5518
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: block/index.js:5788 block/index.js:5496
+#: block/index.js:5801 block/index.js:5520
 msgid "Hide icon"
 msgstr "Icon verstecken"
 
-#: block/index.js:5792 block/index.js:5501
+#: block/index.js:5805 block/index.js:5525
 msgid "Hide file size"
 msgstr "Dateigröße verstecken"
 
-#: block/index.js:5796 block/index.js:5506
+#: block/index.js:5809 block/index.js:5530
 msgid "Hide description"
 msgstr "Beschreibung verstecken"
 
-#: block/index.js:5800 block/index.js:5511
+#: block/index.js:5813 block/index.js:5535
 msgid "Choose link target"
 msgstr "Wähle das Linkziel"
 
-#: block/index.js:5803 block/index.js:5514
+#: block/index.js:5816 block/index.js:5538
 msgid "direct link"
 msgstr "Direktlink"
 
-#: block/index.js:5806 block/index.js:5515
+#: block/index.js:5819 block/index.js:5539
 msgid "attachment page"
 msgstr "Anhangseite"
 
-#: block/index.js:5860 block/index.js:5561
+#: block/index.js:5872 block/index.js:5585
 msgid "Add files to list"
 msgstr "Dateien hinzufügen"
 
-#: block/index.js:5916 block/index.js:5605
+#: block/index.js:5928 block/index.js:5629
 msgid "Download List with Icons"
 msgstr "Download Liste mit Icons"
 
-#: block/index.js:6065 block/index.js:6170 block/index.js:5708
-#: block/index.js:5791
+#: block/index.js:6071 block/index.js:6167 block/index.js:5732
+#: block/index.js:5815
 msgid "Edit file"
 msgstr "Datei bearbeiten"
 
-#: block/index.js:6067 block/index.js:5710
+#: block/index.js:6073 block/index.js:5734
 msgid "Save"
 msgstr "Speichern"
 
-#: block/index.js:6150 block/index.js:5783
+#: block/index.js:6149 block/index.js:5807
 msgid "Loading .."
 msgstr "Lade .."
 
-#: block/index.js:6166 block/index.js:5790
+#: block/index.js:6163 block/index.js:5814
 msgid "Remove from list"
 msgstr "Entfernen von der Liste"
 
-#: block/index.js:6174 block/index.js:5792
+#: block/index.js:6171 block/index.js:5816
 msgid "hold to pull"
 msgstr "festhalten zum Ziehen"
 

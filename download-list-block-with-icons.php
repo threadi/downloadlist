@@ -176,8 +176,8 @@ function downloadlist_get_content_block_loop($blocks): array
 					$block['innerContent'] = [$output];
 				}
 			}
-			$updatedBlocks[] = $block;
 		}
+		$updatedBlocks[] = $block;
 	}
 	return $updatedBlocks;
 }

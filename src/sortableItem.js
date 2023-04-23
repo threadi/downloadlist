@@ -125,7 +125,7 @@ export function SortableItem(props) {
 	}
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`editor-styles-wrapper wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcons}`}>
+		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcons}`}>
 			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'downloadlist')}/>
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'downloadlist' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'downloadlist' )}>{dragHandle}</Button>
