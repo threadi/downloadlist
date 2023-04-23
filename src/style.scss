@@ -9,12 +9,15 @@ ul.downloadlist-list {
   li:before {
 	content: "\f497";
 	display: inline-block;
-	font-family: dashicons;
+	font-family: dashicons, sans-serif;
 	font-size: 24px;
 	margin-left: -32px;
 	margin-right: 8px;
 	vertical-align: middle;
 	width: 24px;
+  }
+  li.file_application:before {
+	content: "\f497";
   }
   li.file_pdf:before {
 	content: "\f190";
@@ -24,9 +27,6 @@ ul.downloadlist-list {
   }
   li.file_video:before {
 	content: "\f126";
-  }
-  li.file_application:before {
-	content: "\f497";
   }
 }
 

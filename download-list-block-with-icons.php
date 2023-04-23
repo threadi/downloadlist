@@ -109,20 +109,23 @@ function downloadlist_get_content_block_loop($blocks): array
 
 						// get the mimetype
 						$mimetype = get_post_mime_type($fileId);
+						if( $fileId < 0 ) {
+							$mimetype = '/';
+						}
 
 						// if nothing could be loaded do not output anything
 						if( empty($mimetype) && $fileId > 0 ) {
 							continue;
 						}
 
-						if( $fileId < 0 ) {
-							$mimetype = '/';
-						}
-
 						// split the mimetype to get type and subtype
 						$mimetypeArray = explode("/", $mimetype);
 						$type = $mimetypeArray[0];
 						$subtype = $mimetypeArray[1];
+						if( $fileId < 0 ) {
+							$type = $file['type'];
+							$subtype = $file['subtype'];
+						}
 
 						// get the meta-data like JS (like human-readable filesize)
 						$file_meta = wp_prepare_attachment_for_js($fileId);
@@ -131,7 +134,7 @@ function downloadlist_get_content_block_loop($blocks): array
 						}
 
 						// get the file size
-						$fileSize =  ' (' . !empty($file_meta['filesizeHumanReadable']) ?? $file_meta['filesizeHumanReadable'] . ')';
+						$fileSize =  ' (' . (!empty($file_meta['filesizeHumanReadable']) ? $file_meta['filesizeHumanReadable'] : '') . ')';
 						if(!empty($block['attrs']['hideFileSize'])) {
 							$fileSize = '';
 						}
@@ -140,8 +143,8 @@ function downloadlist_get_content_block_loop($blocks): array
 						$attachment = get_post($fileId);
 						if( $fileId < 0 ) {
 							$attachment = (object)[
-								'post_title' => !empty($file['title']) ?? $file['title'],
-								'post_content' => !empty($file['description']) ?? $file['description']
+								'post_title' => !empty($file['title']) ? $file['title'] : '',
+								'post_content' => !empty($file['description']) ? $file['description'] : ''
 							];
 						}
 
@@ -154,7 +157,7 @@ function downloadlist_get_content_block_loop($blocks): array
 						// get download URL
 						$url = wp_get_attachment_url($fileId);
 						if( $fileId < 0 ) {
-							$url = !empty($file['link']) ?? $file['link'];
+							$url = !empty($file['link']) ? $file['link'] : '';
 						}
 
 						$downloadAttribute = " download";

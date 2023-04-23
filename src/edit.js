@@ -57,8 +57,9 @@ import {
 	verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./sortableItem";
-import { getActualDate } from "./components";
+import {getActualDate, humanFileSize} from "./components";
 const { useSelect } = wp.data;
+const { useEffect } = wp.element;
 
 const ALLOWED_MEDIA_TYPES = [ 'application', 'audio', 'video' ];
 
@@ -72,7 +73,7 @@ const ALLOWED_MEDIA_TYPES = [ 'application', 'audio', 'video' ];
  * @return {WPElement} Element to render.
  */
 export default function Edit( object ) {
-	let files = ( !object.attributes.files ? [] : object.attributes.files )
+	let files = ( !object.attributes.files ? [] : object.attributes.files );
 
 	// collect the fileIds as array
 	let fileIds = [];
@@ -82,13 +83,15 @@ export default function Edit( object ) {
 
 	// let js know our custom endpoint
 	let dispatch = wp.data.dispatch;
-	dispatch( 'core' ).addEntities( [
-		{
-			name: 'files',           // route name
-			kind: 'downloadlist/v1', // namespace
-			baseURL: '/downloadlist/v1/files' // API path without /wp-json
-		}
-	]);
+	useEffect(() => {
+		dispatch('core').addEntities([
+			{
+				name: 'files',           // route name
+				kind: 'downloadlist/v1', // namespace
+				baseURL: '/downloadlist/v1/files' // API path without /wp-json
+			}
+		]);
+	});
 
 	// set actual date if it is not present
 	if( !object.attributes.date ) {
@@ -125,7 +128,7 @@ export default function Edit( object ) {
 		// -> case 1: update from version 1.x of this plugin
 		// -> case 2: a file is not available anymore
 		if( JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
-			object.setAttributes( { files: objectFiles } );
+			object.setAttributes({files: objectFiles});
 		}
 	}
 
@@ -251,9 +254,8 @@ export default function Edit( object ) {
 	 *
 	 * @param value
 	 * @param object
-	 * @param files
 	 */
-	function openMediaLibrary( value, object, files ) {
+	function openMediaLibrary( value, object ) {
 		// secure the default media router config
 		const defaultMediaRouterConfig = wp.media.view.MediaFrame.Select.prototype.browseRouter;
 
@@ -271,7 +273,7 @@ export default function Edit( object ) {
 					text:     wp.media.view.l10n.mediaLibraryTitle,
 					priority: 40
 				},
-				external_fields: {
+				external_files: {
 					text:     __('external files', 'downloadlist'),
 					priority: 60
 				}
@@ -299,27 +301,44 @@ export default function Edit( object ) {
 		 * Preselect already chosen files in media library.
 		 */
 		frame.on('open',function() {
+			// trigger external files form if the tab is opened initially
+			if( frame.state().get('content') === 'external_files') {
+				wp.media.frame.trigger('content:activate:external_files');
+			}
+
+			// mark selected fields in media library tab
 			let selection = frame.state().get('selection');
 			object.attributes.files.forEach(function (obj) {
-				let attachment = wp.media.attachment(obj.id);
-				selection.add(attachment ? [attachment] : []);
+				if( obj.id > 0 ) {
+					let attachment = wp.media.attachment(obj.id);
+					selection.add(attachment ? [attachment] : []);
+				}
 			});
 		});
 
 		/**
-		 * Show our own content if external_fields-tab is active
-		 * TODO Formular in Sitzung speichern und wieder hervorholen statt es jedes Mal neu zu erzeugen
-		 * TODO sollte auch beim Aufruf des Fensters ausgeführt werden
+		 * Show our own content if external_files-tab is active.
 		 */
-		wp.media.frame.on('content:activate:external_fields',function() {
+		wp.media.frame.on('content:activate:external_files',function() {
 			// add the output
-			jQuery('.media-modal-content .media-frame-content').html(htmlListForExternalFiles);
+			let form = localStorage.getItem('downloadlist_external_files');
+			if( form === null ) {
+				form = htmlListForExternalFiles;
+			}
+			jQuery('.media-modal-content .media-frame-content').html(form);
 
 			// add event to add a new file-entry
 			jQuery('a.downloadlist-add-external-file').on('click', function(e) {
 				e.preventDefault();
 				jQuery('.downloadlist-external-list li').last().clone(false).appendTo('.downloadlist-external-list');
 				setEventsForExternalFileList();
+			});
+
+			// TODO value-Werte bleiben beim Kopieren nicht so erhalten wie eingegeben
+			// add event to reflect every change on global var
+			jQuery('.media-modal-content .media-frame-content').find('input,select,textarea').on('input', function() {
+				localStorage.removeItem('downloadlist_external_files');
+				localStorage.setItem('downloadlist_external_files', jQuery('.media-modal-content .media-frame-content').clone( true, true ).html());
 			});
 
 			// set events to file list
@@ -339,18 +358,31 @@ export default function Edit( object ) {
 			const external_files = [];
 			let i = 0;
 			jQuery('.downloadlist-external-list li').each(function() {
-				// TODO Pflichtangaben prüfen
-				if( jQuery(this).find("input.downloadlist-title").val().length > 0 ) {
+				let obj = jQuery(this);
+				let title = obj.find("input.downloadlist-title").val();
+				let url = obj.find('input.downloadlist-url').val();
+				let filetype = obj.find('select.downloadlist-mimetype').val();
+				let filetype_split = filetype.split("/");
+				let type = filetype_split[0];
+				let subtype = filetype_split[1];
+				let filesize = parseInt(obj.find('input.downloadlist-filesize').val());
+
+				// check for necessary fields
+				if( title.length > 0 && url.length > 0 && filetype.length > 0 && filesize > 0 ) {
+					// set a negative id to prevent overlapping ids with media files
 					i = i - 1;
 					let entry = {
 						'id': i,
-						'title': jQuery(this).find('input.downloadlist-title').val(),
-						'filename': jQuery(this).find('input.downloadlist-url').val(),
-						'description': jQuery(this).find('input.downloadlist-description').val(),
-						'url': jQuery(this).find('input.downloadlist-url').val(),
-						'link': jQuery(this).find('input.downloadlist-url').val(),
-						'filesizeHumanReadable': jQuery(this).find('input.downloadlist-filesize').val(),
-						'filesizeInBytes': jQuery(this).find('input.downloadlist-filesize').val()
+						'title': title,
+						'filename': obj.find('input.downloadlist-url').val(),
+						'description': obj.find('textarea.downloadlist-description').val(),
+						'url': url,
+						'link': url,
+						'filetype': filetype,
+						'type': type,
+						'subtype': subtype,
+						'filesizeHumanReadable': humanFileSize(filesize),
+						'filesizeInBytes': filesize
 					};
 					external_files.push(entry);
 				}
@@ -361,13 +393,19 @@ export default function Edit( object ) {
 
 			// update the list
 			object.setAttributes({files: results, date: getActualDate()})
+
+			// remove local storage of used form
+			localStorage.removeItem('downloadlist_external_files');
+
+			// remove the modal really from DOM
+			frame.detach();
 		});
 
 		/**
 		 * Revert the media setting to default if our own media library is closed.
 		 */
 		frame.on('close', function() {
-			// remove our own tab
+			// revert to initially modal setup
 			wp.media.view.MediaFrame.Select.prototype.browseRouter = defaultMediaRouterConfig;
 		});
 
@@ -388,69 +426,79 @@ export default function Edit( object ) {
 				'title': __('File #', 'downloadlist')
 			},
 			'url': {
-				'type': 'text',
+				'type': 'url',
 				'name': 'url',
 				'title': __('URL', 'downloadlist'),
 				'value': '[URL]'
 			},
 			'filesize': {
-				'type': 'text',
+				'type': 'number',
 				'name': 'filesize',
-				'title': __('filesize in bytes', 'downloadlist'),
+				'title': __('Filesize in byte', 'downloadlist'),
 				'value': '[FILESIZE]'
 			},
 			'mimetype': {
 				'type': 'select',
 				'name': 'mimetype',
-				'title': __('filetype', 'downloadlist'),
+				'title': __('Filetype', 'downloadlist'),
 				'options': [
-					'<option value="file">' + __('file', 'downloadlist') + '</option>',
-					'<option value="pdf">' + __('PDF', 'downloadlist') + '</option>'
+					'<option value="application/file">' + __('file', 'downloadlist') + '</option>',
+					'<option value="application/pdf">' + __('PDF', 'downloadlist') + '</option>'
 				]
 			},
 			'title': {
 				'type': 'text',
 				'name': 'title',
-				'title': __('title', 'downloadlist'),
+				'title': __('Title', 'downloadlist'),
 				'value': '[TITLE]'
 			},
 			'description': {
 				'type': 'textarea',
 				'name': 'description',
-				'title': __('description', 'downloadlist'),
+				'title': __('Description', 'downloadlist'),
 				'value': '[DESC]'
 			}
 		};
 
-		// create list-item from fields
-		let listitem = '<li>';
+		// create html-code for single item from configured fields
+		let html_item = '<li>';
 		for (const [key, value] of Object.entries(fields)) {
 			switch( value.type ) {
 				case 'h3':
-					listitem = listitem + '<h3>' + value.title + '<span class="downloadlist-file-number">[NUMBER]</span> <a href="#" class="downloadlist-delete-entry">' + __('delete entry', 'downloadlist') + '</a></h3>';
+					html_item = html_item + '<h3>' + value.title + '<span class="downloadlist-file-number">[NUMBER]</span> <a href="#" class="downloadlist-delete-entry">' + __('delete entry', 'downloadlist') + '</a></h3>';
+					break;
+				case 'url':
+					html_item = html_item + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><input type="url" id="' + value.name + '[NUMBER]" name="' + value.name + '" value="' + value.value + '" class="downloadlist-' + value.name + '"></span>';
+					break;
+				case 'number':
+					html_item = html_item + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><input type="number" min="0" step="1" id="' + value.name + '[NUMBER]" name="' + value.name + '" value="' + value.value + '" class="downloadlist-' + value.name + '"></span>';
 					break;
 				case 'text':
-					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><input type="text" id="' + value.name + '[NUMBER]" name="' + value.name + '" value="' + value.value + '" class="downloadlist-' + value.name + '"></span>';
+					html_item = html_item + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><input type="text" id="' + value.name + '[NUMBER]" name="' + value.name + '" value="' + value.value + '" class="downloadlist-' + value.name + '"></span>';
 					break;
 				case 'select':
-					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><select id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + value.options + '</select></span>';
+					let options = '';
+					{value.options.map(value => (
+						options = options + value
+					))};
+					html_item = html_item + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><select id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + options + '</select></span>';
 					break;
 				case 'textarea':
-					listitem = listitem + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><textarea id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + value.value + '</textarea></span>';
+					html_item = html_item + '<span><label for="' + value.name + '[NUMBER]">' + value.title + '</label><textarea id="' + value.name + '[NUMBER]" name="' + value.name + '" class="downloadlist-' + value.name + '">' + value.value + '</textarea></span>';
 					break;
 			}
 		}
-		listitem = listitem + '</li>';
+		html_item = html_item + '</li>';
 
 		// create html-output
-		let html = '<div class="downloadlist-external-wrapper"><h2>' + __('External files for this list', 'downloadlist') + '</h2>';
+		let html = '<div class="downloadlist-external-wrapper"><h2>' + __('External files', 'downloadlist') + '</h2>';
 		html = html + '<ul class="downloadlist-external-list">';
 		let i = 0;
 		for (const [key, value] of Object.entries(object.attributes.files)) {
 			if( value.id < 0 ) {
 				i = i + 1;
 				// replace number
-				let item = listitem;
+				let item = html_item;
 
 				// replace title
 				item = item.replace('[TITLE]', value.title);
@@ -464,16 +512,19 @@ export default function Edit( object ) {
 				// replace filesize
 				item = item.replace('[FILESIZE]', value.filesizeInBytes);
 
+				// mark filetype
+				item = item.replace('"' + value.filetype + '"', '"' + value.filetype + '" selected="selected"');
+
 				// add to list
 				html = html + item.replace(/\[NUMBER\]/g, i + '');
 			}
 		}
 
-		// add field for new entry
-		html = html + listitem.replace(/\[NUMBER\]/g, (i+1) + '').replace('[TITLE]', '').replace('[TITLE]', '').replace('[DESC]', '').replace('[URL]', '').replace('[FILESIZE]', '');
+		// add single field for new entry at the end of the list
+		html = html + html_item.replace(/\[NUMBER\]/g, (i+1) + '').replace('[TITLE]', '').replace('[TITLE]', '').replace('[DESC]', '').replace('[URL]', '').replace('[FILESIZE]', '');
 
 		// return completed string
-		return html + '</ul><a href="#" class="downloadlist-add-external-file button media-button button-primary button-large media-button-select">' + __('Add additional external file', 'downloadlist') + '</a></div>';
+		return html + '</ul><a href="#" class="downloadlist-add-external-file button media-button button-primary button-large media-button-select">' + __('Add external file', 'downloadlist') + '</a></div>';
 	}
 
 	/**
@@ -564,7 +615,7 @@ export default function Edit( object ) {
 					allowedTypes={ ALLOWED_MEDIA_TYPES }
 					value={ object.attributes.files }
 					render={ ( { open } ) => (
-						<Button isPrimary onClick={ value => openMediaLibrary(value, object, files) }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
+						<Button isPrimary onClick={ value => openMediaLibrary(value, object) }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
 					) }
 				/>
 			</MediaUploadCheck>
