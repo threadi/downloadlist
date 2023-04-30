@@ -236,17 +236,81 @@ export default function Edit( object ) {
 	 */
 	function setEventsForExternalFileList() {
 		// set event to delete single file from list
-		jQuery('a.downloadlist-delete-entry').off('click').on('click', function(e) {
+		jQuery('.media-modal:visible a.downloadlist-delete-entry').off('click').on('click', function(e) {
 			e.preventDefault();
 			jQuery(this).parents('li').remove();
+
+			// clear the storage
+			localStorage.removeItem('downloadlist_external_files');
+			// get the external files
+			const external_files = get_external_files_as_array();
+			// save in local storage
+			localStorage.setItem('downloadlist_external_files', JSON.stringify(external_files));
 		});
 
 		// reset numbering of the files
 		let i = 0;
-		jQuery('span.downloadlist-file-number').each(function() {
+		jQuery('.media-modal:visible span.downloadlist-file-number').each(function() {
 			i = i + 1;
 			jQuery(this).html(i)
 		});
+	}
+
+	/**
+	 * Return all actual external files from formular as array.
+	 *
+	 * @returns {*[]}
+	 */
+	function get_external_files_as_array() {
+		let external_files = [];
+		let i = 0;
+		jQuery('.downloadlist-external-list li').each(function() {
+			let obj = jQuery(this);
+			let title = obj.find("input.downloadlist-title").val();
+			let url = obj.find('input.downloadlist-url').val();
+			let filetype = obj.find('select.downloadlist-mimetype').val();
+			let filetype_split = filetype.split("/");
+			let type = filetype_split[0];
+			let subtype = filetype_split[1];
+			let filesize = parseInt(obj.find('input.downloadlist-filesize').val());
+
+			// check for necessary fields
+			if( title.length > 0 && url.length > 0 && filetype.length > 0 && filesize > 0 ) {
+				// set a negative id to prevent overlapping ids with media files
+				i = i - 1;
+				let entry = {
+					'id': i,
+					'title': title,
+					'filename': obj.find('input.downloadlist-url').val(),
+					'description': obj.find('textarea.downloadlist-description').val(),
+					'url': url,
+					'link': url,
+					'filetype': filetype,
+					'type': type,
+					'subtype': subtype,
+					'filesizeHumanReadable': humanFileSize(filesize),
+					'filesizeInBytes': filesize
+				};
+				external_files.push(entry);
+			}
+		});
+		return external_files;
+	}
+
+	/**
+	 * Return only the external files from attributes.files-array
+	 *
+	 * @returns {*[]}
+	 */
+	function get_external_files_from_attributes() {
+		let external_files = [];
+		for (const [key, value] of Object.entries(object.attributes.files)) {
+			value.id = parseInt(value.id);
+			if (value.id < 0) {
+				external_files.push(value);
+			}
+		}
+		return external_files;
 	}
 
 	/**
@@ -259,11 +323,9 @@ export default function Edit( object ) {
 		// secure the default media router config
 		const defaultMediaRouterConfig = wp.media.view.MediaFrame.Select.prototype.browseRouter;
 
-		// generate item list for external files
-		let htmlListForExternalFiles = getHtmlListForExternalFiles( object );
-
 		// add our own tab to the router for our own media library
 		wp.media.view.MediaFrame.Select.prototype.browseRouter = function( routerView ) {
+			// noinspection JSUnresolvedReference
 			routerView.set({
 				upload: {
 					text:     wp.media.view.l10n.uploadFilesTitle,
@@ -320,29 +382,50 @@ export default function Edit( object ) {
 		 * Show our own content if external_files-tab is active.
 		 */
 		wp.media.frame.on('content:activate:external_files',function() {
-			// add the output
-			let form = localStorage.getItem('downloadlist_external_files');
-			if( form === null ) {
-				form = htmlListForExternalFiles;
+			// get wrapper
+			let wrapper = jQuery('.media-modal:visible .media-modal-content .media-frame-content');
+
+			// get the files from local storage
+			let filesArray = localStorage.getItem('downloadlist_external_files');
+			filesArray = JSON.parse(filesArray);
+			// -> if no files given, use the attribute.files-list
+			if( filesArray === null ) {
+				filesArray = object.attributes.files;
 			}
-			jQuery('.media-modal-content .media-frame-content').html(form);
+
+			// get the html-code for the formular
+			let form = getHtmlListForExternalFiles( object, filesArray );
+
+			// and add it to the page
+			wrapper.html(form);
 
 			// add event to add a new file-entry
-			jQuery('a.downloadlist-add-external-file').on('click', function(e) {
+			jQuery('.media-modal:visible a.downloadlist-add-external-file').on('click', function(e) {
 				e.preventDefault();
 				jQuery('.downloadlist-external-list li').last().clone(false).appendTo('.downloadlist-external-list');
 				setEventsForExternalFileList();
 			});
 
-			// TODO value-Werte bleiben beim Kopieren nicht so erhalten wie eingegeben
 			// add event to reflect every change on global var
-			jQuery('.media-modal-content .media-frame-content').find('input,select,textarea').on('input', function() {
+			wrapper.find('input,select,textarea').on('input', function() {
+				// clear the storage
 				localStorage.removeItem('downloadlist_external_files');
-				localStorage.setItem('downloadlist_external_files', jQuery('.media-modal-content .media-frame-content').clone( true, true ).html());
+				// get the external files
+				const external_files = get_external_files_as_array();
+				// save in local storage
+				localStorage.setItem('downloadlist_external_files', JSON.stringify(external_files));
 			});
 
 			// set events to file list
 			setEventsForExternalFileList();
+		});
+
+		/**
+		 * Remove local storage on close.
+		 */
+		frame.on('close', function() {
+			// clear the local storage
+			localStorage.removeItem('downloadlist_external_files');
 		});
 
 		/**
@@ -354,39 +437,11 @@ export default function Edit( object ) {
 				return attachment.toJSON();
 			});
 
-			// get the external files
-			const external_files = [];
-			let i = 0;
-			jQuery('.downloadlist-external-list li').each(function() {
-				let obj = jQuery(this);
-				let title = obj.find("input.downloadlist-title").val();
-				let url = obj.find('input.downloadlist-url').val();
-				let filetype = obj.find('select.downloadlist-mimetype').val();
-				let filetype_split = filetype.split("/");
-				let type = filetype_split[0];
-				let subtype = filetype_split[1];
-				let filesize = parseInt(obj.find('input.downloadlist-filesize').val());
-
-				// check for necessary fields
-				if( title.length > 0 && url.length > 0 && filetype.length > 0 && filesize > 0 ) {
-					// set a negative id to prevent overlapping ids with media files
-					i = i - 1;
-					let entry = {
-						'id': i,
-						'title': title,
-						'filename': obj.find('input.downloadlist-url').val(),
-						'description': obj.find('textarea.downloadlist-description').val(),
-						'url': url,
-						'link': url,
-						'filetype': filetype,
-						'type': type,
-						'subtype': subtype,
-						'filesizeHumanReadable': humanFileSize(filesize),
-						'filesizeInBytes': filesize
-					};
-					external_files.push(entry);
-				}
-			});
+			// get the external files from formular if it exists, otherwise use the files from list
+			let external_files = get_external_files_from_attributes();
+			if( jQuery('.downloadlist-external-list').length === 1 ) {
+				external_files = get_external_files_as_array();
+			}
 
 			// merge them
 			let results = [...attachments, ...external_files];
@@ -394,7 +449,7 @@ export default function Edit( object ) {
 			// update the list
 			object.setAttributes({files: results, date: getActualDate()})
 
-			// remove local storage of used form
+			// clear the local storage
 			localStorage.removeItem('downloadlist_external_files');
 
 			// remove the modal really from DOM
@@ -418,7 +473,7 @@ export default function Edit( object ) {
 	 *
 	 * @returns {string}
 	 */
-	function getHtmlListForExternalFiles( object ) {
+	function getHtmlListForExternalFiles( object, filesArray ) {
 		// define fields per external file
 		let fields = {
 			'heading': {
@@ -494,7 +549,7 @@ export default function Edit( object ) {
 		let html = '<div class="downloadlist-external-wrapper"><h2>' + __('External files', 'downloadlist') + '</h2>';
 		html = html + '<ul class="downloadlist-external-list">';
 		let i = 0;
-		for (const [key, value] of Object.entries(object.attributes.files)) {
+		for (const [key, value] of Object.entries(filesArray)) {
 			if( value.id < 0 ) {
 				i = i + 1;
 				// replace number
