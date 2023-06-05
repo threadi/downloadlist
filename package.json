@@ -21,15 +21,7 @@
 	"dependencies": {
 		"@dnd-kit/modifiers": "^6.0.0",
 		"@dnd-kit/sortable": "^7.0.1",
-		"@dnd-kit/utilities": "^3.2.0",
 		"@wordpress/i18n": "^4.3.0",
-		"@wordpress/icons": "^6.2.0",
-		"ansi-regex": "^5.0.1",
-		"gutenberg-sortable": "^1.0.5",
-		"markdown-it": "^12.3.2",
-		"node-fetch": "^2.6.7",
-		"nth-check": "^2.0.1",
-		"react-sortable-hoc": "^2.0.0",
-		"yargs-parser": "^13.1.2"
+		"@wordpress/icons": "^6.2.0"
 	}
 }
