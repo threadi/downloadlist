@@ -52,7 +52,7 @@
 	</target>
 
 	<!-- init project -->
-	<target name="init" description="initialize the project" depends="npm-install" />
+	<target name="init" description="initialize the project" depends="npm-install,npm-build" />
 
 	<!-- create release-zip -->
 	<target name="build" description="builds a new release" depends="init,npm-build,setVersionNumber,json-translations">
