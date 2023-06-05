@@ -58,8 +58,14 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./sortableItem";
 import { getActualDate } from "./components";
-const { useSelect } = wp.data;
+const { useSelect, dispatch } = wp.data;
+const { useEffect } = wp.element;
 
+/**
+ * Set allowed media-types.
+ *
+ * @type {string[]}
+ */
 const ALLOWED_MEDIA_TYPES = [ 'application', 'audio', 'video' ];
 
 /**
@@ -81,14 +87,15 @@ export default function Edit( object ) {
 	})}
 
 	// let js know our custom endpoint
-	let dispatch = wp.data.dispatch;
-	dispatch( 'core' ).addEntities( [
+	useEffect(() => {
+		dispatch( 'core' ).addEntities( [
 		{
 			name: 'files',           // route name
 			kind: 'downloadlist/v1', // namespace
 			baseURL: '/downloadlist/v1/files' // API path without /wp-json
 		}
-	]);
+		] )
+	});
 
 	// set actual date if it is not present
 	if( !object.attributes.date ) {
@@ -117,7 +124,7 @@ export default function Edit( object ) {
 		// -> case 1: update from version 1.x from this plugin
 		// -> case 2: a file is not available anymore
 		if( JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
-			object.setAttributes( { files: objectFiles } );
+			object.setAttributes({files: objectFiles});
 		}
 	}
 
