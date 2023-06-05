@@ -32,7 +32,7 @@ function downloadlist_init() {
 	if ( function_exists( 'register_block_type' ) ) {
 		register_block_type(__DIR__);
 		wp_set_script_translations('downloadlist-list-editor-script', 'downloadlist', plugin_dir_path(__FILE__) . '/languages/');
-		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/block/index.css', __FILE__ ));
+		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/block/style-index.css', __FILE__ ));
 		wp_enqueue_style('dashicons');
 	}
 }
