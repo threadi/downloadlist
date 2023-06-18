@@ -24,8 +24,9 @@ import './style.scss';
 /**
  * Internal dependencies
  */
-import Edit from './edit';
+import edit from './edit';
 import save from "./save";
+import './options';
 
 /**
  * Every block starts by registering a new block type definition.
@@ -38,7 +39,8 @@ registerBlockType( 'downloadlist/list', {
 
 	example: {
 		attributes: {
-			mode: 'preview'
+			mode: 'preview',
+			preview: true
 		}
 	},
 
@@ -64,13 +66,25 @@ registerBlockType( 'downloadlist/list', {
 		linkTarget: {
 			type: 'string',
 			default: 'direct'
+		},
+		iconset: {
+			type: 'int',
+			default: 0
+		},
+		file_types_set: {
+			type: 'boolean',
+			default: false
+		},
+		preview: {
+			type: 'boolean',
+			default: false
 		}
 	},
 
 	/**
 	 * @see ./edit.js
 	 */
-	edit: Edit,
+	edit: edit,
 
 	/**
 	 * @see ./save.js

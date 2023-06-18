@@ -6,7 +6,7 @@ Tested up to: 6.2
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 2.1.1
+Stable tag: 3.0.0
 
 == Description ==
 
@@ -135,3 +135,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 2.1.1 =
 * Fixed output of classic block if this plugin is used
+
+= 3.0.0 =
+* Added possibility to manage different icon-sets and assign them to each downloadlist-block.

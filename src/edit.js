@@ -62,13 +62,6 @@ const { useSelect, dispatch } = wp.data;
 const { useEffect } = wp.element;
 
 /**
- * Set allowed media-types.
- *
- * @type {string[]}
- */
-const ALLOWED_MEDIA_TYPES = [ 'application', 'audio', 'video' ];
-
-/**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
  *
@@ -126,6 +119,50 @@ export default function Edit( object ) {
 		if( JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
 			object.setAttributes({files: objectFiles});
 		}
+	}
+
+	// useSelect to retrieve all post types
+	const iconsets_array = useSelect( ( select ) => {
+		return select('core').getEntityRecords('taxonomy', 'dl_icon_set', { per_page: -1 } )
+	}, []) || [];
+
+	// Options in SelectControl expected format [{label: ..., value: ...}]
+	let iconsets = iconsets_array.map(
+		// Format the options for display in the <SelectControl/>
+		(icon) => ({
+			label: icon.name,
+			value: icon.id
+		})
+	);
+
+	// if no iconset is set, use the default one returned via request.
+	if( 0 === object.attributes.iconset && iconsets_array.length > 0 ) {
+		for (let i = 0; i < iconsets_array.length; i++) {
+			if( 1 === iconsets_array[i].meta.default ) {
+				object.attributes.iconset = iconsets_array[i].id;
+			}
+		}
+	}
+
+	// retrieve all possible file types
+	let allowed_file_types = [];
+	if( !object.attributes.preview ) {
+		useEffect(() => {
+			dispatch('core').addEntities([
+				{
+					name: 'filetypes', // route name
+					kind: 'downloadlist/v1', // namespace
+					baseURL: '/downloadlist/v1/filetypes' // API path without /wp-json
+				}
+			]);
+		}, []);
+		let allowed_file_types_server_result = useSelect( (select) => {
+			return select('core').getEntityRecords('downloadlist/v1', 'filetypes', { per_page: -1, iconset: object.attributes.iconset } );
+		}, [object.attributes.iconset]) || [];
+
+		allowed_file_types = allowed_file_types_server_result.map(
+			(filetype) => filetype.value
+		);
 	}
 
 	/**
@@ -202,6 +239,16 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * On change of icon set option
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeIconSet( newValue, object ) {
+		object.setAttributes({ iconset: newValue });
+	}
+
+	/**
 	 * On change of link target
 	 *
 	 * @param newValue
@@ -227,11 +274,15 @@ export default function Edit( object ) {
 		object.setAttributes({files: files, date: getActualDate()})
 	}
 
+	const blockProps = useBlockProps( {
+		className: 'iconset-' + object.attributes.iconset,
+	} );
+
 	/**
 	 * Collect return for the edit-function
 	 */
 	return (
-		<div { ...useBlockProps() }>
+		<div { ...blockProps }>
 			{
 				<BlockControls>
 					<ToolbarButton
@@ -250,17 +301,25 @@ export default function Edit( object ) {
 				<InspectorControls>
 					<PanelBody title={ __( 'Settings', 'downloadlist' ) }>
 						<CheckboxControl
-							label={__('Hide icon', 'downloadlist')}
+							label={__('Hide icons', 'downloadlist')}
 							checked={ object.attributes.hideIcon }
 							onChange={ value => onChangeHideIcon( value, object ) }
 						/>
+						{false === object.attributes.hideIcon &&
+							<SelectControl
+								label={__('Choose icon-set', 'downloadlist')}
+								options={ iconsets }
+								value={ object.attributes.iconset }
+								onChange={(value) => onChangeIconSet( parseInt(value), object )}
+							/>
+						}
 						<CheckboxControl
-							label={__('Hide file size', 'downloadlist')}
+							label={__('Hide file sizes', 'downloadlist')}
 							checked={ object.attributes.hideFileSize }
 							onChange={ value => onChangeHideFileSize( value, object ) }
 						/>
 						<CheckboxControl
-							label={__('Hide description', 'downloadlist')}
+							label={__('Hide descriptions', 'downloadlist')}
 							checked={ object.attributes.hideDescription }
 							onChange={ value => onChangeHideDescription( value, object ) }
 						/>
@@ -291,34 +350,36 @@ export default function Edit( object ) {
 					</DndContext>
 				</div>
 			}
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ ( newFiles ) => {
-						{newFiles.map((newFile) => {
-							let doNotAdd = false;
-							{files.map((file, index) => {
-								if( file.id === newFile.id ) {
-									// do not add
-									doNotAdd = true;
+			{allowed_file_types.length > 0 &&
+				<MediaUploadCheck>
+					<MediaUpload
+						onSelect={ ( newFiles ) => {
+							{newFiles.map((newFile) => {
+								let doNotAdd = false;
+								{files.map((file, index) => {
+									if( file.id === newFile.id ) {
+										// do not add
+										doNotAdd = true;
+									}
+								})}
+								if( !doNotAdd ) {
+									files.push({
+										id: newFile.id
+									})
 								}
-							})};
-							if( !doNotAdd ) {
-								files.push({
-									id: newFile.id
-								})
-							}
-						})}
-						object.setAttributes({files: files, date: getActualDate()})
-					}
-					}
-					multiple={true}
-					allowedTypes={ ALLOWED_MEDIA_TYPES }
-					value={ object.attributes.files }
-					render={ ( { open } ) => (
-						<Button isPrimary onClick={ open }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
-					) }
-				/>
-			</MediaUploadCheck>
+							})}
+							object.setAttributes({files: files, date: getActualDate()})
+						}
+						}
+						multiple={ true }
+						allowedTypes={ allowed_file_types }
+						value={ object.attributes.files }
+						render={ ( { open } ) => (
+							<Button isPrimary onClick={ open }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
+						) }
+					/>
+				</MediaUploadCheck>
+			}
 		</div>
 	);
 }

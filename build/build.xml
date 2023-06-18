@@ -59,6 +59,8 @@
 		<delete file="${build.dir}/${plugin.slug}_${plugin.version}.zip"/>
 		<zip destfile="${build.dir}/${plugin.slug}_${plugin.version}.zip">
 			<zipfileset dir="${src.dir}/block" prefix="${plugin.slug}/block" />
+			<zipfileset dir="${src.dir}/class" prefix="${plugin.slug}/class" />
+			<zipfileset dir="${src.dir}/inc" prefix="${plugin.slug}/inc" />
 			<zipfileset dir="${src.dir}/languages" prefix="${plugin.slug}/languages" />
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
 			<zipfileset dir="${src.dir}" includes="uninstall.php,readme.txt,block.json" prefix="${plugin.slug}" />
