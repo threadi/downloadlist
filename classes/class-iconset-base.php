@@ -117,6 +117,7 @@ class Iconset_Base {
 	 * Return whether this iconset should be default on plugin-installation.
 	 *
 	 * @return bool
+	 * @noinspection PhpUnused
 	 */
 	public function should_be_default(): bool {
 		return $this->should_be_default;
@@ -126,9 +127,39 @@ class Iconset_Base {
 	 * Return whether this iconset should add an icon entry on plugin-installation.
 	 *
 	 * @return bool
+	 * @noinspection PhpUnused
 	 */
 	public function is_generic(): bool {
 		return $this->generic;
 	}
 
+	/**
+	 * Return list of supported file-types.
+	 *
+	 * @return array
+	 */
+	public function get_file_types(): array {
+		return array();
+	}
+
+	/**
+	 * Get style for given file-type.
+	 *
+	 * @param int $post_id ID of the icon-post.
+	 * @param string $term_slug ID of the iconset-term.
+	 * @param string $filetype Name for the filetype to add.
+	 * @return string
+	 */
+	public function get_style_for_filetype( int $post_id ,string $term_slug, string $filetype ): string {
+		return '';
+	}
+
+	/**
+	 * Get icons this set is assigned to.
+	 *
+	 * @return array
+	 */
+	public function get_icons(): array {
+		return array();
+	}
 }

@@ -6,6 +6,7 @@
  */
 
 .wp-block-downloadlist-list {
+  li { list-style: none }
   li:before {
 	display: inline-block;
 	font-size: 24px;

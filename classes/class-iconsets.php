@@ -73,14 +73,14 @@ class Iconsets {
 	 * Get iconset based on slug.
 	 *
 	 * @param string $slug
-	 * @return array
+	 * @return Iconset_Base|false
 	 */
-	public function get_icon_set_by_slug(string $slug): array {
+	public function get_iconset_by_slug(string $slug): Iconset_Base|false {
 		foreach( $this->get_icon_sets() as $iconset_obj ) {
 			if( $slug === $iconset_obj->get_slug() ) {
-				return array($iconset_obj);
+				return $iconset_obj;
 			}
 		}
-		return array();
+		return false;
 	}
 }

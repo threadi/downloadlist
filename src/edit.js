@@ -35,7 +35,8 @@ import {
 	PanelBody,
 	CheckboxControl,
 	SelectControl,
-	ToolbarButton
+	ToolbarButton,
+	ExternalLink
 } from '@wordpress/components';
 import { plus, sort } from '@wordpress/icons';
 import {
@@ -123,7 +124,7 @@ export default function Edit( object ) {
 
 	// useSelect to retrieve all post types
 	const iconsets_array = useSelect( ( select ) => {
-		return select('core').getEntityRecords('taxonomy', 'dl_icon_set', { per_page: -1 } )
+		return select('core').getEntityRecords('taxonomy', 'dl_icon_set', { per_page: -1, hide_empty: true } )
 	}, []) || [];
 
 	// Options in SelectControl expected format [{label: ..., value: ...}]
@@ -131,15 +132,15 @@ export default function Edit( object ) {
 		// Format the options for display in the <SelectControl/>
 		(icon) => ({
 			label: icon.name,
-			value: icon.id
+			value: icon.slug
 		})
 	);
 
 	// if no iconset is set, use the default one returned via request.
-	if( 0 === object.attributes.iconset && iconsets_array.length > 0 ) {
-		for (let i = 0; i < iconsets_array.length; i++) {
+	if( 0 === object.attributes.iconset.length && iconsets_array.length > 0 ) {
+		for( let i = 0; i < iconsets_array.length; i++ ) {
 			if( 1 === iconsets_array[i].meta.default ) {
-				object.attributes.iconset = iconsets_array[i].id;
+				object.attributes.iconset = iconsets_array[i].slug;
 			}
 		}
 	}
@@ -307,10 +308,11 @@ export default function Edit( object ) {
 						/>
 						{false === object.attributes.hideIcon &&
 							<SelectControl
-								label={__('Choose icon-set', 'downloadlist')}
+								label={__('Choose iconset', 'downloadlist')}
 								options={ iconsets }
 								value={ object.attributes.iconset }
-								onChange={(value) => onChangeIconSet( parseInt(value), object )}
+								onChange={(value) => onChangeIconSet( value, object )}
+								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'downloadlist' ) }</ExternalLink>}
 							/>
 						}
 						<CheckboxControl

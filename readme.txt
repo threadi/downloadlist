@@ -137,4 +137,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Fixed output of classic block if this plugin is used
 
 = 3.0.0 =
-* Added possibility to manage different icon-sets and assign them to each downloadlist-block.
+* Added possibility to manage different icon-sets and assign them to each downloadlist-block
+* Minimum PHP-compatibility set to 8.0

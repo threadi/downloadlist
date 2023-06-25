@@ -68,8 +68,8 @@ registerBlockType( 'downloadlist/list', {
 			default: 'direct'
 		},
 		iconset: {
-			type: 'int',
-			default: 0
+			type: 'string',
+			default: ''
 		},
 		file_types_set: {
 			type: 'boolean',

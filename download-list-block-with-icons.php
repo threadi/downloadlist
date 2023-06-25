@@ -3,7 +3,7 @@
  * Plugin Name:       Download List Block with Icons
  * Description:       Provides a Gutenberg block for capturing a download list with file type specific icons.
  * Requires at least: 5.8
- * Requires PHP:      7.4
+ * Requires PHP:      8.0
  * Version:           @@VersionNumber@@
  * Author:            Thomas Zwirner
  * Author URI:		  https://www.thomaszwirner.de
@@ -54,16 +54,9 @@ function downloadlist_init() {
 		register_block_type(__DIR__);
 		wp_set_script_translations('downloadlist-list-editor-script', 'downloadlist', plugin_dir_path(DL_PLUGIN) . '/languages/');
 		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/block/style-index.css', DL_PLUGIN ));
-		wp_enqueue_style('dashicons');
 	}
 }
 add_action( 'init', 'downloadlist_init' );
-
-add_action( 'admin_enqueue_scripts', function() {
-	wp_enqueue_media();
-	wp_enqueue_script( 'media-grid' );
-	wp_enqueue_script( 'media' );
-});
 
 /**
  * Embed iconset-css.
@@ -71,10 +64,28 @@ add_action( 'admin_enqueue_scripts', function() {
  * @return void
  */
 function downloadlist_enqueue_styles(): void {
+	// get global styles.
 	wp_enqueue_style(
 		'downloadlist-iconsets',
 		helper::get_style_url()
 	);
+
+	// get iconset-styles.
+	foreach( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
+		foreach( $iconset_obj->get_style_files() as $file ) {
+			if( !empty($file['handle']) && !empty($file['path']) ) {
+				wp_enqueue_style(
+					$file['handle'],
+					$file['path']
+				);
+			}
+			if( !empty($file['handle']) && empty($file['path']) ) {
+				wp_enqueue_style(
+					$file['handle']
+				);
+			}
+		}
+	}
 }
 add_action( 'wp_enqueue_scripts', 'downloadlist_enqueue_styles', PHP_INT_MAX );
 
@@ -233,7 +244,7 @@ function downloadlist_add_rest_api() {
 add_action( 'rest_api_init', 'downloadlist_add_rest_api');
 
 /**
- * Return file data depending on postIds in request.
+ * Return file data depending on post-IDs in request.
  *
  * @param WP_REST_Request $request
  * @return string[]
@@ -358,14 +369,14 @@ function downloadlist_add_taxonomies(): void {
 	$icon_set_array = [
 		'hierarchical' => false,
 		'labels' => array(
-			'name' => _x( 'Icon sets', 'taxonomy general name', 'downloadlist' ),
-			'singular_name' => _x( 'Icon set', 'taxonomy singular name', 'downloadlist' ),
-			'search_items' =>  __( 'Search icon set', 'downloadlist' ),
-			'edit_item' => __( 'Edit icon set', 'downloadlist' ),
-			'update_item' => __( 'Update icon set', 'downloadlist' ),
-			'menu_name' => __( 'Icon sets', 'downloadlist' ),
-			'add_new'			  => __( 'Add new Icon set', 'downloadlist' ),
-			'add_new_item'		  => __( 'Add new Icon set', 'downloadlist' ),
+			'name' => _x( 'Iconsets', 'taxonomy general name', 'downloadlist' ),
+			'singular_name' => _x( 'Iconset', 'taxonomy singular name', 'downloadlist' ),
+			'search_items' =>  __( 'Search iconset', 'downloadlist' ),
+			'edit_item' =>  __( 'Edit iconset', 'downloadlist' ),
+			'update_item' 	=> __( 'Update iconset', 'downloadlist' ),
+			'menu_name' 	=> __( 'Iconsets', 'downloadlist' ),
+			'add_new'	    => __( 'Add new Iconset', 'downloadlist' ),
+			'add_new_item'  => __( 'Add new Iconset', 'downloadlist' ),
 		),
 		'public' => false,
 		'show_ui' => true,
@@ -425,7 +436,7 @@ function downloadlist_rest_api(): void
 		'methods' => WP_REST_SERVER::READABLE,
 		'callback' => 'downloadlist_rest_api_filetypes',
 		'permission_callback' => function () {
-			return true;//current_user_can( 'edit_posts' );
+			return current_user_can( 'edit_posts' );
 		}
 	) );
 }
@@ -439,21 +450,23 @@ add_action( 'rest_api_init', 'downloadlist_rest_api');
  * @noinspection PhpUnused
  */
 function downloadlist_rest_api_filetypes( WP_REST_Request $request ): array {
-	$iconset = absint($request->get_param( 'iconset' ));
+	$iconset = sanitize_text_field($request->get_param( 'iconset' ));
 
 	// bail if no iconset is given.
-	if( 0 === $iconset ) {
+	if( empty($iconset) ) {
 		return array();
 	}
 
-	// get iconset as term.
-	$term = get_term( $iconset, 'dl_icon_set' );
-
 	// get the iconset as object
-	$iconset_obj = Iconsets::get_instance()->get_icon_set_by_slug( $term->slug );
+	$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $iconset );
+
+	// bail if no matching iconset was found.
+	if( false === $iconset_obj ) {
+		return array();
+	}
 
 	// get the file-types for this iconset.
-	$file_types = $iconset_obj[0]->get_file_types();
+	$file_types = $iconset_obj->get_file_types();
 
 	// convert array to object-array so every entry has its own index.
 	$resulting_array = array();
@@ -467,3 +480,39 @@ function downloadlist_rest_api_filetypes( WP_REST_Request $request ): array {
 	// return resulting list.
 	return $resulting_array;
 }
+
+/**
+ * Add our own image sizes for icons.
+ *
+ * @return void
+ */
+function downloadlist_add_image_size(): void {
+	// get all iconsets.
+	$query = array(
+		'taxonomy' => 'dl_icon_set',
+		'hide_empty' => false,
+	);
+	$results = new WP_Term_Query( $query );
+	foreach( $results->get_terms() as $term ) {
+		// get iconset as object.
+		$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
+
+		// bail if this is a generic iconset with font as base and not images.
+		if( $iconset_obj->is_generic() ) {
+			continue;
+		}
+
+		// get width and height set on this iconset.
+		$width = absint(get_term_meta( $term->term_id, 'width', true ));
+		$height = absint(get_term_meta( $term->term_id, 'height', true ));
+
+		// bail if no width or height is available.
+		if( 0 === $width || 0 === $height ) {
+			continue;
+		}
+
+		// set image size.
+		add_image_size( 'downloadlist-icon-'.$term->slug, $width, $height );
+	}
+}
+add_action( 'after_setup_theme', 'downloadlist_add_image_size' );

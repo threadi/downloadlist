@@ -55,7 +55,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 *
 	 * @return array
 	 */
-	private function get_icons(): array {
+	private function get_icon_codes(): array {
 		$dashicons = array_flip(helper::get_mime_types());
 		ksort($dashicons);
 		$dashicons['application'] = '\f497';
@@ -132,8 +132,8 @@ class Dashicons extends Iconset_Base implements Iconset {
 		$dashicons['image/webp'] = '\f128';
 		$dashicons['image/x-icon'] = '\f128';
 		$dashicons['pdf'] = '\f190';
-		$dashicons['text/calendar'] = '\f145'; // !!!
-		$dashicons['text/css'] = '\f491'; // !!!
+		$dashicons['text/calendar'] = '\f145';
+		$dashicons['text/css'] = '\f491';
 		$dashicons['text/html'] = '\f491';
 		$dashicons['text/plain'] = '\f491';
 		$dashicons['text/richtext'] = '\f491';
@@ -164,23 +164,22 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 * Get style for given file-type.
 	 *
 	 * @param int $post_id ID of the icon-post.
-	 * @param int $term_id ID of the iconset-term.
+	 * @param string $term_slug ID of the iconset-term.
 	 * @param string $filetype Name for the filetype to add.
 	 * @return string
 	 */
-	public function get_style_for_filetype( int $post_id, int $term_id, string $filetype ): string {
-		$dashicons = $this->get_icons();
+	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
 		$style = '';
-		foreach( $dashicons as $filetype => $dashicon ) {
+		foreach( $this->get_icon_codes() as $filetype => $dashicon ) {
 			$mimetypeArray = explode("/", $filetype);
 			$type = $mimetypeArray[0];
 			$subtype = '';
 			if( !empty($mimetypeArray[1]) ) {
 				$subtype = $mimetypeArray[1];
 			}
-			$style .= '.wp-block-downloadlist-list.iconset-' . $term_id . ' .file_' . $type . ':before { content: "' . $dashicon . '";font-family: dashicons; }';
+			$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $dashicon . '";font-family: dashicons; }';
 			if( !empty($subtype) ) {
-				$style .= '.wp-block-downloadlist-list.iconset-' . $term_id . ' .file_' . $subtype . ':before { content: "' . $dashicon . '";font-family: dashicons; }';
+				$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $dashicon . '";font-family: dashicons; }';
 			}
 		}
 		return $style;
@@ -192,6 +191,28 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	public function get_file_types(): array	{
-		return array_keys($this->get_icons());
+		return array_keys($this->get_icon_codes());
+	}
+
+	/**
+	 * Get icons this set is assigned to.
+	 *
+	 * @return array
+	 */
+	public function get_icons(): array {
+		return array();
+	}
+
+	/**
+	 * Return the style-files this iconset is using.
+	 *
+	 * @return array
+	 */
+	public function get_style_files(): array {
+		return array(
+			array(
+				'handle' => 'dashicons'
+			)
+		);
 	}
 }

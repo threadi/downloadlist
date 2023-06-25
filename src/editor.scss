@@ -17,6 +17,7 @@
   font-size: var(--global--font-size-base);
   font-weight: normal;
   list-style: none;
+  overflow: hidden;
   padding-left: 32px;
   & > button {
 	float: right;
