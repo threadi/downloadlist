@@ -157,7 +157,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 		$dashicons['video/x-ms-wm'] = '\f126';
 		$dashicons['video/x-ms-wmv'] = '\f126';
 		$dashicons['video/x-ms-wmx'] = '\f126';
-		return $dashicons;
+		return apply_filters( 'downloadlist_dashicons_icons', $dashicons );
 	}
 
 	/**
