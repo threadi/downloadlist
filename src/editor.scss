@@ -17,34 +17,18 @@
   font-size: var(--global--font-size-base);
   font-weight: normal;
   list-style: none;
+  overflow: hidden;
   padding-left: 32px;
   & > button {
 	float: right;
   }
 }
 .wp-block-downloadlist-list-draggable:before {
-  transform: none !important;
-  position: static !important;
-  content: "\f497" !important;
   display: inline-block;
-  font-family: dashicons;
-  font-size: 24px;
   margin-left: -32px;
   margin-right: 8px;
   vertical-align: middle;
   width: 24px !important;
-}
-.wp-block-downloadlist-list-draggable.file_pdf:before {
-  content: "\f190" !important;
-}
-.wp-block-downloadlist-list-draggable.file_audio:before {
-  content: "\f500" !important;
-}
-.wp-block-downloadlist-list-draggable.file_video:before {
-  content: "\f126" !important;
-}
-.wp-block-downloadlist-list-draggable.file_application:before {
-  content: "\f497" !important;
 }
 .wp-block-downloadlist-list-draggable.hideIcons { padding-left: 12px; }
 .wp-block-downloadlist-list-draggable.hideIcons:before { display: none }

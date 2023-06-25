@@ -11,6 +11,10 @@ After checkout go through the following steps:
 3. execute the command in _build/_: `ant init`
 4. after that the plugin can be activated in WordPress
 
+## Test
+
+Run `npm start` to compile the Block Editor-Scripts for tests.
+
 ## Release
 
 1. increase the version number in _build/build.properties_.
