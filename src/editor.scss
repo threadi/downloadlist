@@ -4,25 +4,18 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-downloadlist-list {
-  background-color: #fff;
-  padding: 8px;
-  button > svg { width: 24px }
-}
 .wp-block-downloadlist-list-draggable {
-  background: transparent;
-  --wp--typography--line-height: var(--global--line-height-body);
-  color: var(--global--color-primary);
-  font-family: var(--global--font-secondary);
-  font-size: var(--global--font-size-base);
-  font-weight: normal;
   list-style: none;
   overflow: hidden;
   padding-left: 32px;
   & > button {
-	float: right;
+	  color: inherit;
+	  float: right;
+	  opacity: 0.5;
+	  transition: opacity 0.8s ease-in-out;
   }
 }
+.wp-block-downloadlist-list.is-selected .wp-block-downloadlist-list-draggable > button, .wp-block-downloadlist-list:hover .wp-block-downloadlist-list-draggable > button { opacity: 1 }
 .wp-block-downloadlist-list-draggable:before {
   display: inline-block;
   margin-left: -32px;
@@ -30,18 +23,7 @@
   vertical-align: middle;
   width: 24px !important;
 }
-.wp-block-downloadlist-list-draggable.hideIcons { padding-left: 12px; }
-.wp-block-downloadlist-list-draggable.hideIcons:before { display: none }
 body .edit-post-visual-editor .components-sortable > * {
   cursor: grab;
-  margin-bottom: 8px !important;
   overflow: hidden;
-  padding-left: 32px !important;
-}
-button.downloadlist-list-trash:before {
-  content: "\f182";
-  display: inline-block;
-  font-family: dashicons;
-  font-size: 24px;
-  vertical-align: middle;
 }

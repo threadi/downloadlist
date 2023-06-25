@@ -46,12 +46,47 @@ register_deactivation_hook( DL_PLUGIN, array( Installer::get_instance(), 'deacti
  * @return void
  * @noinspection PhpUnused
  */
-function downloadlist_init() {
+function downloadlist_init(): void {
 	load_plugin_textdomain( 'downloadlist', false, dirname( plugin_basename( DL_PLUGIN ) ) . '/languages' );
 
 	// Include block only if Gutenberg exists.
 	if ( function_exists( 'register_block_type' ) ) {
-		register_block_type(__DIR__);
+		register_block_type(__DIR__, array(
+			'render_callback' => 'downloadlist_render_block',
+			'attributes' => array(
+				"files" => array(
+					"type" => "array"
+				),
+				"hideFileSize" => array(
+					"type" => "boolean",
+					"default" => false
+				),
+				"hideDescription" => array(
+					"type" => "boolean",
+					"default" => false
+				),
+				"hideIcon" => array(
+					"type" => "boolean",
+					"default" => false
+				),
+				"linkTarget" => array(
+					"type" => "string",
+					"default" => "direct"
+				),
+				"iconset" => array(
+					"type" => "string",
+					"default" => ""
+				),
+				"file_types_set" => array(
+					"type" => "boolean",
+					"default" => false
+				),
+				"preview" => array(
+					"type" => "boolean",
+					"default" => false
+				)
+			)
+		));
 		wp_set_script_translations('downloadlist-list-editor-script', 'downloadlist', plugin_dir_path(DL_PLUGIN) . '/languages/');
 		wp_enqueue_style( 'downloadlist-list-css', plugins_url( '/block/style-index.css', DL_PLUGIN ));
 	}
@@ -88,128 +123,6 @@ function downloadlist_enqueue_styles(): void {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'downloadlist_enqueue_styles', PHP_INT_MAX );
-
-/**
- * Parse the post_content to replace the blocks HTML-comment with its actual output.
- * This is done here to get the actual media-file data.
- *
- * @param $content
- * @return string
- * @noinspection PhpUnused
- */
-function downloadlist_get_content( $content ): string
-{
-	// check if content has Blocks.
-	if( has_blocks( $content )) {
-		// get the Blocks to parse.
-		$blocks = parse_blocks($content);
-		if (!empty($blocks)) {
-			$updatedBlocks = downloadlist_get_content_block_loop($blocks);
-			// serialize the updated Blocks to the content.
-			$content = serialize_blocks($updatedBlocks);
-		}
-	}
-	return $content;
-}
-add_filter( 'the_content', 'downloadlist_get_content', 5, 1 );
-
-/**
- * Loop through each Block.
- *
- * @param $blocks
- * @return array
- * @noinspection PhpUnused
- */
-function downloadlist_get_content_block_loop($blocks): array
-{
-	$updatedBlocks = array();
-	foreach ($blocks as $block) {
-		if (!empty($block['blockName'])) {
-			if (!empty($block['innerBlocks'])) {
-				$block['innerBlocks'] = downloadlist_get_content_block_loop($block['innerBlocks']);
-			}
-			if ($block['blockName'] === 'downloadlist/list') {
-				if (!empty($block['attrs']['files'])) {
-					// hide icon if set
-					$hide_icon = '';
-					if(!empty($block['attrs']['hideIcon'])) {
-						$hide_icon = ' hideIcon';
-					}
-
-					// marker for icon-set to use.
-					$iconset = '';
-					if(!empty($block['attrs']['iconset'])) {
-						$iconset = 'iconset-'.$block['attrs']['iconset'];
-					}
-
-					ob_start();
-					include downloadlist_get_template('list-start.php');
-					$output = ob_get_clean();
-
-					// get the configured files for this Block
-					foreach ($block['attrs']['files'] as $file) {
-						// get the file-id
-						$fileId = $file['id'];
-
-						// get the mimetype
-						$mimetype = get_post_mime_type($fileId);
-
-						// if nothing could be loaded do not output anything
-						if( empty($mimetype) ) {
-							continue;
-						}
-
-						// split the mimetype to get type and subtype
-						$mimetypeArray = explode("/", $mimetype);
-						$type = $mimetypeArray[0];
-						$subtype = $mimetypeArray[1];
-
-						// get the Post
-						$attachment = get_post($fileId);
-
-						// get the meta-data like JS (like human-readable filesize)
-						$file_meta = wp_prepare_attachment_for_js($fileId);
-
-						// get the file size
-						$fileSize =  ' (' . $file_meta['filesizeHumanReadable'] . ')';
-						if(!empty($block['attrs']['hideFileSize'])) {
-							$fileSize = '';
-						}
-
-						// get the description
-						$description =  '<br />'.$attachment->post_content;
-						if(!empty($block['attrs']['hideDescription'])) {
-							$description = '';
-						}
-
-						// get download URL
-						$url = wp_get_attachment_url($fileId);
-						$downloadAttribute = " download";
-						if(!empty($block['attrs']['linkTarget']) && $block['attrs']['linkTarget'] == 'attachmentpage' ) {
-							$url = get_permalink($fileId);
-							$downloadAttribute = "";
-						}
-
-						// add it to output
-						ob_start();
-						include downloadlist_get_template('list-item.php');
-						$output .= ob_get_clean();
-					}
-					ob_start();
-					include downloadlist_get_template('list-end.php');
-					$output .= ob_get_clean();
-
-					$block['innerHTML'] = $output;
-					$block['innerContent'] = [$output];
-				}
-			}
-		}
-		$updatedBlocks[] = $block;
-	}
-
-	// return resulting blocks.
-	return $updatedBlocks;
-}
 
 /**
  * Filter query from media library to show single attachment.
@@ -283,7 +196,7 @@ function downloadlist_get_widget_block_content($content, $instance): string {
 	}
 	return downloadlist_get_content($instance['content']);
 }
-add_filter( 'widget_block_content', 'downloadlist_get_widget_block_content', 10, 2);
+//add_filter( 'widget_block_content', 'downloadlist_get_widget_block_content', 10, 2);
 
 /**
  * Get template from own plugin or theme.
@@ -516,3 +429,86 @@ function downloadlist_add_image_size(): void {
 	}
 }
 add_action( 'after_setup_theme', 'downloadlist_add_image_size' );
+
+function downloadlist_render_block( $attributes ): string {
+	$output = '';
+
+	// get block-classes
+	$block_html_attributes = get_block_wrapper_attributes();
+
+	if (!empty($attributes['files'])) {
+		// hide icon if set
+		$hide_icon = '';
+		if(!empty($attributes['hideIcon'])) {
+			$hide_icon = ' hide-icon';
+		}
+
+		// marker for icon-set to use.
+		$iconset = '';
+		if(!empty($attributes['iconset'])) {
+			$iconset = 'iconset-'.$attributes['iconset'];
+		}
+
+		// get Block Editor wrapper attributes.
+		$wrapper_attributes = get_block_wrapper_attributes();
+
+		ob_start();
+		include downloadlist_get_template('list-start.php');
+		$output = ob_get_clean();
+
+		// get the configured files for this Block
+		foreach ($attributes['files'] as $file) {
+			// get the file-id
+			$fileId = $file['id'];
+
+			// get the mimetype
+			$mimetype = get_post_mime_type($fileId);
+
+			// if nothing could be loaded do not output anything
+			if( empty($mimetype) ) {
+				continue;
+			}
+
+			// split the mimetype to get type and subtype
+			$mimetypeArray = explode("/", $mimetype);
+			$type = $mimetypeArray[0];
+			$subtype = $mimetypeArray[1];
+
+			// get the Post
+			$attachment = get_post($fileId);
+
+			// get the meta-data like JS (like human-readable filesize)
+			$file_meta = wp_prepare_attachment_for_js($fileId);
+
+			// get the file size
+			$fileSize =  ' (' . $file_meta['filesizeHumanReadable'] . ')';
+			if(!empty($attributes['hideFileSize'])) {
+				$fileSize = '';
+			}
+
+			// get the description
+			$description =  '<br />'.$attachment->post_content;
+			if(!empty($attributes['hideDescription'])) {
+				$description = '';
+			}
+
+			// get download URL
+			$url = wp_get_attachment_url($fileId);
+			$downloadAttribute = " download";
+			if(!empty($attributes['linkTarget']) && $attributes['linkTarget'] == 'attachmentpage' ) {
+				$url = get_permalink($fileId);
+				$downloadAttribute = "";
+			}
+
+			// add it to output
+			ob_start();
+			include downloadlist_get_template('list-item.php');
+			$output .= ob_get_clean();
+		}
+		ob_start();
+		include downloadlist_get_template('list-end.php');
+		$output .= ob_get_clean();
+	}
+
+	return $output;
+}

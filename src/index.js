@@ -37,50 +37,6 @@ registerBlockType( 'downloadlist/list', {
 	title: __( 'Download List with Icons', 'downloadlist' ),
 	description: __('Provides a Gutenberg block for capturing a download list with file type specific icons.', 'downloadlist'),
 
-	example: {
-		attributes: {
-			mode: 'preview',
-			preview: true
-		}
-	},
-
-	/**
-	 * Attributes for this block.
-	 */
-	attributes: {
-		files: {
-			type: 'array'
-		},
-		hideFileSize: {
-			type: 'boolean',
-			default: false
-		},
-		hideDescription: {
-			type: 'boolean',
-			default: false
-		},
-		hideIcon: {
-			type: 'boolean',
-			default: false
-		},
-		linkTarget: {
-			type: 'string',
-			default: 'direct'
-		},
-		iconset: {
-			type: 'string',
-			default: ''
-		},
-		file_types_set: {
-			type: 'boolean',
-			default: false
-		},
-		preview: {
-			type: 'boolean',
-			default: false
-		}
-	},
-
 	/**
 	 * @see ./edit.js
 	 */
@@ -89,5 +45,5 @@ registerBlockType( 'downloadlist/list', {
 	/**
 	 * @see ./save.js
 	 */
-	save,
+	save: save,
 } );

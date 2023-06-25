@@ -4,7 +4,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { Icon, dragHandle, edit } from '@wordpress/icons';
+import { Icon, dragHandle, edit, trash } from '@wordpress/icons';
 import { CSS } from '@dnd-kit/utilities';
 import { getActualDate } from "./components";
 
@@ -12,7 +12,6 @@ import { getActualDate } from "./components";
  * Represents single sortable item in list.
  *
  * @param props
- * @returns {JSX.Element}
  * @constructor
  */
 export function SortableItem(props) {
@@ -102,9 +101,9 @@ export function SortableItem(props) {
 	/**
 	 * Set class to hide icons
 	 */
-	let hideIcons = ''
+	let hideIcon = ''
 	if( props.object.attributes.hideIcon ) {
-		hideIcons = ' hideIcons'
+		hideIcon = ' hide-icon'
 	}
 
 	/**
@@ -124,8 +123,8 @@ export function SortableItem(props) {
 	}
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcons}`}>
-			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'downloadlist')}/>
+		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
+			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'downloadlist')}><Icon icon={ trash } /></Button>
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'downloadlist' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'downloadlist' )}>{dragHandle}</Button>
 			<a href={linkTarget}>{title}</a>{fileSize}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
