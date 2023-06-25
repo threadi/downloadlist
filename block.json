@@ -2,16 +2,70 @@
 	"$schema": "https://json.schemastore.org/block.json",
 	"apiVersion": 2,
 	"name": "downloadlist/list",
-	"version": "2.1.0",
+	"version": "3.0.0",
 	"title": "Download List Block with Icons",
 	"category": "widgets",
 	"icon": "list-view",
 	"description": "Provides a Gutenberg block for capturing a download list with file type specific icons.",
+	"keywords": ["downloadlist", "download", "list"],
 	"supports": {
+		"anchor": false,
+		"color": {
+			"gradients": true,
+			"link": true
+		},
 		"html": false,
-	  	"anchor": true
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": true
 	},
 	"textdomain": "downloadlist",
 	"editorScript": "file:block/index.js",
-	"editorStyle": "file:block/index.css"
+	"editorStyle": "file:block/index.css",
+	"style": "file:block/style-index.css",
+	"attributes": {
+		"files": {
+			"type": "array"
+		},
+		"hideFileSize": {
+			"type": "boolean",
+			"default": false
+		},
+		"hideDescription": {
+			"type": "boolean",
+			"default": false
+		},
+		"hideIcon": {
+			"type": "boolean",
+			"default": false
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "direct"
+		},
+		"iconset": {
+			"type": "string",
+			"default": ""
+		},
+		"file_types_set": {
+			"type": "boolean",
+			"default": false
+		},
+		"preview": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"example": {
+		"attributes": {
+			"mode": "preview",
+			"preview": true
+		}
+	}
 }

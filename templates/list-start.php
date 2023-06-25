@@ -5,4 +5,4 @@
  */
 
 ?>
-<div><ul class="downloadlist-list wp-block-downloadlist-list<?php echo esc_attr($hide_icon); ?> <?php echo esc_attr($iconset); ?>">
+<div <?php echo $wrapper_attributes; ?>><ul class="downloadlist-list wp-block-downloadlist-list <?php echo esc_attr($iconset); ?>">

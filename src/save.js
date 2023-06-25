@@ -7,6 +7,6 @@
  *
  * @return {WPElement} Element to render.
  */
-export default function Save( object ) {
+export default function save( object ) {
 	return null
 }

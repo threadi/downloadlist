@@ -6,20 +6,19 @@
  */
 
 .wp-block-downloadlist-list {
+  padding-left: 0;
   li { list-style: none }
   li:before {
 	display: inline-block;
 	font-size: 24px;
-	margin-left: -32px;
 	margin-right: 8px;
 	vertical-align: middle;
 	width: 24px;
   }
+ .hide-icon {
+	 padding-left: 0;
+	 &:before {
+		 display: none
+	 }
+ }
 }
-
-.wp-block-downloadlist-list.hideIcon {
-  padding-left: 0;
-  li { list-style: none }
-  li:before { display: none }
-}
-

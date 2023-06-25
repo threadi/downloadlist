@@ -6,14 +6,6 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
-import { useBlockProps } from '@wordpress/block-editor';
-
-/**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
  * Those files can contain any CSS code that gets applied to the editor.
  *
@@ -28,7 +20,8 @@ import {
 	MediaUpload,
 	MediaUploadCheck,
 	InspectorControls,
-	BlockControls
+	BlockControls,
+	useBlockProps
 } from '@wordpress/block-editor';
 import {
 	Button,
@@ -76,7 +69,7 @@ export default function Edit( object ) {
 
 	// collect the fileIds as array
 	let fileIds = [];
-	{files.map((file, index) => {
+	{files.map((file) => {
 		fileIds.push(file.id);
 	})}
 
@@ -117,7 +110,7 @@ export default function Edit( object ) {
 		// save a clean file list only with the id-property per file
 		// -> case 1: update from version 1.x from this plugin
 		// -> case 2: a file is not available anymore
-		if( JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
+		if( objectFiles.length > 0 && JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
 			object.setAttributes({files: objectFiles});
 		}
 	}
@@ -271,7 +264,31 @@ export default function Edit( object ) {
 	 * Sort files in list by their filesizes (int-compare).
 	 */
 	function sortFilesByFileSize() {
+		// noinspection JSUnresolvedReference
 		files.sort((a, b) => a.filesizeInBytes - b.filesizeInBytes)
+		object.setAttributes({files: files, date: getActualDate()})
+	}
+
+	/**
+	 * Add given list of files to our list of files in this block.
+	 *
+	 * @param newFiles
+	 */
+	function addFiles( newFiles ) {
+		{newFiles.map((newFile) => {
+			let doNotAdd = false;
+			{files.map((file) => {
+				if( file.id === newFile.id ) {
+					// do not add
+					doNotAdd = true;
+				}
+			})}
+			if( !doNotAdd ) {
+				files.push({
+					id: newFile.id
+				})
+			}
+		})}
 		object.setAttributes({files: files, date: getActualDate()})
 	}
 
@@ -286,6 +303,19 @@ export default function Edit( object ) {
 		<div { ...blockProps }>
 			{
 				<BlockControls>
+					{allowed_file_types.length > 0 &&
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( newFiles ) => addFiles( newFiles ) }
+								multiple={ true }
+								allowedTypes={ allowed_file_types }
+								value={ object.attributes.files }
+								render={ ( { open } ) => (
+									<ToolbarButton onClick={ open } icon={plus} text={ __( 'Add files to list', 'downloadlist' ) } size="small"></ToolbarButton>
+								) }
+							/>
+						</MediaUploadCheck>
+					}
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
 						label={__('Sort files by title', 'downloadlist')}
@@ -337,8 +367,8 @@ export default function Edit( object ) {
 					</PanelBody>
 				</InspectorControls>
 			}
-			{files &&
-				<div>
+			<div { ...useBlockProps()}>
+				{files &&
 					<DndContext
 						sensors={sensors}
 						onDragEnd={handleDragEnd}
@@ -350,39 +380,21 @@ export default function Edit( object ) {
 							))}
 						</SortableContext>
 					</DndContext>
-				</div>
-			}
-			{allowed_file_types.length > 0 &&
-				<MediaUploadCheck>
-					<MediaUpload
-						onSelect={ ( newFiles ) => {
-							{newFiles.map((newFile) => {
-								let doNotAdd = false;
-								{files.map((file, index) => {
-									if( file.id === newFile.id ) {
-										// do not add
-										doNotAdd = true;
-									}
-								})}
-								if( !doNotAdd ) {
-									files.push({
-										id: newFile.id
-									})
-								}
-							})}
-							object.setAttributes({files: files, date: getActualDate()})
-						}
-						}
-						multiple={ true }
-						allowedTypes={ allowed_file_types }
-						value={ object.attributes.files }
-						render={ ( { open } ) => (
-							<Button isPrimary onClick={ open }>{plus} { __( 'Add files to list', 'downloadlist' ) }</Button>
-						) }
-					/>
-				</MediaUploadCheck>
-			}
+				}
+				{files.length === 0 &&
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( newFiles ) => addFiles( newFiles ) }
+							multiple={ true }
+							allowedTypes={ allowed_file_types }
+							value={ object.attributes.files }
+							render={ ( { open } ) => (
+								<Button variant="primary" onClick={ open } icon={plus} text={ __( 'Add your first file', 'downloadlist' ) } size="small"></Button>
+							) }
+						/>
+					</MediaUploadCheck>
+				}
+			</div>
 		</div>
 	);
 }
-
