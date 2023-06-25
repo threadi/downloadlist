@@ -195,7 +195,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		$font_awesome_icons['video/x-ms-wm'] = '\f03d';
 		$font_awesome_icons['video/x-ms-wmv'] = '\f03d';
 		$font_awesome_icons['video/x-ms-wmx'] = '\f03d';
-		return $font_awesome_icons;
+		return apply_filters( 'downloadlist_fontawesome_icons', $font_awesome_icons );
 	}
 
 	/**
