@@ -31,7 +31,7 @@ import {
 	ToolbarButton,
 	ExternalLink
 } from '@wordpress/components';
-import { plus, sort } from '@wordpress/icons';
+import { plus } from '@wordpress/icons';
 import {
 	DndContext,
 	TouchSensor,

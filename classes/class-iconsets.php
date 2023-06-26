@@ -1,6 +1,8 @@
 <?php
 /**
  * File for general iconset-handling.
+ *
+ * @package download-list-block-with-icons
  */
 
 namespace downloadlist;
@@ -38,6 +40,11 @@ class Iconsets {
 		return static::$instance;
 	}
 
+	/**
+	 * Initialize the iconset.
+	 *
+	 * @return void
+	 */
 	public function init(): void {}
 
 	/**
@@ -59,8 +66,8 @@ class Iconsets {
 		$list = array();
 
 		// loop through the iconsets.
-		foreach( $this->get_icon_sets() as $iconset_obj ) {
-			if( $iconset_obj->is_generic() ) {
+		foreach ( $this->get_icon_sets() as $iconset_obj ) {
+			if ( $iconset_obj->is_generic() ) {
 				$list[] = $iconset_obj->get_slug();
 			}
 		}
@@ -72,12 +79,12 @@ class Iconsets {
 	/**
 	 * Get iconset based on slug.
 	 *
-	 * @param string $slug
+	 * @param string $slug The slug of the iconset.
 	 * @return Iconset_Base|false
 	 */
-	public function get_iconset_by_slug(string $slug): Iconset_Base|false {
-		foreach( $this->get_icon_sets() as $iconset_obj ) {
-			if( $slug === $iconset_obj->get_slug() ) {
+	public function get_iconset_by_slug( string $slug ): Iconset_Base|false {
+		foreach ( $this->get_icon_sets() as $iconset_obj ) {
+			if ( $slug === $iconset_obj->get_slug() ) {
 				return $iconset_obj;
 			}
 		}

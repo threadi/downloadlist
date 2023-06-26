@@ -138,4 +138,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.0.0 =
 * Added possibility to manage different icon-sets and assign them to each downloadlist-block
+* Compatible with WordPress Coding Standards
 * Minimum PHP-compatibility set to 8.0

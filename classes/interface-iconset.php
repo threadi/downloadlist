@@ -1,6 +1,8 @@
 <?php
 /**
  * File for interface-object for iconsets.
+ *
+ * @package download-list-block-with-icons
  */
 
 namespace downloadlist;
@@ -19,7 +21,7 @@ interface Iconset {
 	/**
 	 * Return style for given filetype.
 	 *
-	 * @param int $post_id ID of the icon-post.
+	 * @param int    $post_id ID of the icon-post.
 	 * @param string $term_slug ID of the iconset-term.
 	 * @param string $filetype Name for the filetype to add.
 	 * @return string
