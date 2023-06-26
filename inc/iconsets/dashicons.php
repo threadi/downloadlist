@@ -1,6 +1,8 @@
 <?php
 /**
  * File which holds the list of possible dashicons.
+ *
+ * @package download-list-block-with-icons
  */
 
 use downloadlist\iconsets\Dashicons;
@@ -8,7 +10,7 @@ use downloadlist\iconsets\Dashicons;
 /**
  * Register the custom iconset.
  *
- * @param $list
+ * @param array $list The list of iconsets.
  * @return array
  */
 function downloadlist_register_dashicon_iconset( $list ): array {

@@ -66,3 +66,17 @@ OR use ant in build/-directory: `ant json-translations`
 `npm run build`
 
 Hint: will be called by ant-command mentioned above.
+
+## Check for WordPress Coding Standards
+
+### Initialize
+
+`composer install`
+
+### Run
+
+`vendor/bin/phpcs --standard=WordPress file`
+
+### Repair
+
+`vendor/bin/phpcbf --standard=WordPress file`

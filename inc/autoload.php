@@ -2,7 +2,7 @@
 /**
  * File which holds the autoloader for this plugin.
  *
- * @package downloadlist
+ * @package download-list-block-with-icons
  */
 
 /**
@@ -47,12 +47,12 @@ function downloadlist_autoloader( string $class_name ): void {
 
 	if ( ! empty( $file_name ) ) {
 		// Now build a path to the file using mapping to the file location.
-		$filepath_pre  = trailingslashit( dirname( DL_PLUGIN ) . '/classes' . $namespace );
-		foreach( array( 'class', 'interface' ) as $type ) {
-			$filepath = $filepath_pre.$type.'-'.strtolower($file_name);
+		$filepath_pre = trailingslashit( dirname( DL_PLUGIN ) . '/classes' . $namespace );
+		foreach ( array( 'class', 'interface' ) as $type ) {
+			$filepath = $filepath_pre . $type . '-' . strtolower( $file_name );
 
 			// If the file exists in the specified path, then include it.
-			if (file_exists($filepath)) {
+			if ( file_exists( $filepath ) ) {
 				include_once $filepath;
 			}
 		}

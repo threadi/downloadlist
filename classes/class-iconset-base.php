@@ -1,6 +1,15 @@
 <?php
+/**
+ * File for base functions for each iconset.
+ *
+ * @package download-list-block-with-icons
+ */
+
 namespace downloadlist;
 
+/**
+ * Define the base-functions for each iconset.
+ */
 class Iconset_Base {
 	/**
 	 * Label of the iconset.
@@ -74,7 +83,7 @@ class Iconset_Base {
 	 * @return bool
 	 */
 	public function has_type(): bool {
-		return !empty($this->type);
+		return ! empty( $this->type );
 	}
 
 	/**
@@ -83,7 +92,7 @@ class Iconset_Base {
 	 * @return bool
 	 */
 	public function has_label(): bool {
-		return !empty($this->label);
+		return ! empty( $this->label );
 	}
 
 	/**
@@ -145,12 +154,12 @@ class Iconset_Base {
 	/**
 	 * Get style for given file-type.
 	 *
-	 * @param int $post_id ID of the icon-post.
+	 * @param int    $post_id ID of the icon-post.
 	 * @param string $term_slug ID of the iconset-term.
 	 * @param string $filetype Name for the filetype to add.
 	 * @return string
 	 */
-	public function get_style_for_filetype( int $post_id ,string $term_slug, string $filetype ): string {
+	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
 		return '';
 	}
 

@@ -2,7 +2,7 @@
 /**
  * File to handle CLI-tasks.
  *
- * @package downloadlist
+ * @package download-list-block-with-icons
  */
 
 namespace downloadlist;

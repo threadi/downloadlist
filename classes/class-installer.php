@@ -2,7 +2,7 @@
 /**
  * File to handle installer-tasks.
  *
- * @package           downloadlist
+ * @package download-list-block-with-icons
  */
 
 namespace downloadlist;
@@ -48,29 +48,29 @@ class Installer {
 	 */
 	public function activation(): void {
 		// add predefined terms to taxonomy if they do not exist.
-		foreach( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
+		foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
 			// bail if one necessary setting is missing.
-			if( false === $iconset_obj->has_label() || false === $iconset_obj->has_type() ) {
+			if ( false === $iconset_obj->has_label() || false === $iconset_obj->has_type() ) {
 				continue;
 			}
 
 			// check if this term already exists.
-			if( !term_exists($iconset_obj->get_label(), 'dl_icon_set') ) {
+			if ( ! term_exists( $iconset_obj->get_label(), 'dl_icon_set' ) ) {
 				// no, it does not exist. then add it now.
 				$term = wp_insert_term(
 					$iconset_obj->get_label(),
 					'dl_icon_set',
 					array(
-						'slug' => $iconset_obj->get_slug()
+						'slug' => $iconset_obj->get_slug(),
 					)
 				);
 
-				if( !is_wp_error($term) ) {
+				if ( ! is_wp_error( $term ) ) {
 					// save the type for this term.
 					update_term_meta( $term['term_id'], 'type', $iconset_obj->get_type() );
 
 					// set this iconset as default, if set.
-					if( $iconset_obj->should_be_default() ) {
+					if ( $iconset_obj->should_be_default() ) {
 						update_term_meta( $term['term_id'], 'default', 1 );
 					}
 
@@ -79,14 +79,14 @@ class Installer {
 					update_term_meta( $term['term_id'], 'height', 24 );
 
 					// generate icon entry, if this is a generic iconset.
-					if( $iconset_obj->is_generic() ) {
-						$array = array(
-							'post_type' => 'dl_icons',
+					if ( $iconset_obj->is_generic() ) {
+						$array   = array(
+							'post_type'   => 'dl_icons',
 							'post_status' => 'publish',
-							'post_title' => $iconset_obj->get_label()
+							'post_title'  => $iconset_obj->get_label(),
 						);
-						$post_id = wp_insert_post($array);
-						if ($post_id > 0) {
+						$post_id = wp_insert_post( $array );
+						if ( $post_id > 0 ) {
 							// assign post to this taxonomy.
 							wp_set_object_terms( $post_id, $term['term_id'], 'dl_icon_set' );
 						}

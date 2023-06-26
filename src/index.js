@@ -26,7 +26,6 @@ import './style.scss';
  */
 import edit from './edit';
 import save from "./save";
-import './options';
 
 /**
  * Every block starts by registering a new block type definition.
