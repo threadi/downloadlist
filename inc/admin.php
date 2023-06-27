@@ -6,6 +6,7 @@
  */
 
 use downloadlist\helper;
+use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
 
 add_action( 'enqueue_block_editor_assets', 'downloadlist_enqueue_styles' );
@@ -230,21 +231,48 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 		$width  = get_term_meta( $term->term_id, 'width', true );
 		$height = get_term_meta( $term->term_id, 'height', true );
 
-		// output.
-		?>
-		<tr class="form-field">
-			<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'downloadlist' ); ?></label></th>
-			<td>
-				<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1"<?php echo 1 === absint( $default ) ? ' checked="checked"' : ''; ?>>
-			</td>
-		</tr>
-		<tr class="form-field">
-			<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'downloadlist' ); ?></label></th>
-			<td>
-				<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>"> x <input type="number" id="downloadlist-iconset-height" name="height" value="<?php echo absint( $height ); ?>">
-			</td>
-		</tr>
-		<?php
+		// get iconset as object.
+		$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
+		if( $iconset_obj instanceof Iconset_Base ) {
+			// output.
+			?>
+			<tr class="form-field">
+				<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'downloadlist' ); ?></label></th>
+				<td>
+					<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1"<?php echo 1 === absint( $default ) ? ' checked="checked"' : ''; ?>>
+				</td>
+			</tr>
+			<?php
+				if( $iconset_obj->is_generic() ) {
+					?>
+						<tr class="form-field">
+							<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set font size for icons of this set', 'downloadlist' ); ?></label></th>
+							<td>
+								<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>">
+							</td>
+						</tr>
+					<?php
+				}
+				else {
+					?>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'downloadlist' ); ?></label></th>
+						<td>
+							<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>"> x <input type="number" id="downloadlist-iconset-height" name="height" value="<?php echo absint( $height ); ?>">
+						</td>
+					</tr>
+					<?php
+				}
+		}
+		else {
+			?>
+			<tr class="form-field">
+				<td colspan="2">
+					<p><?php echo esc_html__( 'Iconset could not be loaded.', 'downloadlist' ); ?></p>
+				</td>
+			</tr>
+			<?php
+		}
 	} else {
 		// output.
 		?>
@@ -286,11 +314,11 @@ function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, 
 		// save size for icons if they have been changed.
 		$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
 		$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
-		if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
+		if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset($_POST['width']) ) {
 			update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
 			$generate_styles = true;
 		}
-		if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
+		if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset($_POST['height']) ) {
 			update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
 			$generate_styles = true;
 		}
