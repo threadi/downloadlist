@@ -236,7 +236,7 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 
 		// get iconset as object.
 		$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
-		if( $iconset_obj instanceof Iconset_Base ) {
+		if ( $iconset_obj instanceof Iconset_Base ) {
 			// output.
 			?>
 			<tr class="form-field">
@@ -246,8 +246,8 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 				</td>
 			</tr>
 			<?php
-				if( $iconset_obj->is_generic() ) {
-					?>
+			if ( $iconset_obj->is_generic() ) {
+				?>
 						<tr class="form-field">
 							<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set font size for icons of this set', 'downloadlist' ); ?></label></th>
 							<td>
@@ -255,9 +255,8 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 							</td>
 						</tr>
 					<?php
-				}
-				else {
-					?>
+			} else {
+				?>
 					<tr class="form-field">
 						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'downloadlist' ); ?></label></th>
 						<td>
@@ -265,9 +264,8 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 						</td>
 					</tr>
 					<?php
-				}
-		}
-		else {
+			}
+		} else {
 			?>
 			<tr class="form-field">
 				<td colspan="2">
@@ -317,11 +315,11 @@ function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, 
 		// save size for icons if they have been changed.
 		$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
 		$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
-		if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset($_POST['width']) ) {
+		if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset( $_POST['width'] ) ) {
 			update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
 			$generate_styles = true;
 		}
-		if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset($_POST['height']) ) {
+		if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset( $_POST['height'] ) ) {
 			update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
 			$generate_styles = true;
 		}
@@ -427,4 +425,4 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 		);
 	}
 }
-//add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
+add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );

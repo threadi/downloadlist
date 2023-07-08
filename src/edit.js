@@ -324,7 +324,7 @@ export default function Edit( object ) {
 								allowedTypes={ allowed_file_types }
 								value={ object.attributes.files }
 								render={ ( { open } ) => (
-									<ToolbarButton onClick={ open } icon={plus} text={ __( 'Add files to list', 'downloadlist' ) } size="small"></ToolbarButton>
+									<ToolbarButton className="has-text" onClick={ open } icon={plus} text={ __( 'Add files to list', 'downloadlist' ) } size="small"></ToolbarButton>
 								) }
 							/>
 						</MediaUploadCheck>
@@ -402,7 +402,7 @@ export default function Edit( object ) {
 							allowedTypes={ allowed_file_types }
 							value={ object.attributes.files }
 							render={ ( { open } ) => (
-								<Button variant="primary" onClick={ open } icon={plus} text={ __( 'Add your first file', 'downloadlist' ) } size="small"></Button>
+								<Button variant="primary" className="has-text" onClick={ open } icon={plus} text={ __( 'Add your first file', 'downloadlist' ) } size="small"></Button>
 							) }
 						/>
 					</MediaUploadCheck>
