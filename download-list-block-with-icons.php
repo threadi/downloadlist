@@ -471,6 +471,11 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					$iconset = 'iconset-'.$iconset_obj->get_slug();
 				}
 			}
+			else {
+				// set default iconset if none is set (for lists from < 3.0).
+				$iconset_obj = Iconsets::get_instance()->get_default_iconset();
+				$iconset = 'iconset-'.$iconset_obj->get_slug();
+			}
 
 			// variable for block-specific styles.
 			$styles = '';
