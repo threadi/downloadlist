@@ -333,32 +333,38 @@ class Helper {
 						'slug' => $iconset_obj->get_slug(),
 					)
 				);
+			}
+			else {
+				$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
+				$term = array(
+					'term_id' => $term_obj->term_id
+				);
+			}
 
-				if ( ! is_wp_error( $term ) ) {
-					// save the type for this term.
-					update_term_meta( $term['term_id'], 'type', $iconset_obj->get_type() );
+			if ( ! is_wp_error( $term ) ) {
+				// save the type for this term.
+				update_term_meta( $term['term_id'], 'type', $iconset_obj->get_type() );
 
-					// set this iconset as default, if set.
-					if ( $iconset_obj->should_be_default() ) {
-						update_term_meta( $term['term_id'], 'default', 1 );
-					}
+				// set this iconset as default, if set.
+				if ( $iconset_obj->should_be_default() ) {
+					update_term_meta( $term['term_id'], 'default', 1 );
+				}
 
-					// set width and height to default ones.
-					update_term_meta( $term['term_id'], 'width', 24 );
-					update_term_meta( $term['term_id'], 'height', 24 );
+				// set width and height to default ones.
+				update_term_meta( $term['term_id'], 'width', 24 );
+				update_term_meta( $term['term_id'], 'height', 24 );
 
-					// generate icon entry, if this is a generic or graphic iconset.
-					if ( $iconset_obj->is_generic() || $iconset_obj->is_gfx() ) {
-						$array   = array(
-							'post_type'   => 'dl_icons',
-							'post_status' => 'publish',
-							'post_title'  => $iconset_obj->get_label(),
-						);
-						$post_id = wp_insert_post( $array );
-						if ( $post_id > 0 ) {
-							// assign post to this taxonomy.
-							wp_set_object_terms( $post_id, $term['term_id'], 'dl_icon_set' );
-						}
+				// generate icon entry, if this is a generic or graphic iconset.
+				if ( $iconset_obj->is_generic() || $iconset_obj->is_gfx() ) {
+					$array   = array(
+						'post_type'   => 'dl_icons',
+						'post_status' => 'publish',
+						'post_title'  => $iconset_obj->get_label(),
+					);
+					$post_id = wp_insert_post( $array );
+					if ( $post_id > 0 ) {
+						// assign post to this taxonomy.
+						wp_set_object_terms( $post_id, $term['term_id'], 'dl_icon_set' );
 					}
 				}
 			}
