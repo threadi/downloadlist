@@ -129,7 +129,20 @@ export default function Edit( object ) {
 		})
 	);
 
-	// if no iconset is set, use the default one returned via request.
+	// if iconset is set which does not return, set the default iconset.
+	if( 0 < object.attributes.iconset.length && iconsets_array.length > 0 ) {
+		let found = false;
+		for( let i = 0; i < iconsets_array.length; i++ ) {
+			if( object.attributes.iconset === iconsets_array[i].slug ) {
+				found = true;
+			}
+		}
+		if( false === found ) {
+			object.attributes.iconset = '';
+		}
+	}
+
+	// if no iconset is set, use the default one returned.
 	if( 0 === object.attributes.iconset.length && iconsets_array.length > 0 ) {
 		for( let i = 0; i < iconsets_array.length; i++ ) {
 			if( 1 === iconsets_array[i].meta.default ) {

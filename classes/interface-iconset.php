@@ -29,6 +29,14 @@ interface Iconset {
 	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string;
 
 	/**
+	 * Return style for single file.
+	 *
+	 * @param int $attachment_id ID of the attachment.
+	 * @return string
+	 */
+	public function get_style_for_file( int $attachment_id ): string;
+
+	/**
 	 * Return the by iconset supported filetypes.
 	 *
 	 * @return array

@@ -10,6 +10,7 @@ namespace downloadlist\iconsets;
 use downloadlist\Helper;
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
+use WP_Term;
 
 /**
  * Definition for dashicon iconset.
@@ -178,7 +179,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 		$term = get_term_by( 'slug', $term_slug, 'dl_icon_set' );
 
 		// get output if term is available.
-		if( $term instanceof \WP_Term ) {
+		if( $term instanceof WP_Term ) {
 			// get the width on the term as font-size.
 			$width = absint(get_term_meta($term->term_id, 'width', true ));
 
@@ -203,15 +204,6 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 */
 	public function get_file_types(): array {
 		return array_keys( $this->get_icon_codes() );
-	}
-
-	/**
-	 * Get icons this set is assigned to.
-	 *
-	 * @return array
-	 */
-	public function get_icons(): array {
-		return array();
 	}
 
 	/**
