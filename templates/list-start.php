@@ -1,7 +1,8 @@
 <?php
-
 /**
  * Template for starting list
+ *
+ * @package download-list-block-with-icons
  */
 
 ?>

@@ -7,6 +7,8 @@
 
 namespace downloadlist;
 
+use WP_Query;
+
 /**
  * Object to handle uninstaller-tasks.
  */
@@ -50,11 +52,11 @@ class Uninstaller {
 		// delete our own post-type-entries.
 		$query = array(
 			'post_type'      => 'dl_icons',
-			'post_status'    => 'any',
+			'post_status'    => array( 'any', 'trash' ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
 		);
-		$posts = new \WP_Query( $query );
+		$posts = new WP_Query( $query );
 		foreach ( $posts->posts as $post_id ) {
 			// get the assigned media-file.
 			$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
@@ -64,7 +66,7 @@ class Uninstaller {
 				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 				if ( ! empty( $attachment_meta['sizes'] ) ) {
 					foreach ( $attachment_meta['sizes'] as $name => $size ) {
-						if ( false !== strpos( $name, 'downloadlist-icon-' ) ) {
+						if( str_contains($name, 'downloadlist-icon-') ) {
 							unset( $attachment_meta['sizes'][ $name ] );
 						}
 					}

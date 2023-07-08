@@ -10,6 +10,7 @@ namespace downloadlist\iconsets;
 use downloadlist\Helper;
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
+use WP_Term;
 
 /**
  * Definition for Fontawesome iconset.
@@ -54,14 +55,28 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	 * @return string
 	 */
 	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
+		// initialize return variable.
 		$style = '';
-		foreach ( $this->get_icon_codes() as $filetype => $icon ) {
-			list( $type, $subtype ) = Helper::get_type_and_subtype_from_mimetype( $filetype );
-			$style                 .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "Font Awesome 6 Free"; }';
-			if ( ! empty( $subtype ) ) {
-				$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $icon . '";font-family: "Font Awesome 6 Free"; }';
+
+		// get the term.
+		$term = get_term_by( 'slug', $term_slug, 'dl_icon_set' );
+
+		// get output if term is available.
+		if( $term instanceof WP_Term ) {
+			// get the width on the term as font-size.
+			$width = absint(get_term_meta($term->term_id, 'width', true ));
+
+			// loop through the icons and add them to styling.
+			foreach ($this->get_icon_codes() as $filetype => $icon) {
+				list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype($filetype);
+				$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "Font Awesome 6 Free", sans-serif;font-size: ' . $width . 'px; }';
+				if (!empty($subtype)) {
+					$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $icon . '";font-family: "Font Awesome 6 Free", sans-serif;font-size: ' . $width . 'px; }';
+				}
 			}
 		}
+
+		// return resulting code.
 		return $style;
 	}
 
@@ -72,15 +87,6 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	 */
 	public function get_file_types(): array {
 		return array_keys( $this->get_icon_codes() );
-	}
-
-	/**
-	 * Get icons this set is assigned to.
-	 *
-	 * @return array
-	 */
-	public function get_icons(): array {
-		return array();
 	}
 
 	/**

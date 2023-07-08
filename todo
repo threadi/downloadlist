@@ -1,12 +1,6 @@
 ToDo-List for this plugin
 =========================
 
-* add possibility to set icons for file-types
--> eigene taxonomy für verschiedene typen (dashicons (default), fontawesome, custom)
--> custom cpt die einer der taxonomien zugeordnet wird
--> pro cpt-datensatz dann je nach typ 1 icon oder 1 font-set einbinden
--> an block eine der taxonomien auswählbar machen und alle cpt dazu für die liste verwenden
--> daraus dann das CSS generieren
 * add possibility to load files from a given directory
 -> which title and description to use?
 -> https://www.xing.com/communities/posts/wp-plugin-gesucht-1024641835

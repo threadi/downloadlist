@@ -30,6 +30,13 @@ class Custom extends Iconset_Base implements Iconset {
 	protected string $slug = 'custom';
 
 	/**
+	 * This iconset uses generated graphics.
+	 *
+	 * @var bool
+	 */
+	protected bool $gfx = true;
+
+	/**
 	 * Initialize the object.
 	 *
 	 * @return void
@@ -129,14 +136,5 @@ class Custom extends Iconset_Base implements Iconset {
 
 		// return resulting list.
 		return $results->posts;
-	}
-
-	/**
-	 * Return nothing as this iconset does not use any iconset-specific styles.
-	 *
-	 * @return array
-	 */
-	public function get_style_files(): array {
-		return array();
 	}
 }

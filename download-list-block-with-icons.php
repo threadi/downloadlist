@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Download List Block with Icons
  * Description:       Provides a Gutenberg block for capturing a download list with file type specific icons.
- * Requires at least: 5.8
+ * Requires at least: 6.0
  * Requires PHP:      8.0
  * Version:           @@VersionNumber@@
  * Author:            Thomas Zwirner
@@ -422,8 +422,8 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			// get iconset as object.
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
 
-			// bail if this is a generic iconset with font as base and not images.
-			if ( $iconset_obj instanceof Iconset_Base && $iconset_obj->is_generic() ) {
+			// bail if this is an iconset without generated images.
+			if ( $iconset_obj instanceof Iconset_Base && false === $iconset_obj->is_gfx() ) {
 				continue;
 			}
 
@@ -452,9 +452,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	function downloadlist_render_block( array $attributes ): string {
 		$output = '';
 
-		// get block-classes.
-		$block_html_attributes = get_block_wrapper_attributes();
-
 		if ( ! empty( $attributes['files'] ) ) {
 			// hide icon if set.
 			$hide_icon = '';
@@ -464,13 +461,24 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 
 			// marker for icon-set to use.
 			$iconset = '';
+			$iconset_obj = null;
 			if ( ! empty( $attributes['iconset'] ) ) {
 				$iconset = 'iconset-' . $attributes['iconset'];
+				$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
+				// if no iconset could be detected, get the default iconset.
+				if( false === $iconset_obj ) {
+					$iconset_obj = Iconsets::get_instance()->get_default_iconset();
+					$iconset = 'iconset-'.$iconset_obj->get_slug();
+				}
 			}
+
+			// variable for block-specific styles.
+			$styles = '';
 
 			// get Block Editor wrapper attributes.
 			$wrapper_attributes = get_block_wrapper_attributes();
 
+			// generate begin of the file-list.
 			ob_start();
 			include downloadlist_get_template( 'list-start.php' );
 			$output = ob_get_clean();
@@ -517,14 +525,26 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					$download_attribute = '';
 				}
 
+				// get individual styles for this file from used iconset.
+				if( $iconset_obj instanceof Iconset_Base ) {
+					$styles .= $iconset_obj->get_style_for_file( $file_id );
+				}
+
 				// add it to output.
 				ob_start();
 				include downloadlist_get_template( 'list-item.php' );
 				$output .= ob_get_clean();
 			}
+
+			// generate end of the file-list.
 			ob_start();
 			include downloadlist_get_template( 'list-end.php' );
 			$output .= ob_get_clean();
+
+			// output block-specific style.
+			if( !empty($styles) ) {
+				$output .= '<style>'.$styles.'</style>';
+			}
 		}
 
 		return $output;

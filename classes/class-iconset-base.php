@@ -47,6 +47,13 @@ class Iconset_Base {
 	protected bool $generic = false;
 
 	/**
+	 * This iconset contains graphics which will be generated.
+	 *
+	 * @var bool
+	 */
+	protected bool $gfx = false;
+
+	/**
 	 * Instance of this object.
 	 *
 	 * @var ?Iconset_Base
@@ -143,6 +150,16 @@ class Iconset_Base {
 	}
 
 	/**
+	 * Return whether this iconset used generated graphics.
+	 *
+	 * @return bool
+	 * @noinspection PhpUnused
+	 */
+	public function is_gfx(): bool {
+		return $this->gfx;
+	}
+
+	/**
 	 * Return list of supported file-types.
 	 *
 	 * @return array
@@ -169,6 +186,25 @@ class Iconset_Base {
 	 * @return array
 	 */
 	public function get_icons(): array {
+		return array();
+	}
+
+	/**
+	 * Return style for single file.
+	 *
+	 * @param int $attachment_id ID of the attachment.
+	 * @return string
+	 */
+	public function get_style_for_file( int $attachment_id ): string {
+		return '';
+	}
+
+	/**
+	 * Return nothing as this iconset does not use any iconset-specific styles.
+	 *
+	 * @return array
+	 */
+	public function get_style_files(): array {
 		return array();
 	}
 }
