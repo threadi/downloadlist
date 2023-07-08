@@ -66,7 +66,7 @@ class Uninstaller {
 				$attachment_meta = wp_get_attachment_metadata( $attachment_id );
 				if ( ! empty( $attachment_meta['sizes'] ) ) {
 					foreach ( $attachment_meta['sizes'] as $name => $size ) {
-						if( str_contains($name, 'downloadlist-icon-') ) {
+						if ( str_contains( $name, 'downloadlist-icon-' ) ) {
 							unset( $attachment_meta['sizes'][ $name ] );
 						}
 					}

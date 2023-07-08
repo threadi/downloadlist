@@ -172,15 +172,15 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		$term = get_term_by( 'slug', $term_slug, 'dl_icon_set' );
 
 		// get output if term is available.
-		if( $term instanceof WP_Term ) {
+		if ( $term instanceof WP_Term ) {
 			// get the width on the term as font-size.
-			$width = absint(get_term_meta($term->term_id, 'width', true ));
+			$width = absint( get_term_meta( $term->term_id, 'width', true ) );
 
 			// loop through the icons and add them to styling.
-			foreach ($this->get_icon_codes() as $filetype => $icon) {
-				list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype($filetype);
-				$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
-				if (!empty($subtype)) {
+			foreach ( $this->get_icon_codes() as $filetype => $icon ) {
+				list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $filetype );
+				$style               .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
+				if ( ! empty( $subtype ) ) {
 					$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
 				}
 			}
@@ -208,8 +208,8 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		return array(
 			array(
 				'handle' => 'bootstrap',
-				'url'   => plugins_url( '/css/bootstrap/bootstrap-icons.css', DL_PLUGIN ),
-				'path'	=> plugin_dir_path( DL_PLUGIN ).'/css/bootstrap/bootstrap-icons.css'
+				'url'    => plugins_url( '/css/bootstrap/bootstrap-icons.css', DL_PLUGIN ),
+				'path'   => plugin_dir_path( DL_PLUGIN ) . '/css/bootstrap/bootstrap-icons.css',
 			),
 		);
 	}

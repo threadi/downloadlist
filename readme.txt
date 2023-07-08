@@ -1,8 +1,8 @@
 === Download List with Icons ===
 Contributors: threadi
 Tags: list, download, icons, block
-Requires at least: 5.8
-Tested up to: 6.2
+Requires at least: 6.0
+Tested up to: 6.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,8 +15,8 @@ This plugin provides a Gutenberg Block to manage a download list with file type 
 = Features =
 
 - Choose files from media library
-- Output chosen files as list with download-link, file-title, file-size and file-description
-- Show an icon in front of each file in list
+- Output chosen files as list with file-type-specific icon, download-link, title, size and description from media library
+- Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons)
 - Drag & Drop sorting for the list
 - Remove files from list
 
@@ -24,8 +24,13 @@ This plugin provides a Gutenberg Block to manage a download list with file type 
 
 - Display of file size, description and icon can be switched on and off
 - Choose what link should be published: direct link or attachment page
-- sort list by title or filesize with one click
-- the Block can be used in Widgets
+- Choose an iconset for each Block; manage custom icons in unlimited lists
+- Usage of [multiple hooks](https://github.com/threadi/downloadlist/tree/master/docs/hooks.md) to change or add icons to generated iconsets
+- Sort list by title or filesize with one click
+- The Block can be used in classic widgets
+- Set colors, typography and borders for each Block
+
+The development repository is on [GitHub](https://github.com/threadi/downloadlist).
 
 == Screenshots ==
 
@@ -41,7 +46,7 @@ This plugin provides a Gutenberg Block to manage a download list with file type 
 
 == Upgrade Notice ==
 
-There is nothing else to consider when updating from this plugin.
+There is nothing else to consider when updating this plugin.
 
 == Frequently Asked Questions ==
 
@@ -60,15 +65,16 @@ No, there are no limitations.
 
 The block can basically be used in any theme that supports Gutenberg blocks. If this is the case for your theme, you have to ask your theme developer.
 
-= Can I change the file icons? =
+= Can I add my own icons? =
 
-The plugin provides a small number of icons for output in the web page. If you want to change or add them, you can do it with custom CSS.
+Yes, you can manage your custom iconsets in WordPress-backend.
 
-Example for another general icon:
-`ul.downloadlist-list li:before { content:"\f497"; }`
+= No icon is displayed at a file. Why? =
 
-Example of a specific icon for PDF files:
-`ul.downloadlist-list li.file_pdf:before { content:"\f190"; }`
+The file will probably have a file type that does not comply with the WordPress standard and is therefore not included in our plugin. You have 2 options:
+
+* Use the iconset specific hook downloadlist_*_icons to add the list of icons. Check beforehand with the developer of your chosen icon set if the icon you want is included there.
+* Use another icon set which supports the file type if necessary.
 
 = Does the plugin also support Elementor or other PageBuilders? =
 
@@ -137,7 +143,10 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Fixed output of classic block if this plugin is used
 
 = 3.0.0 =
-* Added possibility to manage different icon-sets and assign them to each downloadlist-block
+* Added possibility to manage different iconsets and assign them to each Block
+* Added styling (e.g. color, typography ..) for Blocks using WordPress-standards
 * Compatible with WordPress Coding Standards
 * Minimum PHP-compatibility set to 8.0
+* Only compatible with WordPress 6.0 or newer
+* Compatibility with WordPress 6.3
 * Compatible with theme Blockify and much more FSE-themes

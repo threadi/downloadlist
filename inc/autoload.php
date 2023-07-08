@@ -19,7 +19,7 @@ spl_autoload_register( 'downloadlist_autoloader' );
  */
 function downloadlist_autoloader( string $class_name ): void {
 	// If the specified $class_name does not include our namespace, duck out.
-	if (!str_contains($class_name, 'downloadlist')) {
+	if ( ! str_contains( $class_name, 'downloadlist' ) ) {
 		return;
 	}
 

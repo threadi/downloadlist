@@ -17,10 +17,3 @@ Das Plugin unterstützt alle von WordPress standardmäßig unterstützten Dateit
 ## Eigenes Iconset ergänzen
 
 Es ist möglich eigene Iconsets zu ergänzen, z.B. wenn man selbst eine individuelle Schriftart hierfür entwickelt hat. Dafür ist es notwendig in PHP eine Klasse zu schreiben, die [wie hier beschrieben](Iconset_de.md) aufgebaut ist. Danach kann man per Hook "downloadlist_register_iconset" das eigene Iconset am Plugin anmelden.
-
-## Icons verändern
-
-Über folgende Hooks kann man die Icons beeinflussen:
-
-* downloadlist_fontawesome_icons
-* downloadlist_dashicons_icons

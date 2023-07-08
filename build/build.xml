@@ -68,7 +68,8 @@
 		<zip destfile="${build.dir}/${plugin.slug}_${plugin.version}.zip">
 			<zipfileset dir="${src.dir}/admin" prefix="${plugin.slug}/admin" />
 			<zipfileset dir="${src.dir}/block" prefix="${plugin.slug}/block" />
-			<zipfileset dir="${src.dir}/class" prefix="${plugin.slug}/class" />
+			<zipfileset dir="${src.dir}/classes" prefix="${plugin.slug}/classes" />
+			<zipfileset dir="${src.dir}/css" prefix="${plugin.slug}/css" />
 			<zipfileset dir="${src.dir}/inc" prefix="${plugin.slug}/inc" />
 			<zipfileset dir="${src.dir}/languages" prefix="${plugin.slug}/languages" />
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
