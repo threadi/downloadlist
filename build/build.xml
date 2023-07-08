@@ -27,7 +27,7 @@
 		</exec>
 	</target>
 
-	<!-- build the Blocks via npm -->
+	<!-- build the Blocks via npm and add font libs -->
 	<target name="npm-build" depends="npm-install">
 		<delete file="${log.dir}/npm-build.txt"/>
 		<exec dir="${src.dir}" failonerror="true" executable="${npm.path}" output="${log.dir}/npm-build.txt">
@@ -35,7 +35,11 @@
 		</exec>
 		<copy file="${src.dir}/node_modules/@fortawesome/fontawesome-free/css/all.css" tofile="${src.dir}/css/fontawesome/fontawesome6.css" />
 		<copy todir="${src.dir}/css/webfonts/">
-			<fileset dir="${src.dir}/node_modules/@fortawesome/fontawesome-free/webfonts/"/>
+			<fileset dir="${src.dir}/node_modules/@fortawesome/fontawesome-free/webfonts/" />
+		</copy>
+		<copy file="${src.dir}/node_modules/bootstrap-icons/font/bootstrap-icons.css" tofile="${src.dir}/css/bootstrap/bootstrap-icons.css" />
+		<copy todir="${src.dir}/css/bootstrap/fonts/">
+			<fileset dir="${src.dir}/node_modules/bootstrap-icons/font/fonts/" />
 		</copy>
 	</target>
 

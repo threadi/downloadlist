@@ -427,4 +427,4 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 		);
 	}
 }
-//add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
+add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );

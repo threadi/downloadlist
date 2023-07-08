@@ -47,11 +47,12 @@ class Installer {
 	 * @return void
 	 */
 	public function activation(): void {
-		helper::add_generic_iconset();
-
 		// initialize our own post-type and taxonomies during installation.
 		downloadlist_add_position_posttype();
 		downloadlist_add_taxonomies();
+
+		// add generic iconset.
+		helper::add_generic_iconset();
 
 		// generate icons and styles.
 		Helper::regenerate_icons();

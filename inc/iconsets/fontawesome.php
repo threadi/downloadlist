@@ -5,7 +5,6 @@
  * @package download-list-block-with-icons
  */
 
-use downloadlist\Helper;
 use downloadlist\iconsets\Fontawesome;
 
 /**
@@ -14,7 +13,7 @@ use downloadlist\iconsets\Fontawesome;
  * @param array $list The list of iconsets.
  * @return array
  */
-function downloadlist_register_fontawesome_iconset( $list ): array {
+function downloadlist_register_fontawesome_iconset( array $list ): array {
 	$list[] = Fontawesome::get_instance();
 	return $list;
 }

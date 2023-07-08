@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@dnd-kit/modifiers": "^6.0.0",
 		"@dnd-kit/sortable": "^7.0.1",
+		"@fortawesome/fontawesome-free": "^6.4.0",
 		"@wordpress/i18n": "^4.3.0",
 		"@wordpress/icons": "^6.2.0"
 	}
