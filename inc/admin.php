@@ -194,7 +194,7 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 }
 
 /**
- * Do not return generic iconsets for assignment to post-types.
+ * Do not return generic or graphic iconsets for assignment to post-types.
  *
  * @param array       $results The resulting list.
  * @param WP_Taxonomy $taxonomy_object The taxonomy-object.
@@ -209,6 +209,9 @@ function downloadlist_filter_icon_taxonomy_ajax( array $results, WP_Taxonomy $ta
 	foreach ( $results as $key => $result ) {
 		$term = get_term_by( 'name', $result, 'dl_icon_set' );
 		if ( $term instanceof WP_Term && in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_generic_sets_as_slug_array(), true ) ) {
+			unset( $results[ $key ] );
+		}
+		if ( $term instanceof WP_Term && in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_gfx_sets_as_slug_array(), true ) ) {
 			unset( $results[ $key ] );
 		}
 	}
@@ -404,7 +407,7 @@ function downloadlist_admin_iconset_set_default(): void {
 add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_iconset_set_default' );
 
 /**
- * Hide post-entry which are assigned to generated iconsets.
+ * Hide post-entry which are assigned to generated or graphic iconsets.
  *
  * @param WP_Query $query The Query.
  * @return void
@@ -416,7 +419,7 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 			array(
 				array(
 					'taxonomy' => 'dl_icon_set',
-					'terms'    => Iconsets::get_instance()->get_generic_sets_as_slug_array(),
+					'terms'    => array_merge( Iconsets::get_instance()->get_generic_sets_as_slug_array(), Iconsets::get_instance()->get_gfx_sets_as_slug_array() ),
 					'field'    => 'slug',
 					'operator' => 'NOT IN',
 				),
@@ -424,4 +427,4 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 		);
 	}
 }
-add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
+//add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
