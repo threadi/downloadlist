@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-03-19T11:04:10-05:00\n"
+"POT-Creation-Date: 2023-07-08T16:21:21+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: downloadlist\n"
@@ -19,8 +19,7 @@ msgid "Download List Block with Icons"
 msgstr ""
 
 #. Description of the plugin
-#: block/index.js:5929
-#: block/index.js:5630
+#: block/index.js:1
 msgid "Provides a Gutenberg block for capturing a download list with file type specific icons."
 msgstr ""
 
@@ -32,86 +31,242 @@ msgstr ""
 msgid "https://www.thomaszwirner.de"
 msgstr ""
 
-#: block/index.js:5781
-#: block/index.js:5506
-msgid "Sort files by title"
+#: classes/iconsets/class-bootstrap.php:46
+msgid "Bootstrap"
 msgstr ""
 
-#: block/index.js:5796
-#: block/index.js:5511
-msgid "Sort files by filesize"
+#: classes/iconsets/class-custom.php:45
+msgid "My custom iconset"
 msgstr ""
 
-#: block/index.js:5799
-#: block/index.js:5518
+#: classes/iconsets/class-dashicons.php:53
+msgid "Dashicons"
+msgstr ""
+
+#: classes/iconsets/class-fontawesome.php:46
+msgid "FontAweSome"
+msgstr ""
+
+#: download-list-block-with-icons.php:232
+#: download-list-block-with-icons.php:234
+msgid "Download List Icons"
+msgstr ""
+
+#: download-list-block-with-icons.php:233
+msgid "Download List Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:235
+msgid "Parent Download List  Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:236
+msgid "All Icons"
+msgstr ""
+
+#: download-list-block-with-icons.php:237
+#: download-list-block-with-icons.php:238
+msgid "Add new Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:239
+msgid "Edit Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:240
+msgid "View Download List Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:241
+msgid "View Download List Icons"
+msgstr ""
+
+#: download-list-block-with-icons.php:242
+msgid "Search Download List Icon"
+msgstr ""
+
+#: download-list-block-with-icons.php:243
+msgid "Not Found"
+msgstr ""
+
+#: download-list-block-with-icons.php:244
+msgid "Not found in Trash"
+msgstr ""
+
+#: download-list-block-with-icons.php:289
+msgctxt "taxonomy general name"
+msgid "Iconsets"
+msgstr ""
+
+#: download-list-block-with-icons.php:290
+msgctxt "taxonomy singular name"
+msgid "Iconset"
+msgstr ""
+
+#: download-list-block-with-icons.php:291
+msgid "Search iconset"
+msgstr ""
+
+#: download-list-block-with-icons.php:292
+msgid "Edit iconset"
+msgstr ""
+
+#: download-list-block-with-icons.php:293
+msgid "Update iconset"
+msgstr ""
+
+#: download-list-block-with-icons.php:294
+msgid "Iconsets"
+msgstr ""
+
+#: download-list-block-with-icons.php:295
+#: download-list-block-with-icons.php:296
+msgid "Add new Iconset"
+msgstr ""
+
+#: download-list-block-with-icons.php:297
+msgid "Go to iconsets"
+msgstr ""
+
+#: download-list-block-with-icons.php:566
+msgid "Iconset added."
+msgstr ""
+
+#: download-list-block-with-icons.php:567
+msgid "Iconset updated."
+msgstr ""
+
+#: download-list-block-with-icons.php:568
+msgid "Iconset deleted."
+msgstr ""
+
+#: download-list-block-with-icons.php:582
+msgid "Icon updated."
+msgstr ""
+
+#: download-list-block-with-icons.php:583
+msgid "Icon added."
+msgstr ""
+
+#: inc/admin.php:137
+#: block/index.js:1
 msgid "Settings"
 msgstr ""
 
-#: block/index.js:5801
-#: block/index.js:5520
-msgid "Hide icon"
+#: inc/admin.php:160
+msgid "Choose icon"
 msgstr ""
 
-#: block/index.js:5805
-#: block/index.js:5525
-msgid "Hide file size"
+#: inc/admin.php:167
+#: inc/admin.php:173
+msgid "Remove image"
 msgstr ""
 
-#: block/index.js:5809
-#: block/index.js:5530
-msgid "Hide description"
+#: inc/admin.php:172
+msgid "Upload or choose image"
 msgstr ""
 
-#: block/index.js:5813
-#: block/index.js:5535
-msgid "Choose link target"
+#: inc/admin.php:181
+msgid "Choose file type"
 msgstr ""
 
-#: block/index.js:5816
-#: block/index.js:5538
-msgid "direct link"
+#: inc/admin.php:243
+#: inc/admin.php:283
+#: inc/admin.php:379
+msgid "Set this as default iconset"
 msgstr ""
 
-#: block/index.js:5819
-#: block/index.js:5539
-msgid "attachment page"
+#: inc/admin.php:252
+msgid "Set font size for icons of this set"
 msgstr ""
 
-#: block/index.js:5872
-#: block/index.js:5585
-msgid "Add files to list"
+#: inc/admin.php:262
+#: inc/admin.php:287
+msgid "Set width and height for icons of this set"
 msgstr ""
 
-#: block/index.js:5928
-#: block/index.js:5629
-msgid "Download List with Icons"
+#: inc/admin.php:274
+msgid "Iconset could not be loaded."
 msgstr ""
 
-#: block/index.js:6071
-#: block/index.js:6167
-#: block/index.js:5732
-#: block/index.js:5815
-msgid "Edit file"
+#: inc/admin.php:347
+msgid "Default iconset"
 msgstr ""
 
-#: block/index.js:6073
-#: block/index.js:5734
-msgid "Save"
+#: inc/admin.php:381
+msgid "This is the default iconset"
 msgstr ""
 
-#: block/index.js:6149
-#: block/index.js:5807
+#: block/index.js:1
 msgid "Loading .."
 msgstr ""
 
-#: block/index.js:6163
-#: block/index.js:5814
+#: block/index.js:1
 msgid "Remove from list"
 msgstr ""
 
-#: block/index.js:6171
-#: block/index.js:5816
+#: block/index.js:1
+msgid "Edit file"
+msgstr ""
+
+#: block/index.js:1
+msgid "Save"
+msgstr ""
+
+#: block/index.js:1
 msgid "hold to pull"
+msgstr ""
+
+#: block/index.js:1
+msgid "Download List with Icons"
+msgstr ""
+
+#: block/index.js:1
+msgid "Add files to list"
+msgstr ""
+
+#: block/index.js:1
+msgid "Sort files by title"
+msgstr ""
+
+#: block/index.js:1
+msgid "Sort files by filesize"
+msgstr ""
+
+#: block/index.js:1
+msgid "Hide icons"
+msgstr ""
+
+#: block/index.js:1
+msgid "Choose iconset"
+msgstr ""
+
+#: block/index.js:1
+msgid "Manage Iconsets"
+msgstr ""
+
+#: block/index.js:1
+msgid "Hide file sizes"
+msgstr ""
+
+#: block/index.js:1
+msgid "Hide descriptions"
+msgstr ""
+
+#: block/index.js:1
+msgid "Choose link target"
+msgstr ""
+
+#: block/index.js:1
+msgid "direct link"
+msgstr ""
+
+#: block/index.js:1
+msgid "attachment page"
+msgstr ""
+
+#: block/index.js:1
+msgid "Add your first file"
 msgstr ""
 
 #: block.json
@@ -122,4 +277,19 @@ msgstr ""
 #: block.json
 msgctxt "block description"
 msgid "Provides a Gutenberg block for capturing a download list with file type specific icons."
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "downloadlist"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "download"
+msgstr ""
+
+#: block.json
+msgctxt "block keyword"
+msgid "list"
 msgstr ""
