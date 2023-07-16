@@ -50,11 +50,16 @@
 		</exec>
 	</target>
 
-	<!-- set version number in plugin-file for the release -->
+	<!-- set version number for the release -->
 	<target name="setVersionNumber">
 		<delete file="${build.dir}/${plugin.slug}-release.php"/>
 		<copy file="${src.dir}/${plugin.slug}.php" tofile="${src.dir}/${plugin.slug}-release.php"/>
 		<replace file="${src.dir}/${plugin.slug}-release.php">
+			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
+		</replace>
+		<delete file="${build.dir}/uninstall-release.php"/>
+		<copy file="${src.dir}/uninstall.php" tofile="${src.dir}/uninstall-release.php"/>
+		<replace file="${src.dir}/uninstall-release.php">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
 	</target>
@@ -73,10 +78,12 @@
 			<zipfileset dir="${src.dir}/inc" prefix="${plugin.slug}/inc" />
 			<zipfileset dir="${src.dir}/languages" prefix="${plugin.slug}/languages" />
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
-			<zipfileset dir="${src.dir}" includes="uninstall.php,readme.txt,block.json" prefix="${plugin.slug}" />
+			<zipfileset dir="${src.dir}" includes="readme.txt,block.json" prefix="${plugin.slug}" />
 			<zipfileset dir="${src.dir}" includes="${plugin.slug}-release.php" fullpath="${plugin.slug}/${plugin.slug}.php" />
+			<zipfileset dir="${src.dir}" includes="uninstall-release.php" fullpath="${plugin.slug}/uninstall.php" />
 		</zip>
 		<delete file="${src.dir}/${plugin.slug}-release.php"/>
+		<delete file="${src.dir}/uninstall-release.php"/>
 	</target>
 
 	<!-- upload release-zip to WordPress Repository -->
