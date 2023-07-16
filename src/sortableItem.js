@@ -122,12 +122,20 @@ export function SortableItem(props) {
 		title = props.file.title;
 	}
 
+	/**
+	 * Add download-button
+	 */
+	let downloadButton = ''
+	if( props.object.attributes.showDownloadButton ) {
+		downloadButton = '<a href="' + linkTarget + '" class="download-button button button-secondary">' + __('Download', 'downloadlist') + '</a>'
+	}
+
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
 			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'downloadlist')}><Icon icon={ trash } /></Button>
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'downloadlist' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'downloadlist' )}>{dragHandle}</Button>
-			<a href={linkTarget}>{title}</a>{fileSize}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
+			<a href={linkTarget}>{title}</a>{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
 		</div>
 	);
 }

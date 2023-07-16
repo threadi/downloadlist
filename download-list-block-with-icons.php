@@ -94,6 +94,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 							'type'    => 'boolean',
 							'default' => false,
 						),
+						'showDownloadButton' => array(
+							'type'    => 'boolean',
+							'default' => false,
+						),
 					),
 				)
 			);
@@ -542,6 +546,12 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get individual styles for this file from used iconset.
 				if( $iconset_obj instanceof Iconset_Base ) {
 					$styles .= $iconset_obj->get_style_for_file( $file_id );
+				}
+
+				// get optional download-button.
+				$download_button = '';
+				if ( ! empty( $attributes['showDownloadButton'] ) ) {
+					$download_button = '<a href="'.esc_url($url).'" class="download-button button button-secondary"'.esc_attr($download_attribute).'>'.__('Download', 'downloadlist').'</a>';
 				}
 
 				// add it to output.
