@@ -159,3 +159,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Added option to show download-button on each file entry
 * Optimized styling for files with description
 * Optimized iconset-style-generation
+* Fixed usage of unique function names

@@ -599,14 +599,14 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @param array $messages List of messages.
 	 * @return array
 	 */
-	function change_post_labels( array $messages ): array {
+	function downloadlist_change_post_labels( array $messages ): array {
 		$messages['dl_icons'] = array(
 			1 => __( 'Icon updated.', 'downloadlist' ),
 			6 => __( 'Icon added.', 'downloadlist' ),
 		);
 		return $messages;
 	}
-	add_filter( 'post_updated_messages', 'change_post_labels' );
+	add_filter( 'post_updated_messages', 'downloadlist_change_post_labels' );
 
 	/**
 	 * Update the messages on bulk-actions in our cpt.
@@ -615,7 +615,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @param array $bulk_counts Count of events.
 	 * @return array
 	 */
-	function change_post_labels_bulk( array $messages, array $bulk_counts ): array {
+	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
 		/* translators: $1%s: Number of pages. */
 		$messages['dl_icons']['trashed'] = _n( '%d icon moved to the Trash.', '%d icons moved to the Trash.', $bulk_counts['trashed'] );
 		/* translators: $1%s: Number of pages. */
@@ -624,7 +624,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		// return resulting list.
 		return $messages;
 	}
-	add_filter( 'bulk_post_updated_messages', 'change_post_labels_bulk', 10, 2 );
+	add_filter( 'bulk_post_updated_messages', 'downloadlist_change_post_labels_bulk', 10, 2 );
 
 	/**
 	 * Check on each load if plugin-version has been changed.
