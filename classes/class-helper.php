@@ -159,11 +159,6 @@ class Helper {
 			// get file-type with main- and subtype.
 			$file_type_name = get_post_meta( $post_id, 'file_type', true );
 
-			// continue with next if no file-type is assigned.
-			if ( empty( $file_type_name ) ) {
-				$file_type_name = '';
-			}
-
 			// get iconset-object for this post.
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $terms[0]->slug );
 
@@ -172,13 +167,19 @@ class Helper {
 				continue;
 			}
 
-			// get type and subtype.
-			list( $type, $subtype ) = self::get_type_and_subtype_from_mimetype( $file_type_name );
+			// load just the styles on generic iconsets.
+			if( false !== $iconset_obj->is_generic() ) {
+				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, '' );
+			}
+			else {
+				// get type and subtype.
+				list($type, $subtype) = self::get_type_and_subtype_from_mimetype($file_type_name);
 
-			// get iconset-specific styles.
-			$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
-			if ( ! empty( $subtype ) ) {
-				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
+				// get iconset-specific styles.
+				$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $type);
+				if (!empty($subtype) && false === $iconset_obj->is_generic()) {
+					$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $subtype);
+				}
 			}
 		}
 

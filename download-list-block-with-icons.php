@@ -27,6 +27,9 @@ use downloadlist\Installer;
 // save the plugin-path.
 const DL_PLUGIN = __FILE__;
 
+// save the plugin-version.
+const DL_VERSION = '@@VersionNumber@@';
+
 // only run our plugin-function if PHP 8.0 or newer is used.
 if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	// embed necessary files.
@@ -623,4 +626,27 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	}
 	add_filter( 'bulk_post_updated_messages', 'change_post_labels_bulk', 10, 2 );
 
+	/**
+	 * Check on each load if plugin-version has been changed.
+	 * If yes, run appropriated functions for migrate to the new version.
+	 *
+	 * @return void
+	 */
+	function downloadlist_update(): void {
+		// get installed plugin-version (version of the actual files in this plugin).
+		$installedPluginVersion = DL_VERSION;
+
+		// get db-version (version which was last installed).
+		$dbPluginVersion = get_option('downloadlistVersion', '3.0.0');
+
+		// compare version if we are not in development-mode
+		if( $installedPluginVersion != '@@VersionNumber@@' && version_compare($installedPluginVersion, $dbPluginVersion, '>') ) {
+			// run style generation.
+			Helper::generate_css();
+
+			// save new plugin-version in DB.
+			update_option('downloadlistVersion', $installedPluginVersion);
+		}
+	}
+	add_action( 'plugins_loaded', 'downloadlist_update' );
 }

@@ -93,5 +93,13 @@ class Uninstaller {
 		if ( file_exists( $path ) ) {
 			unlink( $path );
 		}
+
+		// delete options.
+		$options = array(
+			'downloadlistVersion'
+		);
+		foreach( $options as $option ) {
+			delete_option( $option );
+		}
 	}
 }
