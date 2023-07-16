@@ -90,6 +90,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 							'type'    => 'boolean',
 							'default' => false,
 						),
+						'doNotForceDownload' => array(
+							'type'    => 'boolean',
+							'default' => false,
+						),
 					),
 				)
 			);
@@ -527,6 +531,11 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				$download_attribute = ' download';
 				if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] ) {
 					$url                = get_permalink( $file_id );
+					$download_attribute = '';
+				}
+
+				// prevent forcing of download via html-attribute.
+				if ( ! empty( $attributes['linkTarget'] ) && 'direct' === $attributes['linkTarget'] && ! empty( $attributes['doNotForceDownload'] ) && false !== $attributes['doNotForceDownload'] ) {
 					$download_attribute = '';
 				}
 
