@@ -6,7 +6,7 @@ Tested up to: 6.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.0.1
+Stable tag: 3.1.0
 
 == Description ==
 
@@ -153,3 +153,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.0.1 =
 * Fixed initialization of iconsets during plugin activation
+
+= 3.1.0 =
+* Added option to disable forcing download on click on file-link

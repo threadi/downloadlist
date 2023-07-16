@@ -266,6 +266,16 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * On change of do not force download
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeDoNotForceDownload( newValue, object ) {
+		object.setAttributes({ doNotForceDownload: newValue });
+	}
+
+	/**
 	 * Sort files in list by their titles (string compare).
 	 */
 	function sortFilesByTitle() {
@@ -377,6 +387,13 @@ export default function Edit( object ) {
 							] }
 							onChange={ value => onChangeLinkTarget( value, object ) }
 						/>
+						{'direct' === object.attributes.linkTarget &&
+							<CheckboxControl
+								label={__('Do not force download', 'downloadlist')}
+								checked={ object.attributes.doNotForceDownload }
+								onChange={ value => onChangeDoNotForceDownload( value, object ) }
+							/>
+						}
 					</PanelBody>
 				</InspectorControls>
 			}

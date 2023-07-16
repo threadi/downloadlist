@@ -60,6 +60,10 @@
 		"preview": {
 			"type": "boolean",
 			"default": false
+		},
+		"doNotForceDownload": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"example": {
