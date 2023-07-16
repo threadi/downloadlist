@@ -64,6 +64,10 @@
 		"doNotForceDownload": {
 			"type": "boolean",
 			"default": false
+		},
+		"showDownloadButton": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"example": {

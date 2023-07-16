@@ -8,10 +8,14 @@
 .wp-block-downloadlist-list {
   margin-left: 0;
   padding-left: 0;
-  li { list-style: none }
+  li {
+	list-style: none;
+	padding-left: 32px;
+  }
   li:before {
 	display: inline-block;
 	font-size: 24px;
+    margin-left: -32px;
 	margin-right: 8px;
 	vertical-align: middle;
 	width: 24px;
@@ -21,5 +25,8 @@
 	 &:before {
 		 display: none
 	 }
+ }
+ .download-button {
+	 float: right;
  }
 }

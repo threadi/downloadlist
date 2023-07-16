@@ -156,3 +156,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.1.0 =
 * Added option to disable forcing download on click on file-link
+* Added option to show download-button on each file entry
+* Optimized styling for files with description

@@ -276,6 +276,16 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * On change of do not force download
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeShowDownloadButton( newValue, object ) {
+		object.setAttributes({ showDownloadButton: newValue });
+	}
+
+	/**
 	 * Sort files in list by their titles (string compare).
 	 */
 	function sortFilesByTitle() {
@@ -377,6 +387,11 @@ export default function Edit( object ) {
 							label={__('Hide descriptions', 'downloadlist')}
 							checked={ object.attributes.hideDescription }
 							onChange={ value => onChangeHideDescription( value, object ) }
+						/>
+						<CheckboxControl
+							label={__('Show download-button', 'downloadlist')}
+							checked={ object.attributes.showDownloadButton }
+							onChange={ value => onChangeShowDownloadButton( value, object ) }
 						/>
 						<SelectControl
 							label={__('Choose link target', 'downloadlist')}
