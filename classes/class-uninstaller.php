@@ -94,9 +94,20 @@ class Uninstaller {
 			unlink( $path );
 		}
 
+		// delete transients.
+		$transients_obj = Transients::get_instance();
+		foreach ( $transients_obj->get_transients() as $transient_obj ) {
+			// delete transient-data.
+			$transient_obj->delete();
+
+			// delete dismiss-marker for this transient.
+			delete_option( 'pi-dismissed-' . md5( $transient_obj->get_name() ) );
+		}
+
 		// delete options.
 		$options = array(
-			'downloadlistVersion'
+			'downloadlistVersion',
+			DL_TRANSIENT_LIST
 		);
 		foreach( $options as $option ) {
 			delete_option( $option );

@@ -2,3 +2,8 @@ body.taxonomy-dl_icon_set .term-description-wrap, body.taxonomy-dl_icon_set .ter
 body.taxonomy-dl_icon_set input[type="number"] { width: auto }
 
 body.post-type-dl_icons .subsubsub { display: none }
+
+.downloadlist-transient {
+	position: relative;
+	z-index: 1;
+}

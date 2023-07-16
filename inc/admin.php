@@ -8,6 +8,7 @@
 use downloadlist\helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
+use downloadlist\Transients;
 
 add_action( 'enqueue_block_editor_assets', 'downloadlist_enqueue_styles' );
 
@@ -426,3 +427,42 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 	}
 }
 add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
+
+/**
+ * Check on each load if plugin-version has been changed.
+ * If yes, run appropriated functions for migrate to the new version.
+ *
+ * @return void
+ */
+function downloadlist_update(): void {
+	// get installed plugin-version (version of the actual files in this plugin).
+	$installedPluginVersion = DL_VERSION;
+
+	// get db-version (version which was last installed).
+	$dbPluginVersion = get_option('downloadlistVersion', '3.0.0');
+
+	// compare version if we are not in development-mode
+	if( $installedPluginVersion !== '@@VersionNumber@@' && version_compare($installedPluginVersion, $dbPluginVersion, '>') ) {
+		$transient_obj = Transients::get_instance()->add();
+		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
+		$transient_obj->set_name('refresh_css');
+		$transient_obj->save();
+
+		// save new plugin-version in DB.
+		update_option('downloadlistVersion', $installedPluginVersion);
+	}
+}
+add_action( 'plugins_loaded', 'downloadlist_update' );
+
+/**
+ * Show known transients only for users with rights.
+ *
+ * @return void
+ */
+function downloadlist_admin_notices(): void {
+	if ( current_user_can( 'manage_options' ) ) {
+		$transients_obj = Transients::get_instance();
+		$transients_obj->check_transients();
+	}
+}
+add_action( 'admin_notices', 'downloadlist_admin_notices' );
