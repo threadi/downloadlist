@@ -163,4 +163,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.2.0 =
 * Added custom title and description for files in downloadlist
+* Added icon for our own icon-post-type in wp-admin
 * Optimized rest of code regarding WordPress Coding Standard
