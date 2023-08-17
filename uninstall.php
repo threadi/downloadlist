@@ -5,6 +5,16 @@
  * @package download-list-block-with-icons
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// if uninstall.php is not called by WordPress, die.
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	die;
+}
+
 use downloadlist\Uninstaller;
 
 // save the plugin-path.

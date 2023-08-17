@@ -436,20 +436,20 @@ add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
  */
 function downloadlist_update(): void {
 	// get installed plugin-version (version of the actual files in this plugin).
-	$installedPluginVersion = DL_VERSION;
+	$installed_plugin_version = DL_VERSION;
 
 	// get db-version (version which was last installed).
-	$dbPluginVersion = get_option( 'downloadlistVersion', '3.0.0' );
+	$db_plugin_version = get_option( 'downloadlistVersion', '3.0.0' );
 
-	// compare version if we are not in development-mode
-	if ( $installedPluginVersion !== '@@VersionNumber@@' && version_compare( $installedPluginVersion, $dbPluginVersion, '>' ) ) {
+	// compare version if we are not in development-mode.
+	if ( '@@VersionNumber@@' !== $installed_plugin_version && version_compare( $installed_plugin_version, $db_plugin_version, '>' ) ) {
 		$transient_obj = Transients::get_instance()->add();
 		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
 		$transient_obj->set_name( 'refresh_css' );
 		$transient_obj->save();
 
 		// save new plugin-version in DB.
-		update_option( 'downloadlistVersion', $installedPluginVersion );
+		update_option( 'downloadlistVersion', $installed_plugin_version );
 	}
 }
 add_action( 'plugins_loaded', 'downloadlist_update' );

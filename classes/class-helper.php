@@ -168,17 +168,16 @@ class Helper {
 			}
 
 			// load just the styles on generic iconsets.
-			if( false !== $iconset_obj->is_generic() ) {
+			if ( false !== $iconset_obj->is_generic() ) {
 				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, '' );
-			}
-			else {
+			} else {
 				// get type and subtype.
-				list($type, $subtype) = self::get_type_and_subtype_from_mimetype($file_type_name);
+				list($type, $subtype) = self::get_type_and_subtype_from_mimetype( $file_type_name );
 
 				// get iconset-specific styles.
-				$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $type);
-				if (!empty($subtype) && false === $iconset_obj->is_generic()) {
-					$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $subtype);
+				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
+				if ( ! empty( $subtype ) && false === $iconset_obj->is_generic() ) {
+					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
 				}
 			}
 		}
@@ -334,11 +333,10 @@ class Helper {
 						'slug' => $iconset_obj->get_slug(),
 					)
 				);
-			}
-			else {
+			} else {
 				$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
-				$term = array(
-					'term_id' => $term_obj->term_id
+				$term     = array(
+					'term_id' => $term_obj->term_id,
 				);
 			}
 
