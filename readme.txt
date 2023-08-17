@@ -6,7 +6,7 @@ Tested up to: 6.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 
 == Description ==
 
@@ -160,3 +160,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Optimized styling for files with description
 * Optimized iconset-style-generation
 * Fixed usage of unique function names
+
+= 3.2.0 =
+* Added custom title and description for files in downloadlist

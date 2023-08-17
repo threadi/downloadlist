@@ -524,6 +524,12 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get the meta-data like JS (like human-readable filesize).
 				$file_meta = wp_prepare_attachment_for_js( $file_id );
 
+				// get custom attachment title, if set.
+				$attachment->post_title = $file_meta['title'];
+
+				// get custom attachment description, if set.
+				$attachment->post_content = $file_meta['description'];
+
 				// get the file size.
 				$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
 				if ( ! empty( $attributes['hideFileSize'] ) ) {
@@ -628,4 +634,34 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		return $messages;
 	}
 	add_filter( 'bulk_post_updated_messages', 'downloadlist_change_post_labels_bulk', 10, 2 );
+
+	/**
+	 * Use custom title and description for attachment.
+	 *
+	 * @param array $response
+	 * @param WP_Post $attachment
+	 * @return array
+	 */
+	function downloadlist_wp_prepare_attachment_for_js( array $response, WP_Post $attachment ): array {
+		// bail if attachment-data are queried for attachment-edit-page.
+		if( !empty($_REQUEST['action']) && 'query-attachments' === $_REQUEST['action'] ) {
+			return $response;
+		}
+
+		// get actual custom title.
+		$dl_title = get_post_meta( $attachment->ID, 'dl_title', true );
+		if( !empty( $dl_title) ) {
+			$response['title'] = $dl_title;
+		}
+
+		// get actual custom description.
+		$dl_description = get_post_meta( $attachment->ID, 'dl_description', true );
+		if( !empty( $dl_description) ) {
+			$response['description'] = nl2br($dl_description);
+		}
+
+		// return resulting response.
+		return $response;
+	}
+	add_filter( 'wp_prepare_attachment_for_js', 'downloadlist_wp_prepare_attachment_for_js', 10, 2 );
 }
