@@ -439,17 +439,17 @@ function downloadlist_update(): void {
 	$installedPluginVersion = DL_VERSION;
 
 	// get db-version (version which was last installed).
-	$dbPluginVersion = get_option('downloadlistVersion', '3.0.0');
+	$dbPluginVersion = get_option( 'downloadlistVersion', '3.0.0' );
 
 	// compare version if we are not in development-mode
-	if( $installedPluginVersion !== '@@VersionNumber@@' && version_compare($installedPluginVersion, $dbPluginVersion, '>') ) {
+	if ( $installedPluginVersion !== '@@VersionNumber@@' && version_compare( $installedPluginVersion, $dbPluginVersion, '>' ) ) {
 		$transient_obj = Transients::get_instance()->add();
 		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
-		$transient_obj->set_name('refresh_css');
+		$transient_obj->set_name( 'refresh_css' );
 		$transient_obj->save();
 
 		// save new plugin-version in DB.
-		update_option('downloadlistVersion', $installedPluginVersion);
+		update_option( 'downloadlistVersion', $installedPluginVersion );
 	}
 }
 add_action( 'plugins_loaded', 'downloadlist_update' );
@@ -466,3 +466,63 @@ function downloadlist_admin_notices(): void {
 	}
 }
 add_action( 'admin_notices', 'downloadlist_admin_notices' );
+
+/**
+ * Add new field for attachments.
+ *
+ * @param array   $form_fields The list of fields.
+ * @param WP_Post $post The attachment-object.
+ * @return array
+ */
+function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( $form_fields, $post ): array {
+	// get actual custom title.
+	$dl_title = get_post_meta( $post->ID, 'dl_title', true );
+
+	// add field for title.
+	$form_fields['dl_title'] = array(
+		'label' => 'title for downloadlist (optional)',
+		'input' => 'text',
+		'value' => $dl_title,
+	);
+
+	// get actual custom description.
+	$dl_description = get_post_meta( $post->ID, 'dl_description', true );
+
+	// add field for title.
+	$form_fields['dl_description'] = array(
+		'label' => 'description for downloadlist (optional)',
+		'input' => 'textarea',
+		'value' => $dl_description,
+	);
+
+	// return the field list.
+	return $form_fields;
+}
+add_filter( 'attachment_fields_to_edit', 'downloadlist_add_custom_text_field_to_attachment_fields_to_edit', null, 2 );
+
+/**
+ * Save values from our custom fields for attachments.
+ *
+ * @param array $post The attachment-array.
+ * @param array $fields The form fields.
+ * @return array
+ */
+function downloadlist_save_custom_text_attachment_field( array $post, array $fields ): array {
+	// save the value for the title.
+	if ( isset( $fields['dl_title'] ) ) {
+		update_post_meta( $post['ID'], 'dl_title', sanitize_text_field( $fields['dl_title'] ) );
+	} else {
+		delete_post_meta( $post['ID'], 'dl_title' );
+	}
+
+	// save the value for the description.
+	if ( isset( $fields['dl_description'] ) ) {
+		update_post_meta( $post['ID'], 'dl_description', sanitize_textarea_field( $fields['dl_description'] ) );
+	} else {
+		delete_post_meta( $post['ID'], 'dl_description' );
+	}
+
+	// return post-object.
+	return $post;
+}
+add_filter( 'attachment_fields_to_save', 'downloadlist_save_custom_text_attachment_field', null, 2 );
