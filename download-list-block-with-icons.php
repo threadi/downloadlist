@@ -280,6 +280,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'rewrite'             => array(
 				'slug' => 'downloadlist_icons',
 			),
+			'menu_icon'           => plugin_dir_url( __FILE__ ).'/gfx/dl_icon.png',
 		);
 		register_post_type( 'dl_icons', $args );
 
