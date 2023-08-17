@@ -182,13 +182,13 @@ class Bootstrap extends Iconset_Base implements Iconset {
 			// loop through the icons and add them to styling.
 			foreach ( $this->get_icon_codes() as $filetype => $icon ) {
 				list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $filetype );
-				if( empty($types[$type]) ) {
-					$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
-					$types[$type] = 1;
+				if ( empty( $types[ $type ] ) ) {
+					$style         .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
+					$types[ $type ] = 1;
 				}
 				if ( ! empty( $subtype ) ) {
-					$style .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
-					$types[$subtype] = 1;
+					$style            .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $subtype . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
+					$types[ $subtype ] = 1;
 				}
 			}
 		}

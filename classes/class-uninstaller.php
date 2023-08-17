@@ -107,9 +107,9 @@ class Uninstaller {
 		// delete options.
 		$options = array(
 			'downloadlistVersion',
-			DL_TRANSIENT_LIST
+			DL_TRANSIENT_LIST,
 		);
-		foreach( $options as $option ) {
+		foreach ( $options as $option ) {
 			delete_option( $option );
 		}
 	}

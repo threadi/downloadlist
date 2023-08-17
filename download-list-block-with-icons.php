@@ -65,34 +65,34 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				array(
 					'render_callback' => 'downloadlist_render_block',
 					'attributes'      => array(
-						'files'           => array(
+						'files'              => array(
 							'type' => 'array',
 						),
-						'hideFileSize'    => array(
+						'hideFileSize'       => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'hideDescription' => array(
+						'hideDescription'    => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'hideIcon'        => array(
+						'hideIcon'           => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'linkTarget'      => array(
+						'linkTarget'         => array(
 							'type'    => 'string',
 							'default' => 'direct',
 						),
-						'iconset'         => array(
+						'iconset'            => array(
 							'type'    => 'string',
 							'default' => '',
 						),
-						'file_types_set'  => array(
+						'file_types_set'     => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'preview'         => array(
+						'preview'            => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
@@ -474,21 +474,20 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			}
 
 			// marker for icon-set to use.
-			$iconset = '';
+			$iconset     = '';
 			$iconset_obj = null;
 			if ( ! empty( $attributes['iconset'] ) ) {
-				$iconset = 'iconset-' . $attributes['iconset'];
+				$iconset     = 'iconset-' . $attributes['iconset'];
 				$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
 				// if no iconset could be detected, get the default iconset.
-				if( false === $iconset_obj ) {
+				if ( false === $iconset_obj ) {
 					$iconset_obj = Iconsets::get_instance()->get_default_iconset();
-					$iconset = 'iconset-'.$iconset_obj->get_slug();
+					$iconset     = 'iconset-' . $iconset_obj->get_slug();
 				}
-			}
-			else {
+			} else {
 				// set default iconset if none is set (for lists from < 3.0).
 				$iconset_obj = Iconsets::get_instance()->get_default_iconset();
-				$iconset = 'iconset-'.$iconset_obj->get_slug();
+				$iconset     = 'iconset-' . $iconset_obj->get_slug();
 			}
 
 			// variable for block-specific styles.
@@ -556,14 +555,14 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				}
 
 				// get individual styles for this file from used iconset.
-				if( $iconset_obj instanceof Iconset_Base ) {
+				if ( $iconset_obj instanceof Iconset_Base ) {
 					$styles .= $iconset_obj->get_style_for_file( $file_id );
 				}
 
 				// get optional download-button.
 				$download_button = '';
 				if ( ! empty( $attributes['showDownloadButton'] ) ) {
-					$download_button = '<a href="'.esc_url($url).'" class="download-button button button-secondary"'.esc_attr($download_attribute).'>'.__('Download', 'downloadlist').'</a>';
+					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . '>' . __( 'Download', 'downloadlist' ) . '</a>';
 				}
 
 				// add it to output.
@@ -578,8 +577,8 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			$output .= ob_get_clean();
 
 			// output block-specific style.
-			if( !empty($styles) ) {
-				$output .= '<style>'.$styles.'</style>';
+			if ( ! empty( $styles ) ) {
+				$output .= '<style>' . $styles . '</style>';
 			}
 		}
 
@@ -638,26 +637,26 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	/**
 	 * Use custom title and description for attachment.
 	 *
-	 * @param array $response
-	 * @param WP_Post $attachment
+	 * @param array   $response Array with response for JS.
+	 * @param WP_Post $attachment The attachment-object.
 	 * @return array
 	 */
 	function downloadlist_wp_prepare_attachment_for_js( array $response, WP_Post $attachment ): array {
 		// bail if attachment-data are queried for attachment-edit-page.
-		if( !empty($_REQUEST['action']) && 'query-attachments' === $_REQUEST['action'] ) {
+		if ( ! empty( $_REQUEST['action'] ) && 'query-attachments' === $_REQUEST['action'] ) {
 			return $response;
 		}
 
 		// get actual custom title.
 		$dl_title = get_post_meta( $attachment->ID, 'dl_title', true );
-		if( !empty( $dl_title) ) {
+		if ( ! empty( $dl_title ) ) {
 			$response['title'] = $dl_title;
 		}
 
 		// get actual custom description.
 		$dl_description = get_post_meta( $attachment->ID, 'dl_description', true );
-		if( !empty( $dl_description) ) {
-			$response['description'] = nl2br($dl_description);
+		if ( ! empty( $dl_description ) ) {
+			$response['description'] = nl2br( $dl_description );
 		}
 
 		// return resulting response.
