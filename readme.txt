@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.3
+Tested up to: 6.3.1
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,7 @@ This plugin provides a Gutenberg Block to manage a download list with file type 
 - Sort list by title or filesize with one click
 - The Block can be used in classic widgets
 - Set colors, typography and borders for each Block
+- Use [External files in media library](https://wordpress.org/plugins/external-files-in-media-library/) if you want to link to external files
 
 The development repository is on [GitHub](https://github.com/threadi/downloadlist).
 
@@ -165,3 +166,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Added custom title and description for files in downloadlist
 * Added icon for our own icon-post-type in wp-admin
 * Optimized rest of code regarding WordPress Coding Standard
+* Updated dependencies
