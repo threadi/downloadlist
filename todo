@@ -5,5 +5,4 @@ ToDo-List for this plugin
 -> which title and description to use?
 -> https://www.xing.com/communities/posts/wp-plugin-gesucht-1024641835
 * set default settings for all blocks (e.g. hide things) incl. auto-update them in one task
-* add custom title and description per file in block
 * use overridable templates for html-output
