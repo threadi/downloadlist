@@ -651,10 +651,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return array
 	 */
 	function downloadlist_wp_prepare_attachment_for_js( array $response, WP_Post $attachment ): array {
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			return $response;
-		}
-
 		// bail if nonce does not match.
 		if ( ! empty( $_REQUEST['query']['downloadlist_nonce'] ) && false === wp_verify_nonce( sanitize_key( $_REQUEST['query']['downloadlist_nonce'] ), 'downloadlist-edit-attachment' ) ) {
 			return $response;
