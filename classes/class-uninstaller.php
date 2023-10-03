@@ -91,7 +91,7 @@ class Uninstaller {
 		// delete style-file.
 		$path = helper::get_style_path();
 		if ( file_exists( $path ) ) {
-			unlink( $path );
+			wp_delete_file( $path );
 		}
 
 		// delete transients.

@@ -10,11 +10,11 @@ use downloadlist\iconsets\Bootstrap;
 /**
  * Register the custom iconset.
  *
- * @param array $list The list of iconsets.
+ * @param array $iconset_list The list of iconsets.
  * @return array
  */
-function downloadlist_register_bootstrap_iconset( array $list ): array {
-	$list[] = Bootstrap::get_instance();
-	return $list;
+function downloadlist_register_bootstrap_iconset( array $iconset_list ): array {
+	$iconset_list[] = Bootstrap::get_instance();
+	return $iconset_list;
 }
 add_filter( 'downloadlist_register_iconset', 'downloadlist_register_bootstrap_iconset', 10, 1 );

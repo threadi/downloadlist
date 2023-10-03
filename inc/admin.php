@@ -54,45 +54,17 @@ function downloadlist_add_styles_and_js_admin(): void {
 add_action( 'admin_enqueue_scripts', 'downloadlist_add_styles_and_js_admin', PHP_INT_MAX );
 
 /**
- * Move the icon category-meta-box.
- *
- * @return void
- */
-function downloadlist_move_meta_box(): void {
-	global $current_screen, $wp_meta_boxes;
-
-	// only do stuff if this is the editor screen for the post type 'project' and it has meta boxes.
-	if ( 'dl_icons' === $current_screen->id && isset( $wp_meta_boxes['dl_icons'] ) ) {
-		// loop though 'side' meta boxes.
-		if ( ! empty( $wp_meta_boxes['dl_icons']['side']['core'] ) ) {
-			foreach ( $wp_meta_boxes['dl_icons']['side']['core'] as $key => $high_box ) {
-				// move our own taxonomy meta boxes.
-				if ( 'tagsdiv-dl_icon_set' === $high_box['id'] ) {
-					// grab the meta box.
-					$meta_box = array( $key => $high_box );
-
-					// remove it from the array of 'high' meta boxes.
-					unset( $wp_meta_boxes['dl_icons']['side']['core'][ $key ] );
-
-					// add it to the start of the array.
-					if ( empty( $wp_meta_boxes['dl_icons']['normal']['high'] ) ) {
-						$wp_meta_boxes['dl_icons']['normal']['high'] = array();
-					}
-					$wp_meta_boxes['dl_icons']['normal']['high'] = $meta_box + $wp_meta_boxes['dl_icons']['normal']['high'];
-				}
-			}
-		}
-	}
-}
-add_action( 'edit_form_after_title', 'downloadlist_move_meta_box' );
-
-/**
  * Check the set taxonomy on each icon-cpt-item.
  *
  * @param int $post_id The post-ID.
  * @return void
  */
 function downloadlist_check_taxonomy( int $post_id ): void {
+	// bail if nonce does not match.
+	if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-post_' . $post_id ) ) {
+		return;
+	}
+
 	// do nothing if post is in trash.
 	if ( in_array( get_post_status( $post_id ), array( 'trash', 'draft', 'auto-draft' ), true ) ) {
 		return;
@@ -303,6 +275,11 @@ add_action( 'dl_icon_set_edit_form_fields', 'downloadlist_admin_icon_set_fields'
  */
 function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, string $taxonomy = '' ): void {
 	if ( 'dl_icon_set' === $taxonomy ) {
+		// bail if nonce does not match.
+		if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) ) {
+			return;
+		}
+
 		// marker if the term has been changed that should result in new style generation.
 		$generate_styles = false;
 

@@ -61,7 +61,7 @@ class Iconset_Base {
 	private static ?Iconset_Base $instance = null;
 
 	/**
-	 * Constructor for Init-Handler.
+	 * Constructor for every Iconbase-object.
 	 */
 	private function __construct() {
 		$this->init();
@@ -88,6 +88,7 @@ class Iconset_Base {
 	 * Return whether the iconset has a type set.
 	 *
 	 * @return bool
+	 * @noinspection PhpUnused
 	 */
 	public function has_type(): bool {
 		return ! empty( $this->type );
@@ -97,6 +98,7 @@ class Iconset_Base {
 	 * Return whether the iconset has a label set.
 	 *
 	 * @return bool
+	 * @noinspection PhpUnused
 	 */
 	public function has_label(): bool {
 		return ! empty( $this->label );
@@ -169,18 +171,6 @@ class Iconset_Base {
 	}
 
 	/**
-	 * Get style for given file-type.
-	 *
-	 * @param int    $post_id ID of the icon-post.
-	 * @param string $term_slug ID of the iconset-term.
-	 * @param string $filetype Name for the filetype to add.
-	 * @return string
-	 */
-	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
-		return '';
-	}
-
-	/**
 	 * Get icons this set is assigned to.
 	 *
 	 * @return array
@@ -194,8 +184,12 @@ class Iconset_Base {
 	 *
 	 * @param int $attachment_id ID of the attachment.
 	 * @return string
+	 * @noinspection PhpIfWithCommonPartsInspection
 	 */
 	public function get_style_for_file( int $attachment_id ): string {
+		if ( $attachment_id > 0 ) {
+			return '';
+		}
 		return '';
 	}
 
