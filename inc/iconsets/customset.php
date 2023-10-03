@@ -10,11 +10,11 @@ use downloadlist\iconsets\Custom;
 /**
  * Register the custom iconset.
  *
- * @param array $list The list of iconsets.
+ * @param array $iconset_list The list of iconsets.
  * @return array
  */
-function downloadlist_register_custom_iconset( array $list ): array {
-	$list[] = Custom::get_instance();
-	return $list;
+function downloadlist_register_custom_iconset( array $iconset_list ): array {
+	$iconset_list[] = Custom::get_instance();
+	return $iconset_list;
 }
 add_filter( 'downloadlist_register_iconset', 'downloadlist_register_custom_iconset', 10, 1 );

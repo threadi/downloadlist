@@ -114,6 +114,14 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				array(),
 				filemtime( plugin_dir_path( DL_PLUGIN ) . '/admin/js.js' ),
 			);
+			// add php-vars to our js-script.
+			wp_localize_script(
+				'downloadlist-list-editor-script',
+				'downloadlistJsVars',
+				array(
+					'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
+				)
+			);
 		}
 	}
 	add_action( 'init', 'downloadlist_init' );
@@ -161,7 +169,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @noinspection PhpUnused
 	 */
 	function downloadlist_ajax_query_attachments_args( array $query ): array {
-		if ( ! empty( $_REQUEST['query']['downloadlist_post_id'] ) ) {
+		if ( ! empty( $_REQUEST['query']['downloadlist_post_id'] ) && ! empty( $_REQUEST['query']['downloadlist_nonce'] ) && false !== wp_verify_nonce( sanitize_key( $_REQUEST['query']['downloadlist_nonce'] ), 'downloadlist-edit-attachment' ) ) {
 			$query['p'] = absint( $_REQUEST['query']['downloadlist_post_id'] );
 		}
 		return $query;
@@ -179,7 +187,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'downloadlist/v1',
 			'/files/',
 			array(
-				'methods'             => WP_REST_SERVER::READABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => 'downloadlist_api_return_file_data',
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
@@ -227,7 +235,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		}
 
 		// get the template from theme-directory, if available.
-		$theme_template = locate_template( trailingslashit( basename( dirname( __FILE__ ) ) ) . $template );
+		$theme_template = locate_template( trailingslashit( basename( DL_PLUGIN ) ) . $template );
 		if ( $theme_template ) {
 			return $theme_template;
 		}
@@ -280,7 +288,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'rewrite'             => array(
 				'slug' => 'downloadlist_icons',
 			),
-			'menu_icon'           => plugin_dir_url( __FILE__ ).'/gfx/dl_icon.png',
+			'menu_icon'           => plugin_dir_url( DL_PLUGIN ) . '/gfx/dl_icon.png',
 		);
 		register_post_type( 'dl_icons', $args );
 
@@ -372,7 +380,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'downloadlist/v1',
 			'/filetypes/',
 			array(
-				'methods'             => WP_REST_SERVER::READABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => 'downloadlist_rest_api_filetypes',
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
@@ -643,6 +651,15 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return array
 	 */
 	function downloadlist_wp_prepare_attachment_for_js( array $response, WP_Post $attachment ): array {
+		if ( ! defined( 'DOING_AJAX' ) ) {
+			return $response;
+		}
+
+		// bail if nonce does not match.
+		if ( ! empty( $_REQUEST['query']['downloadlist_nonce'] ) && false === wp_verify_nonce( sanitize_key( $_REQUEST['query']['downloadlist_nonce'] ), 'downloadlist-edit-attachment' ) ) {
+			return $response;
+		}
+
 		// bail if attachment-data are queried for attachment-edit-page.
 		if ( ! empty( $_REQUEST['action'] ) && 'query-attachments' === $_REQUEST['action'] ) {
 			return $response;

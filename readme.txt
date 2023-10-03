@@ -6,7 +6,7 @@ Tested up to: 6.3.1
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 
 == Description ==
 
@@ -167,3 +167,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Added icon for our own icon-post-type in wp-admin
 * Optimized rest of code regarding WordPress Coding Standard
 * Updated dependencies
+
+= 3.2.1 =
+* Compatible with WordPress Coding Standards 3.0

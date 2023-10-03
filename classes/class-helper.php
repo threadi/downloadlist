@@ -85,7 +85,7 @@ class Helper {
 	public static function generate_css( int $term_id = 0 ): void {
 		global $wp_filesystem;
 
-		// define variable for resulting content.
+		// define variable for resulting styles.
 		$styles = '';
 
 		// get all icons of non-generic iconsets which are configured with icon-set and file-type.
@@ -143,7 +143,7 @@ class Helper {
 		}
 		$generic_icons = new WP_Query( $query_generic_icons );
 
-		// mix all results.
+		// merge all results.
 		$icons = array_merge( $non_generic_icons->posts, $generic_icons->posts );
 
 		// loop through the resulting list of icons.
@@ -192,7 +192,7 @@ class Helper {
 			// save the given content to the path.
 			$wp_filesystem->put_contents( $style_path, $styles );
 		} elseif ( file_exists( $style_path ) ) {
-			unlink( $style_path );
+			wp_delete_file( $style_path );
 		}
 	}
 

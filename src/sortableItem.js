@@ -48,7 +48,8 @@ export function SortableItem(props) {
 			},
 			multiple: false,
 			library: {
-				downloadlist_post_id: postId // filter for this postId via ajax_query_attachments_args
+				downloadlist_post_id: postId, // filter for this postId via ajax_query_attachments_args
+				downloadlist_nonce: downloadlistJsVars.downloadlist_nonce
 			},
 		})
 

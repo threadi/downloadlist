@@ -65,7 +65,5 @@ class Installer {
 	 * @return void
 	 */
 	public function deactivation(): void {
-
 	}
-
 }
