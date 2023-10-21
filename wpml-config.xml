@@ -1,0 +1,8 @@
+<wpml-config>
+    <custom-types>
+        <custom-type translate="0">dl_icons</custom-type>
+    </custom-types>
+	<taxonomies>
+		<taxonomy translate="0">dl_icon_set</taxonomy>
+	</taxonomies>
+</wpml-config>
