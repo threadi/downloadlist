@@ -29,7 +29,7 @@ I recommend to use [PoEdit](https://poedit.net/) to translate texts for this plu
 
 Run in main directory:
 
-`wp i18n make-pot . languages/downloadlist.pot --exclude=docs,css,src,svn`
+`wp i18n make-pot . languages/download-list-block-with-icons.pot --exclude=docs,css,src,svn`
 
 ### update translation-file
 
@@ -47,7 +47,7 @@ Run in main directory:
 
 Run in main directory:
 
-`wp i18n make-json languages`
+`wp i18n make-json languages --no-purge`
 
 OR use ant in build/-directory: `ant json-translations`
 

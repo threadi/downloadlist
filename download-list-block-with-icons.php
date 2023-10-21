@@ -9,7 +9,7 @@
  * Author URI:        https://www.thomaszwirner.de
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       downloadlist
+ * Text Domain:       download-list-block-with-icons
  *
  * @package download-list-block-with-icons
  */
@@ -56,8 +56,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @noinspection PhpUnused
 	 */
 	function downloadlist_init(): void {
-		load_plugin_textdomain( 'downloadlist', false, dirname( plugin_basename( DL_PLUGIN ) ) . '/languages' );
-
 		// Include block only if Gutenberg exists.
 		if ( function_exists( 'register_block_type' ) ) {
 			register_block_type(
@@ -107,7 +105,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					),
 				)
 			);
-			wp_set_script_translations( 'downloadlist-list-editor-script', 'downloadlist', plugin_dir_path( DL_PLUGIN ) . '/languages/' );
+			wp_set_script_translations( 'downloadlist-list-editor-script', 'download-list-block-with-icons', plugin_dir_path( DL_PLUGIN ) . '/languages/' );
 			wp_enqueue_style(
 				'downloadlist-list-css',
 				plugins_url( '/block/style-index.css', DL_PLUGIN ),
@@ -251,19 +249,19 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	function downloadlist_add_position_posttype(): void {
 		// set labels for our own cpt.
 		$labels = array(
-			'name'               => __( 'Download List Icons', 'downloadlist' ),
-			'singular_name'      => __( 'Download List Icon', 'downloadlist' ),
-			'menu_name'          => __( 'Download List Icons', 'downloadlist' ),
-			'parent_item_colon'  => __( 'Parent Download List  Icon', 'downloadlist' ),
-			'all_items'          => __( 'All Icons', 'downloadlist' ),
-			'add_new'            => __( 'Add new Icon', 'downloadlist' ),
-			'add_new_item'       => __( 'Add new Icon', 'downloadlist' ),
-			'edit_item'          => __( 'Edit Icon', 'downloadlist' ),
-			'view_item'          => __( 'View Download List Icon', 'downloadlist' ),
-			'view_items'         => __( 'View Download List Icons', 'downloadlist' ),
-			'search_items'       => __( 'Search Download List Icon', 'downloadlist' ),
-			'not_found'          => __( 'Not Found', 'downloadlist' ),
-			'not_found_in_trash' => __( 'Not found in Trash', 'downloadlist' ),
+			'name'               => __( 'Download List Icons', 'download-list-block-with-icons' ),
+			'singular_name'      => __( 'Download List Icon', 'download-list-block-with-icons' ),
+			'menu_name'          => __( 'Download List Icons', 'download-list-block-with-icons' ),
+			'parent_item_colon'  => __( 'Parent Download List  Icon', 'download-list-block-with-icons' ),
+			'all_items'          => __( 'All Icons', 'download-list-block-with-icons' ),
+			'add_new'            => __( 'Add new Icon', 'download-list-block-with-icons' ),
+			'add_new_item'       => __( 'Add new Icon', 'download-list-block-with-icons' ),
+			'edit_item'          => __( 'Edit Icon', 'download-list-block-with-icons' ),
+			'view_item'          => __( 'View Download List Icon', 'download-list-block-with-icons' ),
+			'view_items'         => __( 'View Download List Icons', 'download-list-block-with-icons' ),
+			'search_items'       => __( 'Search Download List Icon', 'download-list-block-with-icons' ),
+			'not_found'          => __( 'Not Found', 'download-list-block-with-icons' ),
+			'not_found_in_trash' => __( 'Not found in Trash', 'download-list-block-with-icons' ),
 		);
 
 		// set arguments for our own cpt.
@@ -309,15 +307,15 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		$icon_set_array = array(
 			'hierarchical'       => false,
 			'labels'             => array(
-				'name'          => _x( 'Iconsets', 'taxonomy general name', 'downloadlist' ),
-				'singular_name' => _x( 'Iconset', 'taxonomy singular name', 'downloadlist' ),
-				'search_items'  => __( 'Search iconset', 'downloadlist' ),
-				'edit_item'     => __( 'Edit iconset', 'downloadlist' ),
-				'update_item'   => __( 'Update iconset', 'downloadlist' ),
-				'menu_name'     => __( 'Iconsets', 'downloadlist' ),
-				'add_new'       => __( 'Add new Iconset', 'downloadlist' ),
-				'add_new_item'  => __( 'Add new Iconset', 'downloadlist' ),
-				'back_to_items' => __( 'Go to iconsets', 'downloadlist' ),
+				'name'          => _x( 'Iconsets', 'taxonomy general name', 'download-list-block-with-icons' ),
+				'singular_name' => _x( 'Iconset', 'taxonomy singular name', 'download-list-block-with-icons' ),
+				'search_items'  => __( 'Search iconset', 'download-list-block-with-icons' ),
+				'edit_item'     => __( 'Edit iconset', 'download-list-block-with-icons' ),
+				'update_item'   => __( 'Update iconset', 'download-list-block-with-icons' ),
+				'menu_name'     => __( 'Iconsets', 'download-list-block-with-icons' ),
+				'add_new'       => __( 'Add new Iconset', 'download-list-block-with-icons' ),
+				'add_new_item'  => __( 'Add new Iconset', 'download-list-block-with-icons' ),
+				'back_to_items' => __( 'Go to iconsets', 'download-list-block-with-icons' ),
 			),
 			'public'             => false,
 			'show_ui'            => true,
@@ -365,7 +363,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @noinspection PhpUndefinedClassInspection
 	 */
 	function downloadlist_cli_register_commands(): void {
-		WP_CLI::add_command( 'downloadlist', 'downloadlist\cli' );
+		WP_CLI::add_command( 'download-list-block-with-icons', 'downloadlist\cli' );
 	}
 	add_action( 'cli_init', 'downloadlist_cli_register_commands' );
 
@@ -571,7 +569,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get optional download-button.
 				$download_button = '';
 				if ( ! empty( $attributes['showDownloadButton'] ) ) {
-					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . '>' . __( 'Download', 'downloadlist' ) . '</a>';
+					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . '>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
 				}
 
 				// add it to output.
@@ -602,9 +600,9 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 */
 	function downloadlist_updated_shows_messages( array $messages ): array {
 		$messages['dl_icon_set'] = array(
-			1 => __( 'Iconset added.', 'downloadlist' ),
-			3 => __( 'Iconset updated.', 'downloadlist' ),
-			6 => __( 'Iconset deleted.', 'downloadlist' ),
+			1 => __( 'Iconset added.', 'download-list-block-with-icons' ),
+			3 => __( 'Iconset updated.', 'download-list-block-with-icons' ),
+			6 => __( 'Iconset deleted.', 'download-list-block-with-icons' ),
 		);
 		return $messages;
 	}
@@ -618,8 +616,8 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 */
 	function downloadlist_change_post_labels( array $messages ): array {
 		$messages['dl_icons'] = array(
-			1 => __( 'Icon updated.', 'downloadlist' ),
-			6 => __( 'Icon added.', 'downloadlist' ),
+			1 => __( 'Icon updated.', 'download-list-block-with-icons' ),
+			6 => __( 'Icon added.', 'download-list-block-with-icons' ),
 		);
 		return $messages;
 	}
@@ -633,10 +631,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return array
 	 */
 	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
+		/* translators: $1%d: Number of pages. */
+		$messages['dl_icons']['trashed'] = _n( '%1%d icon moved to the Trash.', '%d icons moved to the Trash.', absint($bulk_counts['trashed']) );
 		/* translators: $1%s: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%d icon moved to the Trash.', '%d icons moved to the Trash.', $bulk_counts['trashed'] );
-		/* translators: $1%s: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%d icon restored from the Trash.', '%d icon restored from the Trash.', $bulk_counts['untrashed'] );
+		$messages['dl_icons']['untrashed'] = _n( '%1%d icon restored from the Trash.', '%d icon restored from the Trash.', absint($bulk_counts['untrashed']) );
 
 		// return resulting list.
 		return $messages;

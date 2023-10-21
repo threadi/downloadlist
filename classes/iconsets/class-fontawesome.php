@@ -43,7 +43,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->label = __( 'FontAweSome', 'downloadlist' );
+		$this->label = __( 'FontAweSome', 'download-list-block-with-icons' );
 	}
 
 	/**

@@ -160,7 +160,7 @@ class Transient {
 				echo wp_kses_post( wpautop( $this->get_message() ) );
 				if ( $this->get_dismissible_days() > 0 ) {
 					?>
-					<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php echo esc_html__( 'Dismiss this notice.', 'external-medias-library' ); ?></span></button>
+					<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php echo esc_html__( 'Dismiss this notice.', 'download-list-block-with-icons' ); ?></span></button>
 					<?php
 				}
 				?>

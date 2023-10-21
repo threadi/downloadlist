@@ -42,9 +42,9 @@ export function SortableItem(props) {
 	function editListItem(postId) {
 		// Create a new media frame
 		myFrame = wp.media({
-			title: __('Edit file', 'downloadlist'),
+			title: __('Edit file', 'download-list-block-with-icons'),
 			button: {
-				text: __('Save', 'downloadlist'),
+				text: __('Save', 'download-list-block-with-icons'),
 			},
 			multiple: false,
 			library: {
@@ -118,7 +118,7 @@ export function SortableItem(props) {
 	/**
 	 * Set title
 	 */
-	let title = __('Loading ..', 'downloadlist');
+	let title = __('Loading ..', 'download-list-block-with-icons');
 	if( props.file.title ) {
 		title = props.file.title;
 	}
@@ -128,14 +128,14 @@ export function SortableItem(props) {
 	 */
 	let downloadButton = ''
 	if( props.object.attributes.showDownloadButton ) {
-		downloadButton = '<a href="' + linkTarget + '" class="download-button button button-secondary">' + __('Download', 'downloadlist') + '</a>'
+		downloadButton = '<a href="' + linkTarget + '" class="download-button button button-secondary">' + __('Download', 'download-list-block-with-icons') + '</a>'
 	}
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
-			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'downloadlist')}><Icon icon={ trash } /></Button>
-			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'downloadlist' )}><Icon icon={ edit } /></Button>
-			<Button title={__( 'hold to pull', 'downloadlist' )}>{dragHandle}</Button>
+			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>
+			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ edit } /></Button>
+			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
 			<a href={linkTarget}>{title}</a>{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
 		</div>
 	);

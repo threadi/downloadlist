@@ -172,3 +172,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Compatible with WordPress Coding Standards 3.0
 * Fixed possible error during adding files
 * Updated dependencies
+
+= 3.2.2 =
+* Changed text domain to plugin slug to match WordPress-Repository requirements
+* Removed language-files from plugin (except the json-files for Block Editor)
+* Added missing translations

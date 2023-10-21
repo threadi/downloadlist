@@ -43,7 +43,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->label = __( 'Bootstrap', 'downloadlist' );
+		$this->label = __( 'Bootstrap', 'download-list-block-with-icons' );
 	}
 
 	/**

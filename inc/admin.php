@@ -107,7 +107,7 @@ function downloadlist_admin_meta_boxes( WP_Post $post ): void {
 	// add meta-box to add icons.
 	add_meta_box(
 		'downloadlist_custom_icons',
-		__( 'Settings', 'downloadlist' ),
+		__( 'Settings', 'download-list-block-with-icons' ),
 		'downloadlist_admin_meta_boxes_settings',
 		'dl_icons'
 	);
@@ -130,20 +130,20 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 	// output.
 	?>
 	<div class="form-field">
-		<label for="icon"><?php echo esc_html__( 'Choose icon', 'downloadlist' ); ?>:</label>
+		<label for="icon"><?php echo esc_html__( 'Choose icon', 'download-list-block-with-icons' ); ?>:</label>
 		<div>
 			<?php
 			$image = wp_get_attachment_image_src( $image_id );
 			if ( $image_id > 0 && $image ) {
 				?>
 				<a href="#" class="downloadlist-image-choose"><img src="<?php echo esc_url( $image[0] ); ?>" alt="" /></a>
-				<a href="#" class="downloadlist-image-remove"><?php echo esc_html__( 'Remove image', 'downloadlist' ); ?></a>
+				<a href="#" class="downloadlist-image-remove"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
 				<input type="hidden" name="icon" value="<?php echo esc_attr( $image_id ); ?>">
 				<?php
 			} else {
 				?>
-				<a href="#" class="downloadlist-image-choose"><?php echo esc_html__( 'Upload or choose image', 'downloadlist' ); ?></a>
-				<a href="#" class="downloadlist-image-remove" style="display:none"><?php echo esc_html__( 'Remove image', 'downloadlist' ); ?></a>
+				<a href="#" class="downloadlist-image-choose"><?php echo esc_html__( 'Upload or choose image', 'download-list-block-with-icons' ); ?></a>
+				<a href="#" class="downloadlist-image-remove" style="display:none"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
 				<input type="hidden" name="icon" value="">
 				<?php
 			}
@@ -151,7 +151,7 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 		</div>
 	</div>
 	<div class="form-field">
-		<label for="file_type"><?php echo esc_html__( 'Choose file type', 'downloadlist' ); ?>:</label>
+		<label for="file_type"><?php echo esc_html__( 'Choose file type', 'download-list-block-with-icons' ); ?>:</label>
 		<select name="file_type" id="file_type">
 			<option value="">&nbsp;</option>
 			<?php
@@ -213,7 +213,7 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 			// output.
 			?>
 			<tr class="form-field">
-				<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'downloadlist' ); ?></label></th>
+				<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label></th>
 				<td>
 					<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1"<?php echo 1 === absint( $default ) ? ' checked="checked"' : ''; ?>>
 				</td>
@@ -222,7 +222,7 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 			if ( $iconset_obj->is_generic() ) {
 				?>
 						<tr class="form-field">
-							<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set font size for icons of this set', 'downloadlist' ); ?></label></th>
+							<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set font size for icons of this set', 'download-list-block-with-icons' ); ?></label></th>
 							<td>
 								<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>">
 							</td>
@@ -231,7 +231,7 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 			} else {
 				?>
 					<tr class="form-field">
-						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'downloadlist' ); ?></label></th>
+						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'download-list-block-with-icons' ); ?></label></th>
 						<td>
 							<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>"> x <input type="number" id="downloadlist-iconset-height" name="height" value="<?php echo absint( $height ); ?>">
 						</td>
@@ -242,7 +242,7 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 			?>
 			<tr class="form-field">
 				<td colspan="2">
-					<p><?php echo esc_html__( 'Iconset could not be loaded.', 'downloadlist' ); ?></p>
+					<p><?php echo esc_html__( 'Iconset could not be loaded.', 'download-list-block-with-icons' ); ?></p>
 				</td>
 			</tr>
 			<?php
@@ -251,11 +251,11 @@ function downloadlist_admin_icon_set_fields( WP_Term|string $term ): void {
 		// output.
 		?>
 		<div class="form-field">
-			<label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'downloadlist' ); ?></label>
+			<label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label>
 			<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1">
 		</div>
 		<div class="form-field">
-			<label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'downloadlist' ); ?></label>
+			<label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'download-list-block-with-icons' ); ?></label>
 			<input type="number" id="downloadlist-iconset-width" name="width" value="24"> x <input type="number" id="downloadlist-iconset-height" name="height" value="24">
 		</div>
 		<?php
@@ -320,7 +320,7 @@ add_action( 'edit_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
  */
 function downloadlist_admin_iconset_columns( array $columns ): array {
 	// add our column.
-	$columns['downloadlist_iconset_default'] = __( 'Default iconset', 'downloadlist' );
+	$columns['downloadlist_iconset_default'] = __( 'Default iconset', 'download-list-block-with-icons' );
 
 	// remove count-row.
 	unset( $columns['posts'] );
@@ -352,9 +352,9 @@ function downloadlist_admin_iconset_column( string $content, string $column_name
 		);
 
 		// define output.
-		$content = '<a href="' . esc_url( $link ) . '" class="dashicons dashicons-no" title="' . esc_attr__( 'Set this as default iconset', 'downloadlist' ) . '">&nbsp;</a>';
+		$content = '<a href="' . esc_url( $link ) . '" class="dashicons dashicons-no" title="' . esc_attr__( 'Set this as default iconset', 'download-list-block-with-icons' ) . '">&nbsp;</a>';
 		if ( get_term_meta( $term_id, 'default', true ) ) {
-			$content = '<span class="dashicons dashicons-yes" title="' . esc_attr__( 'This is the default iconset', 'downloadlist' ) . '"></span>';
+			$content = '<span class="dashicons dashicons-yes" title="' . esc_attr__( 'This is the default iconset', 'download-list-block-with-icons' ) . '"></span>';
 		}
 	}
 	return $content;
@@ -451,13 +451,13 @@ add_action( 'admin_notices', 'downloadlist_admin_notices' );
  * @param WP_Post $post The attachment-object.
  * @return array
  */
-function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( $form_fields, $post ): array {
+function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array $form_fields, WP_Post $post ): array {
 	// get actual custom title.
 	$dl_title = get_post_meta( $post->ID, 'dl_title', true );
 
 	// add field for title.
 	$form_fields['dl_title'] = array(
-		'label' => 'title for downloadlist (optional)',
+		'label' => __( 'title for downloadlist (optional)', 'download-list-block-with-icons'),
 		'input' => 'text',
 		'value' => $dl_title,
 	);
@@ -467,7 +467,7 @@ function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( $form_
 
 	// add field for title.
 	$form_fields['dl_description'] = array(
-		'label' => 'description for downloadlist (optional)',
+		'label' => __( 'description for downloadlist (optional)', 'download-list-block-with-icons' ),
 		'input' => 'textarea',
 		'value' => $dl_description,
 	);
