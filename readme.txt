@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.3.1
+Tested up to: 6.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -170,5 +170,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.2.1 =
 * Compatible with WordPress Coding Standards 3.0
-* Fixed possible error during adding files
+* Prevented WPML from translating our (only internal used) custom post type and taxonomy for icons
+* Compatibility with WordPress 6.4
 * Updated dependencies
+* Fixed possible error during adding files
