@@ -170,8 +170,10 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.2.1 =
 * Compatible with WordPress Coding Standards 3.0
-* Fixed possible error during adding files
+* Prevented WPML from translating our (only internal used) custom post type and taxonomy for icons
+* Compatibility with WordPress 6.4
 * Updated dependencies
+* Fixed possible error during adding files
 
 = 3.2.2 =
 * Changed text domain to plugin slug to match WordPress-Repository requirements
