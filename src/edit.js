@@ -111,7 +111,7 @@ export default function Edit( object ) {
 		// -> case 1: update from version 1.x from this plugin
 		// -> case 2: a file is not available anymore
 		if( objectFiles.length > 0 && JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
-			object.setAttributes({files: objectFiles});
+			object.attributes.files = objectFiles;
 		}
 	}
 
