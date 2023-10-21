@@ -344,67 +344,67 @@ export default function Edit( object ) {
 								allowedTypes={ allowed_file_types }
 								value={ object.attributes.files }
 								render={ ( { open } ) => (
-									<ToolbarButton className="has-text" onClick={ open } icon={plus} text={ __( 'Add files to list', 'downloadlist' ) } size="small"></ToolbarButton>
+									<ToolbarButton className="has-text" onClick={ open } icon={plus} text={ __( 'Add files to list', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
 								) }
 							/>
 						</MediaUploadCheck>
 					}
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
-						label={__('Sort files by title', 'downloadlist')}
+						label={__('Sort files by title', 'download-list-block-with-icons')}
 						onClick={ () => sortFilesByTitle() }
 					/>
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21H3v-2h4v-1H5a2 2 0 0 1-2-2v-1c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2m0-6H5v1h2M5 3h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2m0 6h2V5H5m7 0h10v2H12m0 12v-2h10v2m-10-8h10v2H12Z"/></svg>}
-						label={__('Sort files by filesize', 'downloadlist')}
+						label={__('Sort files by filesize', 'download-list-block-with-icons')}
 						onClick={ () => sortFilesByFileSize() }
 					/>
 				</BlockControls>
 			}
 			{
 				<InspectorControls>
-					<PanelBody title={ __( 'Settings', 'downloadlist' ) }>
+					<PanelBody title={ __( 'Settings', 'download-list-block-with-icons' ) }>
 						<CheckboxControl
-							label={__('Hide icons', 'downloadlist')}
+							label={__('Hide icons', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideIcon }
 							onChange={ value => onChangeHideIcon( value, object ) }
 						/>
 						{false === object.attributes.hideIcon &&
 							<SelectControl
-								label={__('Choose iconset', 'downloadlist')}
+								label={__('Choose iconset', 'download-list-block-with-icons')}
 								options={ iconsets }
 								value={ object.attributes.iconset }
 								onChange={(value) => onChangeIconSet( value, object )}
-								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'downloadlist' ) }</ExternalLink>}
+								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'download-list-block-with-icons' ) }</ExternalLink>}
 							/>
 						}
 						<CheckboxControl
-							label={__('Hide file sizes', 'downloadlist')}
+							label={__('Hide file sizes', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideFileSize }
 							onChange={ value => onChangeHideFileSize( value, object ) }
 						/>
 						<CheckboxControl
-							label={__('Hide descriptions', 'downloadlist')}
+							label={__('Hide descriptions', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideDescription }
 							onChange={ value => onChangeHideDescription( value, object ) }
 						/>
 						<CheckboxControl
-							label={__('Show download-button', 'downloadlist')}
+							label={__('Show download-button', 'download-list-block-with-icons')}
 							checked={ object.attributes.showDownloadButton }
 							onChange={ value => onChangeShowDownloadButton( value, object ) }
 						/>
 						<SelectControl
-							label={__('Choose link target', 'downloadlist')}
+							label={__('Choose link target', 'download-list-block-with-icons')}
 							value={ object.attributes.linkTarget }
 							options={ [
-								{ label: __('direct link', 'downloadlist'), value: 'direct' },
-								{ label: __('attachment page', 'downloadlist'), value: 'attachmentpage' },
+								{ label: __('Direct link', 'download-list-block-with-icons'), value: 'direct' },
+								{ label: __('Attachment page', 'download-list-block-with-icons'), value: 'attachmentpage' },
 							] }
 							onChange={ value => onChangeLinkTarget( value, object ) }
 						/>
 						{'direct' === object.attributes.linkTarget &&
 							<CheckboxControl
-								label={__('Do not force download', 'downloadlist')}
+								label={__('Do not force download', 'download-list-block-with-icons')}
 								checked={ object.attributes.doNotForceDownload }
 								onChange={ value => onChangeDoNotForceDownload( value, object ) }
 							/>
@@ -434,7 +434,7 @@ export default function Edit( object ) {
 							allowedTypes={ allowed_file_types }
 							value={ object.attributes.files }
 							render={ ( { open } ) => (
-								<Button variant="primary" className="has-text" onClick={ open } icon={plus} text={ __( 'Add your first file', 'downloadlist' ) } size="small"></Button>
+								<Button variant="primary" className="has-text" onClick={ open } icon={plus} text={ __( 'Add your first file', 'download-list-block-with-icons' ) } size="small"></Button>
 							) }
 						/>
 					</MediaUploadCheck>

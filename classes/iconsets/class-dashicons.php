@@ -50,7 +50,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->label = __( 'Dashicons', 'downloadlist' );
+		$this->label = __( 'Dashicons', 'download-list-block-with-icons' );
 	}
 
 	/**

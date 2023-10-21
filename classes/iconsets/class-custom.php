@@ -42,7 +42,7 @@ class Custom extends Iconset_Base implements Iconset {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->label = __( 'My custom iconset', 'downloadlist' );
+		$this->label = __( 'My custom iconset', 'download-list-block-with-icons' );
 	}
 
 	/**

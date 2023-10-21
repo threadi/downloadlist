@@ -6,7 +6,7 @@ Tested up to: 6.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 
 == Description ==
 
@@ -174,3 +174,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Compatibility with WordPress 6.4
 * Updated dependencies
 * Fixed possible error during adding files
+
+= 3.2.2 =
+* Changed text domain to plugin slug to match WordPress-Repository requirements
+* Removed language-files from plugin (except the json-files for Block Editor)
+* Added missing translations

@@ -2,12 +2,12 @@
 	"$schema": "https://json.schemastore.org/block.json",
 	"apiVersion": 2,
 	"name": "downloadlist/list",
-	"version": "3.0.0",
+	"version": "3.2.2",
 	"title": "Download List Block with Icons",
 	"category": "widgets",
 	"icon": "list-view",
 	"description": "Provides a Gutenberg block for capturing a download list with file type specific icons.",
-	"keywords": ["downloadlist", "download", "list"],
+	"keywords": [ "downloadlist", "download" ],
 	"supports": {
 		"anchor": false,
 		"color": {

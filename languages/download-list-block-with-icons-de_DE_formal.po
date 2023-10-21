@@ -1,9 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Download List\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/"
-"downloadlist\n"
-"POT-Creation-Date: 2023-07-08T16:21:21+02:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/downloadlist\n"
+"POT-Creation-Date: 2023-10-21T15:06:23+02:00\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Zwirner <info@thomaszwirner.de>\n"
 "Language-Team: Thomas Zwirner\n"
@@ -34,6 +33,10 @@ msgstr "Thomas Zwirner"
 msgid "https://www.thomaszwirner.de"
 msgstr "https://www.thomaszwirner.de"
 
+#: classes/class-transient.php:163
+msgid "Dismiss this notice."
+msgstr "Diesen Hinweis ausblenden."
+
 #: classes/iconsets/class-bootstrap.php:46
 msgid "Bootstrap"
 msgstr "Bootstrap"
@@ -50,150 +53,162 @@ msgstr "Dashicons"
 msgid "FontAweSome"
 msgstr "FontAweSome"
 
-#: download-list-block-with-icons.php:232
-#: download-list-block-with-icons.php:234
+#: download-list-block-with-icons.php:252
+#: download-list-block-with-icons.php:254
 msgid "Download List Icons"
 msgstr "Download Liste Icons"
 
-#: download-list-block-with-icons.php:233
+#: download-list-block-with-icons.php:253
 msgid "Download List Icon"
 msgstr "Download Liste Icons"
 
-#: download-list-block-with-icons.php:235
+#: download-list-block-with-icons.php:255
 msgid "Parent Download List  Icon"
 msgstr "Eltern Download Liste Icons"
 
-#: download-list-block-with-icons.php:236
+#: download-list-block-with-icons.php:256
 msgid "All Icons"
 msgstr "Alle Icons"
 
-#: download-list-block-with-icons.php:237
-#: download-list-block-with-icons.php:238
+#: download-list-block-with-icons.php:257
+#: download-list-block-with-icons.php:258
 msgid "Add new Icon"
 msgstr "Neues Icon hinzufügen"
 
-#: download-list-block-with-icons.php:239
+#: download-list-block-with-icons.php:259
 msgid "Edit Icon"
 msgstr "Icon bearbeiten"
 
-#: download-list-block-with-icons.php:240
+#: download-list-block-with-icons.php:260
 msgid "View Download List Icon"
 msgstr "Zeige Download Liste Icon"
 
-#: download-list-block-with-icons.php:241
+#: download-list-block-with-icons.php:261
 msgid "View Download List Icons"
 msgstr "Zeige Download Liste Icons"
 
-#: download-list-block-with-icons.php:242
+#: download-list-block-with-icons.php:262
 msgid "Search Download List Icon"
 msgstr "Suche Download Liste Icons"
 
-#: download-list-block-with-icons.php:243
+#: download-list-block-with-icons.php:263
 msgid "Not Found"
 msgstr "Nicht gefunden"
 
-#: download-list-block-with-icons.php:244
+#: download-list-block-with-icons.php:264
 msgid "Not found in Trash"
 msgstr "Nicht gefunden im Papierkorb"
 
-#: download-list-block-with-icons.php:289
+#: download-list-block-with-icons.php:310
 msgctxt "taxonomy general name"
 msgid "Iconsets"
 msgstr "Iconsets"
 
-#: download-list-block-with-icons.php:290
+#: download-list-block-with-icons.php:311
 msgctxt "taxonomy singular name"
 msgid "Iconset"
 msgstr "Iconset"
 
-#: download-list-block-with-icons.php:291
+#: download-list-block-with-icons.php:312
 msgid "Search iconset"
 msgstr "Suche Iconset"
 
-#: download-list-block-with-icons.php:292
+#: download-list-block-with-icons.php:313
 msgid "Edit iconset"
 msgstr "Iconset bearbeiten"
 
-#: download-list-block-with-icons.php:293
+#: download-list-block-with-icons.php:314
 msgid "Update iconset"
 msgstr "Aktualisiere Iconset"
 
-#: download-list-block-with-icons.php:294
+#: download-list-block-with-icons.php:315
 msgid "Iconsets"
 msgstr "Iconsets"
 
-#: download-list-block-with-icons.php:295
-#: download-list-block-with-icons.php:296
+#: download-list-block-with-icons.php:316
+#: download-list-block-with-icons.php:317
 msgid "Add new Iconset"
-msgstr "neues Iconset hinzufügen"
+msgstr "Neues Iconset hinzufügen"
 
-#: download-list-block-with-icons.php:297
+#: download-list-block-with-icons.php:318
 msgid "Go to iconsets"
 msgstr "Gehe zu Iconsets"
 
-#: download-list-block-with-icons.php:566
+#: download-list-block-with-icons.php:572 block/index.js:1
+msgid "Download"
+msgstr "Download"
+
+#: download-list-block-with-icons.php:603
 msgid "Iconset added."
 msgstr "Iconset hinzugefügt."
 
-#: download-list-block-with-icons.php:567
+#: download-list-block-with-icons.php:604
 msgid "Iconset updated."
 msgstr "Iconset aktualisiert."
 
-#: download-list-block-with-icons.php:568
+#: download-list-block-with-icons.php:605
 msgid "Iconset deleted."
 msgstr "Iconset gelöscht."
 
-#: download-list-block-with-icons.php:582
+#: download-list-block-with-icons.php:619
 msgid "Icon updated."
 msgstr "Icon aktualisiert."
 
-#: download-list-block-with-icons.php:583
+#: download-list-block-with-icons.php:620
 msgid "Icon added."
 msgstr "Icon hinzugefügt."
 
-#: inc/admin.php:137 block/index.js:1
+#: inc/admin.php:110 block/index.js:1
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: inc/admin.php:160
+#: inc/admin.php:133
 msgid "Choose icon"
 msgstr "Wähle ein Icon"
 
-#: inc/admin.php:167 inc/admin.php:173
+#: inc/admin.php:140 inc/admin.php:146
 msgid "Remove image"
 msgstr "Entferne die Grafik"
 
-#: inc/admin.php:172
+#: inc/admin.php:145
 msgid "Upload or choose image"
 msgstr "Hochladen oder wählen einer Grafik"
 
-#: inc/admin.php:181
+#: inc/admin.php:154
 msgid "Choose file type"
 msgstr "Wähle den Dateityp"
 
-#: inc/admin.php:243 inc/admin.php:283 inc/admin.php:379
+#: inc/admin.php:216 inc/admin.php:254 inc/admin.php:355
 msgid "Set this as default iconset"
 msgstr "Setze als Standard-Iconset"
 
-#: inc/admin.php:252
+#: inc/admin.php:225
 msgid "Set font size for icons of this set"
 msgstr "Setze Schriftgröße für Icons in diesem Set"
 
-#: inc/admin.php:262 inc/admin.php:287
+#: inc/admin.php:234 inc/admin.php:258
 msgid "Set width and height for icons of this set"
-msgstr "Setze Breite und Höhe für Icons in diesem Set."
+msgstr "Setze Breite und Höhe für Icons in diesem Set"
 
-#: inc/admin.php:274
+#: inc/admin.php:245
 msgid "Iconset could not be loaded."
 msgstr "Iconset konnte nicht geladen werden."
 
-#: inc/admin.php:347
+#: inc/admin.php:323
 msgid "Default iconset"
 msgstr "Standard Iconset"
 
-#: inc/admin.php:381
+#: inc/admin.php:357
 msgid "This is the default iconset"
-msgstr "Das ist das Standard-Iconset."
+msgstr "Das ist das Standard-Iconset"
+
+#: inc/admin.php:460
+msgid "title for downloadlist (optional)"
+msgstr "Titel für Downloadlisten (optional)"
+
+#: inc/admin.php:470
+msgid "description for downloadlist (optional)"
+msgstr "Beschreibung für Downloadlisten (optional)"
 
 #: block/index.js:1
 msgid "Loading .."
@@ -252,49 +267,52 @@ msgid "Hide descriptions"
 msgstr "Beschreibungen verstecken"
 
 #: block/index.js:1
+msgid "Show download-button"
+msgstr "Herunterladen-Button anzeigen"
+
+#: block/index.js:1
 msgid "Choose link target"
 msgstr "Wähle das Linkziel"
 
 #: block/index.js:1
-msgid "direct link"
+msgid "Direct link"
 msgstr "Direktlink"
 
 #: block/index.js:1
-msgid "attachment page"
+msgid "Attachment page"
 msgstr "Anhangseite"
+
+#: block/index.js:1
+msgid "Do not force download"
+msgstr "Herunterladen nicht erzwingen"
 
 #: block/index.js:1
 msgid "Add your first file"
 msgstr "Ergänze deine erste Datei"
 
-#: block.json
-msgctxt "block title"
-msgid "Download List Block with Icons"
-msgstr "Download Liste mit Icons"
+#~ msgctxt "block title"
+#~ msgid "Download List Block with Icons"
+#~ msgstr "Download Liste mit Icons"
 
-#: block.json
-msgctxt "block description"
-msgid ""
-"Provides a Gutenberg block for capturing a download list with file type "
-"specific icons."
-msgstr ""
-"Stellt einen Gutenberg-Block für die Erfassung einer Download-Liste mit "
-"Dateityp-spezifischen Icons bereit."
+#~ msgctxt "block description"
+#~ msgid ""
+#~ "Provides a Gutenberg block for capturing a download list with file type "
+#~ "specific icons."
+#~ msgstr ""
+#~ "Stellt einen Gutenberg-Block für die Erfassung einer Download-Liste mit "
+#~ "Dateityp-spezifischen Icons bereit."
 
-#: block.json
-msgctxt "block keyword"
-msgid "downloadlist"
-msgstr "downloadlist"
+#~ msgctxt "block keyword"
+#~ msgid "downloadlist"
+#~ msgstr "downloadlist"
 
-#: block.json
-msgctxt "block keyword"
-msgid "download"
-msgstr "runterladen"
+#~ msgctxt "block keyword"
+#~ msgid "download"
+#~ msgstr "runterladen"
 
-#: block.json
-msgctxt "block keyword"
-msgid "list"
-msgstr "Liste"
+#~ msgctxt "block keyword"
+#~ msgid "list"
+#~ msgstr "Liste"
 
 #~ msgid "Download List Block with Icons for Gutenberg"
 #~ msgstr "Download Liste Block mit Icons für Gutenberg"
