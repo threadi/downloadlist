@@ -170,3 +170,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.2.1 =
 * Compatible with WordPress Coding Standards 3.0
+* Updated dependencies
