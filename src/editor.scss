@@ -14,6 +14,9 @@
 	  opacity: 0.5;
 	  transition: opacity 0.8s ease-in-out;
   }
+	a {
+		word-break: break-all;
+	}
 }
 .wp-block-downloadlist-list.is-selected .wp-block-downloadlist-list-draggable > button, .wp-block-downloadlist-list:hover .wp-block-downloadlist-list-draggable > button { opacity: 1 }
 .wp-block-downloadlist-list-draggable:before {

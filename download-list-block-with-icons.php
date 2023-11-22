@@ -106,12 +106,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				)
 			);
 			wp_set_script_translations( 'downloadlist-list-editor-script', 'download-list-block-with-icons', plugin_dir_path( DL_PLUGIN ) . '/languages/' );
-			wp_enqueue_style(
-				'downloadlist-list-css',
-				plugins_url( '/block/style-index.css', DL_PLUGIN ),
-				array(),
-				filemtime( plugin_dir_path( DL_PLUGIN ) . '/admin/js.js' ),
-			);
+
 			// add php-vars to our js-script.
 			wp_localize_script(
 				'downloadlist-list-editor-script',
@@ -286,7 +281,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'rewrite'             => array(
 				'slug' => 'downloadlist_icons',
 			),
-			'menu_icon'           => plugin_dir_url( DL_PLUGIN ) . '/gfx/dl_icon.png',
+			'menu_icon'           => trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'gfx/dl_icon.png',
 		);
 		register_post_type( 'dl_icons', $args );
 

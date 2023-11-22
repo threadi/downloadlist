@@ -21,17 +21,17 @@ function downloadlist_add_styles_and_js_admin(): void {
 	// admin-specific styles.
 	wp_enqueue_style(
 		'downloadlist-admin',
-		plugin_dir_url( DL_PLUGIN ) . '/admin/styles.css',
+		trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'admin/styles.css',
 		array(),
-		filemtime( plugin_dir_path( DL_PLUGIN ) . '/admin/styles.css' ),
+		filemtime( trailingslashit(plugin_dir_path( DL_PLUGIN )) . 'admin/styles.css' ),
 	);
 
 	// backend-JS.
 	wp_enqueue_script(
 		'downloadlist-admin',
-		plugins_url( '/admin/js.js', DL_PLUGIN ),
+		trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'admin/js.js',
 		array( 'jquery' ),
-		filemtime( plugin_dir_path( DL_PLUGIN ) . '/admin/js.js' ),
+		filemtime( trailingslashit(plugin_dir_path( DL_PLUGIN )) . '/admin/js.js' ),
 		true
 	);
 
