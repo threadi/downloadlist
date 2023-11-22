@@ -11,6 +11,9 @@
   li {
 	list-style: none;
 	padding-left: 32px;
+	a {
+		word-break: break-all;
+	}
   }
   li:before {
 	display: inline-block;
