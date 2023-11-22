@@ -182,3 +182,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.2.3 =
 * Check if attachment page is enabled for WordPress 6.4 or newer before generating link to it
+* Updated dependencies
