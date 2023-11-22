@@ -125,12 +125,16 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return void
 	 */
 	function downloadlist_enqueue_styles(): void {
+		if( false === file_exists(Helper::get_style_path()) ) {
+			Helper::generate_css();
+		}
+
 		// get global styles.
 		wp_enqueue_style(
 			'downloadlist-iconsets',
-			helper::get_style_url(),
+			Helper::get_style_url(),
 			array(),
-			filemtime( helper::get_style_path() ),
+			filemtime( Helper::get_style_path() ),
 		);
 
 		// get iconset-styles.

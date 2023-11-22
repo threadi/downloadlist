@@ -189,6 +189,11 @@ class Helper {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			WP_Filesystem();
 
+			// create directory if it does not exist atm.
+			if( false === $wp_filesystem->exists( dirname($style_path) ) ) {
+				$wp_filesystem->mkdir( dirname($style_path) );
+			}
+
 			// save the given content to the path.
 			$wp_filesystem->put_contents( $style_path, $styles );
 		} elseif ( file_exists( $style_path ) ) {
