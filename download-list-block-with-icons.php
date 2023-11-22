@@ -551,7 +551,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get download URL.
 				$url                = wp_get_attachment_url( $file_id );
 				$download_attribute = ' download';
-				if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] ) {
+				if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint(get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
 					$url                = get_permalink( $file_id );
 					$download_attribute = '';
 				}
