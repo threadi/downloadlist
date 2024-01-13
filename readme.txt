@@ -3,7 +3,7 @@ Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
 Tested up to: 6.4.2
-Requires PHP: 7.4
+Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 3.3.0
@@ -190,6 +190,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.3.0 =
 * Added possibility to convert File-, Audio- and Video-Block zu Downloadlist-Block
+* Optimized sort-button: now sorting on every click in the opposite direction
+* Disable sort-buttons if list contains less or equal than 1 file
 * Releases now MUST fulfill all WordPress Coding Standard rules before creating release files
 * Removed AJAX requests for preview as list to request is empty for preview
 * Updated dependencies

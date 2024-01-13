@@ -11,6 +11,9 @@
             "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra"
         ]
     },
+	"require": {
+		"php": "^8.0"
+	},
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true

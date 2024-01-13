@@ -307,17 +307,62 @@ export default function Edit( object ) {
 	 * Sort files in list by their titles (string compare).
 	 */
 	function sortFilesByTitle() {
-		files.sort((a, b) => a.title.localeCompare(b.title))
-		object.setAttributes({files: files, date: getActualDate()})
+		if( 'descending' === getSortDirectionByTitle(files) ) {
+			files.sort((a, b) => a.title.localeCompare(b.title))
+		}
+		else {
+			files.sort((a, b) => b.title.localeCompare(a.title))
+		}
+		object.setAttributes({ files: files, date: getActualDate() })
 	}
 
 	/**
-	 * Sort files in list by their filesizes (int-compare).
+	 * Check alphabetical sorting of given file array.
+	 *
+	 * @param array file_array
+	 * @returns {string}
+	 */
+	function getSortDirectionByTitle(file_array) {
+		const c = [];
+		for (let i = 1; i < file_array.length; i++) {
+			c.push(file_array[i - 1].title.localeCompare(file_array[i].title));
+		}
+
+		if (c.every((n) => n <= 0)) return 'ascending';
+		if (c.every((n) => n >= 0)) return 'descending';
+
+		return 'unsorted';
+	}
+
+	/**
+	 * Sort files in list by their sizes (int-compare).
 	 */
 	function sortFilesByFileSize() {
-		// noinspection JSUnresolvedReference
-		files.sort((a, b) => a.filesizeInBytes - b.filesizeInBytes)
-		object.setAttributes({files: files, date: getActualDate()})
+		if( 'descending' === getSortDirectionBySize(files) ) {
+			files.sort((a, b) => a.filesizeInBytes - b.filesizeInBytes)
+		}
+		else {
+			files.sort((a, b) => b.filesizeInBytes - a.filesizeInBytes)
+		}
+		object.setAttributes({ files: files, date: getActualDate() })
+	}
+
+	/**
+	 * Check alphabetical sorting of given file array.
+	 *
+	 * @param array file_array
+	 * @returns {string}
+	 */
+	function getSortDirectionBySize(file_array) {
+		const c = [];
+		for (let i = 1; i < file_array.length; i++) {
+			c.push(file_array[i - 1].filesizeInBytes - file_array[i].filesizeInBytes);
+		}
+
+		if (c.every((n) => n <= 0)) return 'ascending';
+		if (c.every((n) => n >= 0)) return 'descending';
+
+		return 'unsorted';
 	}
 
 	/**
@@ -370,11 +415,13 @@ export default function Edit( object ) {
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
 						label={__('Sort files by title', 'download-list-block-with-icons')}
+						disabled={ object.attributes.files.length <= 1 }
 						onClick={ () => sortFilesByTitle() }
 					/>
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21H3v-2h4v-1H5a2 2 0 0 1-2-2v-1c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2m0-6H5v1h2M5 3h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2m0 6h2V5H5m7 0h10v2H12m0 12v-2h10v2m-10-8h10v2H12Z"/></svg>}
 						label={__('Sort files by filesize', 'download-list-block-with-icons')}
+						disabled={ object.attributes.files.length <= 1 }
 						onClick={ () => sortFilesByFileSize() }
 					/>
 				</BlockControls>
