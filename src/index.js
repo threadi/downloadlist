@@ -10,7 +10,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-import { registerBlockType } from '@wordpress/blocks';
+import { registerBlockType, createBlock } from '@wordpress/blocks';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -35,6 +35,23 @@ import save from "./save";
 registerBlockType( 'downloadlist/list', {
 	title: __( 'Download List with Icons', 'download-list-block-with-icons' ),
 	description: __('Provides a Gutenberg block for capturing a download list with file type specific icons.', 'download-list-block-with-icons'),
+
+	transforms: {
+		from: [
+			{
+				type: 'block',
+				blocks: [ 'core/file', 'core/audio', 'core/video' ],
+				transform: ( { id } ) => {
+					return createBlock( 'downloadlist/list', {
+						'files': [{
+							'id': id
+						}],
+						'preview': true
+					} );
+				},
+			},
+		],
+	},
 
 	/**
 	 * @see ./edit.js

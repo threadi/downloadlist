@@ -73,103 +73,121 @@ export default function Edit( object ) {
 		fileIds.push(file.id);
 	})}
 
-	// let js know our custom endpoint
-	useEffect(() => {
-		dispatch( 'core' ).addEntities( [
-		{
-			name: 'files',           // route name
-			kind: 'downloadlist/v1', // namespace
-			baseURL: '/downloadlist/v1/files' // API path without /wp-json
-		}
-		] )
-	});
-
-	// set actual date if it is not present
-	if( !object.attributes.date ) {
-		object.attributes.date = getActualDate()
+	/**
+	 * Revert preview-setting of block is selected.
+	 */
+	if( object.isSelected && object.attributes.preview ) {
+		object.attributes.preview = false;
 	}
 
-	// send request to our custom endpoint to get the data of the files
-	let attachments = useSelect( ( select ) => {
-		return select('core').getEntityRecords('downloadlist/v1', 'files', {
-			post_id: fileIds,
-			date: object.attributes.date,
-			per_page: fileIds.length
-		}, [] ) || null;
-	});
-	if( attachments ) {
-		// loop through the results
-		files = [];
-		let objectFiles = [];
-		attachments.map((newFile) => {
-			// collect the file-data for @SortableItem
-			files.push(newFile)
-			// and save the actual list in the block-settings
-			objectFiles.push({ id: newFile.id })
-		});
-		// save a clean file list only with the id-property per file
-		// -> case 1: update from version 1.x from this plugin
-		// -> case 2: a file is not available anymore
-		if( objectFiles.length > 0 && JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files) ) {
-			object.attributes.files = objectFiles;
-		}
-	}
-
-	// useSelect to retrieve all post types
-	const iconsets_array = useSelect( ( select ) => {
-		return select('core').getEntityRecords('taxonomy', 'dl_icon_set', { per_page: -1, hide_empty: true } )
-	}, []) || [];
-
-	// Options in SelectControl expected format [{label: ..., value: ...}]
-	let iconsets = iconsets_array.map(
-		// Format the options for display in the <SelectControl/>
-		(icon) => ({
-			label: icon.name,
-			value: icon.slug
-		})
-	);
-
-	// if iconset is set which does not return, set the default iconset.
-	if( 0 < object.attributes.iconset.length && iconsets_array.length > 0 ) {
-		let found = false;
-		for( let i = 0; i < iconsets_array.length; i++ ) {
-			if( object.attributes.iconset === iconsets_array[i].slug ) {
-				found = true;
-			}
-		}
-		if( false === found ) {
-			object.attributes.iconset = '';
-		}
-	}
-
-	// if no iconset is set, use the default one returned.
-	if( 0 === object.attributes.iconset.length && iconsets_array.length > 0 ) {
-		for( let i = 0; i < iconsets_array.length; i++ ) {
-			if( 1 === iconsets_array[i].meta.default ) {
-				object.attributes.iconset = iconsets_array[i].slug;
-			}
-		}
-	}
-
-	// retrieve all possible file types
+	/**
+	 * Run AJAX-request not in preview-mode.
+	 *
+	 * @type {*[]}
+	 */
 	let allowed_file_types = [];
+	let iconsets = [];
 	if( !object.attributes.preview ) {
+		// let js know our custom endpoint
 		useEffect(() => {
 			dispatch('core').addEntities([
 				{
-					name: 'filetypes', // route name
+					name: 'files',           // route name
 					kind: 'downloadlist/v1', // namespace
-					baseURL: '/downloadlist/v1/filetypes' // API path without /wp-json
+					baseURL: '/downloadlist/v1/files' // API path without /wp-json
 				}
-			]);
-		}, []);
-		let allowed_file_types_server_result = useSelect( (select) => {
-			return select('core').getEntityRecords('downloadlist/v1', 'filetypes', { per_page: -1, iconset: object.attributes.iconset } );
-		}, [object.attributes.iconset]) || [];
+			])
+		});
 
-		allowed_file_types = allowed_file_types_server_result.map(
-			(filetype) => filetype.value
+		// set actual date if it is not present
+		if (!object.attributes.date) {
+			object.attributes.date = getActualDate()
+		}
+
+		// send request to our custom endpoint to get the data of the files
+		let attachments = useSelect((select) => {
+			return select('core').getEntityRecords('downloadlist/v1', 'files', {
+				post_id: fileIds,
+				date: object.attributes.date,
+				per_page: fileIds.length
+			}, []) || null;
+		});
+		if (attachments) {
+			// loop through the results
+			files = [];
+			let objectFiles = [];
+			attachments.map((newFile) => {
+				// collect the file-data for @SortableItem
+				files.push(newFile)
+				// and save the actual list in the block-settings
+				objectFiles.push({id: newFile.id})
+			});
+			// save a clean file list only with the id-property per file
+			// -> case 1: update from version 1.x from this plugin
+			// -> case 2: a file is not available anymore
+			if (objectFiles.length > 0 && JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files)) {
+				object.attributes.files = objectFiles;
+			}
+		}
+
+		// useSelect to retrieve all post types
+		const iconsets_array = useSelect((select) => {
+			return select('core').getEntityRecords('taxonomy', 'dl_icon_set', {per_page: -1, hide_empty: true})
+		}, []) || [];
+
+		// Options in SelectControl expected format [{label: ..., value: ...}]
+		iconsets = iconsets_array.map(
+			// Format the options for display in the <SelectControl/>
+			(icon) => ({
+				label: icon.name,
+				value: icon.slug
+			})
 		);
+
+		// if iconset is set which does not return, set the default iconset.
+		if (0 < object.attributes.iconset.length && iconsets_array.length > 0) {
+			let found = false;
+			for (let i = 0; i < iconsets_array.length; i++) {
+				if (object.attributes.iconset === iconsets_array[i].slug) {
+					found = true;
+				}
+			}
+			if (false === found) {
+				object.attributes.iconset = '';
+			}
+		}
+
+		// if no iconset is set, use the default one returned.
+		if (0 === object.attributes.iconset.length && iconsets_array.length > 0) {
+			for (let i = 0; i < iconsets_array.length; i++) {
+				if (1 === iconsets_array[i].meta.default) {
+					object.attributes.iconset = iconsets_array[i].slug;
+				}
+			}
+		}
+
+		// retrieve all possible file types
+		if (!object.attributes.preview) {
+			useEffect(() => {
+				dispatch('core').addEntities([
+					{
+						name: 'filetypes', // route name
+						kind: 'downloadlist/v1', // namespace
+						baseURL: '/downloadlist/v1/filetypes' // API path without /wp-json
+					}
+				]);
+			}, []);
+			let allowed_file_types_server_result = useSelect((select) => {
+				return select('core').getEntityRecords('downloadlist/v1', 'filetypes', {
+					per_page: -1,
+					iconset: object.attributes.iconset
+				});
+			}, [object.attributes.iconset]) || [];
+
+			allowed_file_types = allowed_file_types_server_result.map(
+				(filetype) => filetype.value
+			);
+		}
 	}
 
 	/**
