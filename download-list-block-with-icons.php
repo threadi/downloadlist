@@ -125,12 +125,16 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return void
 	 */
 	function downloadlist_enqueue_styles(): void {
+		if ( false === file_exists( Helper::get_style_path() ) ) {
+			Helper::generate_css();
+		}
+
 		// get global styles.
 		wp_enqueue_style(
 			'downloadlist-iconsets',
-			helper::get_style_url(),
+			Helper::get_style_url(),
 			array(),
-			filemtime( helper::get_style_path() ),
+			filemtime( Helper::get_style_path() ),
 		);
 
 		// get iconset-styles.
@@ -281,7 +285,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'rewrite'             => array(
 				'slug' => 'downloadlist_icons',
 			),
-			'menu_icon'           => trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'gfx/dl_icon.png',
+			'menu_icon'           => trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'gfx/dl_icon.png',
 		);
 		register_post_type( 'dl_icons', $args );
 
@@ -546,7 +550,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get download URL.
 				$url                = wp_get_attachment_url( $file_id );
 				$download_attribute = ' download';
-				if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint(get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
+				if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint( get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
 					$url                = get_permalink( $file_id );
 					$download_attribute = '';
 				}
@@ -627,9 +631,9 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 */
 	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
 		/* translators: $1%d: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%1%d icon moved to the Trash.', '%d icons moved to the Trash.', absint($bulk_counts['trashed']) );
+		$messages['dl_icons']['trashed'] = _n( '%1%d icon moved to the Trash.', '%d icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
 		/* translators: $1%s: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%1%d icon restored from the Trash.', '%d icon restored from the Trash.', absint($bulk_counts['untrashed']) );
+		$messages['dl_icons']['untrashed'] = _n( '%1%d icon restored from the Trash.', '%d icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
 
 		// return resulting list.
 		return $messages;

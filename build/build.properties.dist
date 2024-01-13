@@ -7,6 +7,9 @@ plugin.version=
 # set path to npm-binary
 npm.path=
 
+# set path to composer-binary
+composer.path=
+
 # set path to svn-binary
 svn.path=
 

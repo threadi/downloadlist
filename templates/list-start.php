@@ -6,4 +6,4 @@
  */
 
 ?>
-<div <?php echo $wrapper_attributes; ?>><ul class="downloadlist-list wp-block-downloadlist-list <?php echo esc_attr($iconset); ?>">
+<div <?php echo wp_kses_data( $wrapper_attributes ); ?>><ul class="downloadlist-list wp-block-downloadlist-list <?php echo esc_attr( $iconset ); ?>">
