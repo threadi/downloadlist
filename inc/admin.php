@@ -21,17 +21,17 @@ function downloadlist_add_styles_and_js_admin(): void {
 	// admin-specific styles.
 	wp_enqueue_style(
 		'downloadlist-admin',
-		trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'admin/styles.css',
+		trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'admin/styles.css',
 		array(),
-		filemtime( trailingslashit(plugin_dir_path( DL_PLUGIN )) . 'admin/styles.css' ),
+		filemtime( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . 'admin/styles.css' ),
 	);
 
 	// backend-JS.
 	wp_enqueue_script(
 		'downloadlist-admin',
-		trailingslashit(plugin_dir_url( DL_PLUGIN )) . 'admin/js.js',
+		trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'admin/js.js',
 		array( 'jquery' ),
-		filemtime( trailingslashit(plugin_dir_path( DL_PLUGIN )) . '/admin/js.js' ),
+		filemtime( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . '/admin/js.js' ),
 		true
 	);
 
@@ -457,7 +457,7 @@ function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array 
 
 	// add field for title.
 	$form_fields['dl_title'] = array(
-		'label' => __( 'title for downloadlist (optional)', 'download-list-block-with-icons'),
+		'label' => __( 'title for downloadlist (optional)', 'download-list-block-with-icons' ),
 		'input' => 'text',
 		'value' => $dl_title,
 	);

@@ -75,8 +75,8 @@ Hint: will be called by ant-command mentioned above.
 
 ### Run
 
-`vendor/bin/phpcs --standard=WordPress file`
+`vendor/bin/phpcs --standard=ruleset.xml file`
 
 ### Repair
 
-`vendor/bin/phpcbf --standard=WordPress file`
+`vendor/bin/phpcbf --standard=ruleset.xml file`

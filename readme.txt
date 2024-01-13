@@ -190,5 +190,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.3.0 =
 * Added possibility to convert File-, Audio- and Video-Block zu Downloadlist-Block
+* Releases now MUST fulfill all WordPress Coding Standard rules before creating release files
 * Removed AJAX requests for preview as list to request is empty for preview
 * Updated dependencies
