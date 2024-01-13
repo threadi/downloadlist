@@ -93,7 +93,6 @@
 			<zipfileset dir="${src.dir}/css" prefix="${plugin.slug}/css" />
 			<zipfileset dir="${src.dir}/gfx" prefix="${plugin.slug}/gfx" />
 			<zipfileset dir="${src.dir}/inc" prefix="${plugin.slug}/inc" />
-			<zipfileset dir="${src.dir}/languages" includes="*.json" prefix="${plugin.slug}/languages" />
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
 			<zipfileset dir="${src.dir}" includes="readme.txt,block.json" prefix="${plugin.slug}" />
 			<zipfileset dir="${src.dir}" includes="${plugin.slug}-release.php" fullpath="${plugin.slug}/${plugin.slug}.php" />

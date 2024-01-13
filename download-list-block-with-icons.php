@@ -105,7 +105,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					),
 				)
 			);
-			wp_set_script_translations( 'downloadlist-list-editor-script', 'download-list-block-with-icons', plugin_dir_path( DL_PLUGIN ) . '/languages/' );
 
 			// add php-vars to our js-script.
 			wp_localize_script(

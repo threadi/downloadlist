@@ -194,4 +194,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Disable sort-buttons if list contains less or equal than 1 file
 * Releases now MUST fulfill all WordPress Coding Standard rules before creating release files
 * Removed AJAX requests for preview as list to request is empty for preview
+* Removed all language files from plugin directory
 * Updated dependencies
