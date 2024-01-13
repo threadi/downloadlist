@@ -189,7 +189,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Better check for uploads-directory existence for compatibility with playground-preview
 
 = 3.3.0 =
-* Added possibility to convert File-, Audio- and Video-Block zu Downloadlist-Block
+* Added possibility to convert File-, Audio- and Video-Block to Downloadlist-Block
 * Optimized sort-button: now sorting on every click in the opposite direction
 * Disable sort-buttons if list contains less or equal than 1 file
 * Releases now MUST fulfill all WordPress Coding Standard rules before creating release files
