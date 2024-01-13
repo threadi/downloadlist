@@ -196,3 +196,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Removed AJAX requests for preview as list to request is empty for preview
 * Removed all language files from plugin directory
 * Updated dependencies
+
+= 3.3.1 =
+* Fixed error in creating new Downloadlist-Block
+* Fixed typos in descriptions
