@@ -114,6 +114,15 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
 				)
 			);
+
+			// embed json-translations the wp-repository creates.
+			if ( function_exists( 'wp_set_script_translations' ) ) {
+				wp_set_script_translations(
+					'downloadlist-list-editor-script',
+					'download-list-block-with-icons',
+					plugin_dir_path( DL_PLUGIN ) . '/languages/'
+				);
+			}
 		}
 	}
 	add_action( 'init', 'downloadlist_init' );
