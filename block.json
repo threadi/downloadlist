@@ -25,7 +25,7 @@
 		},
 		"__experimentalBorder": true
 	},
-	"textdomain": "downloadlist",
+	"textdomain": "download-list-block-with-icons",
 	"editorScript": "file:block/index.js",
 	"editorStyle": "file:block/index.css",
 	"style": "file:block/style-index.css",
