@@ -180,7 +180,6 @@ class Dashicons extends Iconset_Base implements Iconset {
 		 *
 		 * @param array $dashicons List of the icons.
 		 * @since 3.0.0 Available since 3.0.0
-		 *
 		 */
 		return apply_filters( 'downloadlist_dashicons_icons', $dashicons );
 	}
@@ -241,10 +240,18 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	public function get_style_files(): array {
-		return array(
+		$files = array(
 			array(
 				'handle' => 'dashicons',
 			),
 		);
+
+		/**
+		 * Filter the files used for dashicons.
+		 *
+		 * @param array $files List of the files.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		return apply_filters( 'downloadlist_dashicons_files', $files );
 	}
 }

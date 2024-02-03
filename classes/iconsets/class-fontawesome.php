@@ -223,7 +223,6 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		 *
 		 * @param array $font_awesome_icons List of the icons.
 		 * @since 3.0.0 Available since 3.0.0
-		 *
 		 */
 		return apply_filters( 'downloadlist_fontawesome_icons', $font_awesome_icons );
 	}
@@ -234,12 +233,20 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	public function get_style_files(): array {
-		return array(
+		$files = array(
 			array(
 				'handle' => 'fontawesome',
 				'url'    => plugins_url( '/css/fontawesome/fontawesome6.css', DL_PLUGIN ),
 				'path'   => plugin_dir_path( DL_PLUGIN ) . '/css/fontawesome/fontawesome6.css',
 			),
 		);
+
+		/**
+		 * Filter the files used for fontawesome.
+		 *
+		 * @param array $files List of the files.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		return apply_filters( 'downloadlist_fontawesome_files', $files );
 	}
 }

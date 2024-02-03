@@ -36,8 +36,13 @@ class Helper {
 		$mime_types['video']       = 'video';
 		ksort( $mime_types );
 
-		// return the list.
-		return $mime_types;
+		/**
+		 * Filter the list of possible mimetypes.
+		 *
+		 * @param array $mime_types List of the mime types.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		return apply_filters( 'downloadlist_fontawesome_files', $mime_types );
 	}
 
 	/**
@@ -65,7 +70,17 @@ class Helper {
 	 */
 	public static function get_style_path(): string {
 		$upload_dir = wp_get_upload_dir();
-		return trailingslashit( $upload_dir['basedir'] ) . self::get_style_filename();
+
+		$path = trailingslashit( $upload_dir['basedir'] );
+
+		/**
+		 * Filter the path where the CSS-file will be saved.
+		 *
+		 * @since 3.4.0 Available since 3.4.0
+		 *
+		 * @param string $styles The CSS-code.
+		 */
+		return apply_filters( 'downloadlist_css_path', $path ) . self::get_style_filename();
 	}
 
 	/**
@@ -75,7 +90,17 @@ class Helper {
 	 */
 	public static function get_style_url(): string {
 		$upload_dir = wp_get_upload_dir();
-		return trailingslashit( $upload_dir['baseurl'] ) . self::get_style_filename();
+
+		$url = trailingslashit( $upload_dir['baseurl'] );
+
+		/**
+		 * Filter the path where the CSS-file will be linked.
+		 *
+		 * @since 3.4.0 Available since 3.4.0
+		 *
+		 * @param string $styles The CSS-code.
+		 */
+		return apply_filters( 'downloadlist_css_url', $url ) . self::get_style_filename();
 	}
 
 	/**
@@ -107,6 +132,17 @@ class Helper {
 	 */
 	public static function generate_css( int $term_id = 0 ): void {
 		global $wp_filesystem;
+
+		$false = false;
+		/**
+		 * Prevent generation of new CSS-files.
+		 *
+		 * @param array $false Set to true to prevent the generation.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		if ( apply_filters( 'downloadlist_prevent_css_generation', $false ) ) {
+			return;
+		}
 
 		// define variable for resulting styles.
 		$styles = '';
@@ -175,6 +211,7 @@ class Helper {
 		// merge all results.
 		$icons = array_merge( $non_generic_icons->posts, $generic_icons->posts );
 
+		// list of slugs which are generated.
 		$iconset_generated_slugs = array();
 
 		// loop through the resulting list of icons.
@@ -196,7 +233,7 @@ class Helper {
 			}
 
 			// bail if this iconset-slug has already been generated.
-			if( ! empty( $iconset_generated_slugs[$iconset_obj->get_slug()] ) ) {
+			if ( ! empty( $iconset_generated_slugs[ $iconset_obj->get_slug() ] ) ) {
 				continue;
 			}
 
@@ -218,7 +255,7 @@ class Helper {
 			}
 
 			// add slug to list of generated iconsets.
-			$iconset_generated_slugs[$iconset_obj->get_slug()] = 1;
+			$iconset_generated_slugs[ $iconset_obj->get_slug() ] = 1;
 		}
 
 		// write resulting code in upload-directory.
@@ -233,8 +270,26 @@ class Helper {
 				$wp_filesystem->mkdir( dirname( $style_path ) );
 			}
 
+			/**
+			 * Filter the CSS-code just before it is saved.
+			 *
+			 * @since 3.4.0 Available since 3.4.0
+			 *
+			 * @param string $styles The CSS-code.
+			 */
+			$styles = apply_filters( 'downloadlist_generate_css', $styles );
+
 			// save the given content to the path.
 			$wp_filesystem->put_contents( $style_path, $styles );
+
+			/**
+			 * Run additional tasks after generating of the CSS-file.
+			 *
+			 * @param string $styles The CSS-code.
+			 *
+			 * @since 3.4.0 Available since 3.4.0
+			 */
+			do_action( 'downloadlist_generate_css', $styles );
 		} elseif ( file_exists( $style_path ) ) {
 			wp_delete_file( $style_path );
 		}
@@ -288,6 +343,17 @@ class Helper {
 	 * @return void
 	 */
 	public static function regenerate_icons( int $term_id = 0 ): void {
+		$false = false;
+		/**
+		 * Prevent generation of icons used by iconsets of this plugin.
+		 *
+		 * @param array $false Set to true to prevent the generation.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		if ( apply_filters( 'downloadlist_prevent_icon_generation', $false ) ) {
+			return;
+		}
+
 		$query = array(
 			'taxonomy'   => 'dl_icon_set',
 			'hide_empty' => false,
@@ -321,6 +387,13 @@ class Helper {
 
 			// set suffix for generated filename.
 			$suffix = $width . 'x' . $height;
+			/**
+			 * Set suffix for generated filename.
+			 *
+			 * @param array $suffix The suffix to use.
+			 * @since 3.4.0 Available since 3.4.0
+			 */
+			$suffix = apply_filters( 'downloadlist_prevent_icon_generation', $suffix );
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
@@ -340,6 +413,18 @@ class Helper {
 						&& ! empty( $metadata['sizes'][ 'downloadlist-icon-' . $term->slug ]['height'] )
 						&& $height === $metadata['sizes'][ 'downloadlist-icon-' . $term->slug ]['height']
 					) {
+						continue;
+					}
+
+					$false = false;
+					/**
+					 * Prevent generation of specific icon.
+					 *
+					 * @param bool $false Set to true to prevent generation.
+					 * @param int $post_id The ID of the attachment.
+					 * @since 3.4.0 Available since 3.4.0
+					 */
+					if ( apply_filters( 'downloadlist_prevent_icon_generation', $false, $post_id ) ) {
 						continue;
 					}
 
@@ -373,7 +458,7 @@ class Helper {
 	}
 
 	/**
-	 * Add generic iconsets, if they are not exist atm.
+	 * Add generic iconsets, if they do not exist atm.
 	 *
 	 * @return void
 	 */
