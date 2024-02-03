@@ -673,4 +673,15 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		return $response;
 	}
 	add_filter( 'wp_prepare_attachment_for_js', 'downloadlist_wp_prepare_attachment_for_js', 10, 2 );
+
+	/**
+	 * Sanitize the class names generated from mime types.
+	 *
+	 * @param string $class_name
+	 * @return string
+	 */
+	function downloadlist_generate_classname( string $class_name ): string {
+		return sanitize_html_class( $class_name );
+	}
+	add_filter( 'downloadlist_generate_classname', 'downloadlist_generate_classname' );
 }

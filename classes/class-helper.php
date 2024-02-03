@@ -156,9 +156,6 @@ class Helper {
 				continue;
 			}
 
-			// get file-type with main- and subtype.
-			$file_type_name = get_post_meta( $post_id, 'file_type', true );
-
 			// get iconset-object for this post.
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $terms[0]->slug );
 
@@ -171,6 +168,9 @@ class Helper {
 			if ( false !== $iconset_obj->is_generic() ) {
 				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, '' );
 			} else {
+				// get file-type with main- and subtype.
+				$file_type_name = get_post_meta( $post_id, 'file_type', true );
+
 				// get type and subtype.
 				list($type, $subtype) = self::get_type_and_subtype_from_mimetype( $file_type_name );
 
@@ -221,7 +221,10 @@ class Helper {
 		}
 
 		// return resulting values.
-		return array( $type, $subtype );
+		return array(
+			apply_filters( 'downloadlist_generate_classname', $type ),
+			apply_filters( 'downloadlist_generate_classname', $subtype )
+		);
 	}
 
 	/**
@@ -248,7 +251,7 @@ class Helper {
 				continue;
 			}
 
-			// bail if iconset is a generic iconset which does not contains images.
+			// bail if iconset is a generic iconset which does not contain images.
 			if ( $iconset_obj->is_generic() ) {
 				continue;
 			}
@@ -267,6 +270,7 @@ class Helper {
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
+				var_dump($post_id);
 				// get the attachment_id.
 				$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
 				if ( $attachment_id > 0 ) {
