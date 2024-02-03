@@ -7,6 +7,11 @@
 
 namespace downloadlist\iconsets;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use downloadlist\Helper;
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;

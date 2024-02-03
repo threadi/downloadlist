@@ -7,6 +7,11 @@
 
 namespace downloadlist;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_Query;
 use WP_Term_Query;
 
@@ -36,13 +41,31 @@ class Helper {
 	}
 
 	/**
+	 * Return the filename for the style-file.
+	 *
+	 * @return string
+	 */
+	private static function get_style_filename(): string {
+		$filename = 'downloadlist-style.css';
+
+		/**
+		 * Set the filename for the style.css which will be saved in upload-directory.
+		 *
+		 * @since 3.4.0 Available since 3.4.0.
+		 *
+		 * @param string $filename The list of iconsets.
+		 */
+		return apply_filters( 'downloadlist_style_filename', $filename );
+	}
+
+	/**
 	 * Get path to the generated style-file of this plugin.
 	 *
 	 * @return string
 	 */
 	public static function get_style_path(): string {
 		$upload_dir = wp_get_upload_dir();
-		return trailingslashit( $upload_dir['basedir'] ) . 'downloadlist-style.css';
+		return trailingslashit( $upload_dir['basedir'] ) . self::get_style_filename();
 	}
 
 	/**
@@ -52,7 +75,7 @@ class Helper {
 	 */
 	public static function get_style_url(): string {
 		$upload_dir = wp_get_upload_dir();
-		return trailingslashit( $upload_dir['baseurl'] ) . 'downloadlist-style.css';
+		return trailingslashit( $upload_dir['baseurl'] ) . self::get_style_filename();
 	}
 
 	/**
@@ -122,6 +145,12 @@ class Helper {
 			'post_type'      => 'dl_icons',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
+			'meta_query'     => array(
+				array(
+					'key'     => 'file_type',
+					'compare' => 'NOT EXISTS',
+				),
+			),
 			'tax_query'      => array(
 				array(
 					'taxonomy' => 'dl_icon_set',
@@ -146,6 +175,8 @@ class Helper {
 		// merge all results.
 		$icons = array_merge( $non_generic_icons->posts, $generic_icons->posts );
 
+		$iconset_generated_slugs = array();
+
 		// loop through the resulting list of icons.
 		foreach ( $icons as $post_id ) {
 			// get the assigned icon-set.
@@ -161,6 +192,11 @@ class Helper {
 
 			// bail if no iconset-object could be loaded.
 			if ( false === $iconset_obj ) {
+				continue;
+			}
+
+			// bail if this iconset-slug has already been generated.
+			if( ! empty( $iconset_generated_slugs[$iconset_obj->get_slug()] ) ) {
 				continue;
 			}
 
@@ -180,6 +216,9 @@ class Helper {
 					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
 				}
 			}
+
+			// add slug to list of generated iconsets.
+			$iconset_generated_slugs[$iconset_obj->get_slug()] = 1;
 		}
 
 		// write resulting code in upload-directory.
@@ -396,7 +435,7 @@ class Helper {
 						),
 						'fields'     => 'ids',
 					);
-					$check = new \WP_Query( $query );
+					$check = new WP_Query( $query );
 					if ( 0 === $check->post_count ) {
 						$query   = array(
 							'post_type'   => 'dl_icons',

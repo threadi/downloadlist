@@ -461,10 +461,6 @@ function downloadlist_update(): void {
 			delete_option( 'downloadlistVersion' );
 		}
 
-		// run style-generation.
-		Helper::regenerate_icons();
-		Helper::generate_css();
-
 		// save new plugin-version in DB.
 		update_option( 'downloadlistVersion', $installed_plugin_version, true );
 	}
