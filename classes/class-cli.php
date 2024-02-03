@@ -7,8 +7,6 @@
 
 namespace downloadlist;
 
-use WP_Term_Query;
-
 /**
  * Manage download-lists via CLI.
  */

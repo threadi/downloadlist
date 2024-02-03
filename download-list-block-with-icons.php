@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// do nothing if PHP-version is not 8.0 or newer.
+if ( version_compare( PHP_VERSION, '8.0', '<' ) ) {
+	return;
+}
+
 use downloadlist\Helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
@@ -141,7 +146,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			foreach ( $iconset_obj->get_style_files() as $file ) {
 				if ( ! empty( $file['handle'] ) && ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
 					wp_enqueue_style(
-						$file['handle'],
+						'downloadlist-' . $file['handle'],
 						$file['url'],
 						array(),
 						filemtime( $file['path'] )
@@ -149,7 +154,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				}
 				if ( ! empty( $file['handle'] ) && empty( $file['path'] ) ) {
 					wp_enqueue_style(
-						$file['handle']
+						'downloadlist-' . $file['handle']
 					);
 				}
 			}
@@ -629,10 +634,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return array
 	 */
 	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
-		/* translators: $1%d: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%1%d icon moved to the Trash.', '%d icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
-		/* translators: $1%s: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%1%d icon restored from the Trash.', '%d icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
+		/* translators: %1$d: Number of pages. */
+		$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the Trash.', '%1$d icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
+		/* translators: %1$d: Number of pages. */
+		$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the Trash.', '%1$d icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
 
 		// return resulting list.
 		return $messages;
@@ -677,7 +682,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	/**
 	 * Sanitize the class names generated from mime types.
 	 *
-	 * @param string $class_name
+	 * @param string $class_name The given class name.
 	 * @return string
 	 */
 	function downloadlist_generate_classname( string $class_name ): string {

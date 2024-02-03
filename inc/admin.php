@@ -35,8 +35,9 @@ function downloadlist_add_styles_and_js_admin(): void {
 		true
 	);
 
-	// embed media if not already done.
-	if ( ! did_action( 'wp_enqueue_media' ) ) {
+	// embed media if we edit our own cpt, if not already done.
+	$post_id = absint( filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT ) );
+	if ( ! did_action( 'wp_enqueue_media' ) && $post_id > 0 && get_post_type( $post_id ) === 'dl_icons' ) {
 		wp_enqueue_media();
 	}
 
@@ -54,7 +55,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 add_action( 'admin_enqueue_scripts', 'downloadlist_add_styles_and_js_admin', PHP_INT_MAX );
 
 /**
- * Check the set taxonomy on each icon-cpt-item.
+ * Check the taxonomy on each icon-cpt-item.
  *
  * @param int $post_id The post-ID.
  * @return void
@@ -167,7 +168,7 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 }
 
 /**
- * Do not return generic or graphic iconsets for assignment to post-types.
+ * Do not return generic for assignment to post-types.
  *
  * @param array       $results The resulting list.
  * @param WP_Taxonomy $taxonomy_object The taxonomy-object.
@@ -179,15 +180,16 @@ function downloadlist_filter_icon_taxonomy_ajax( array $results, WP_Taxonomy $ta
 		return $results;
 	}
 
+	// check if the result is a generic iconset.
 	foreach ( $results as $key => $result ) {
 		$term = get_term_by( 'name', $result, 'dl_icon_set' );
 		if ( $term instanceof WP_Term && in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_generic_sets_as_slug_array(), true ) ) {
-			unset( $results[ $key ] );
-		}
-		if ( $term instanceof WP_Term && in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_gfx_sets_as_slug_array(), true ) ) {
+			// remove it from results.
 			unset( $results[ $key ] );
 		}
 	}
+
+	// return search results.
 	return $results;
 }
 add_filter( 'ajax_term_search_results', 'downloadlist_filter_icon_taxonomy_ajax', 10, 2 );
@@ -383,7 +385,7 @@ function downloadlist_admin_iconset_set_default(): void {
 add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_iconset_set_default' );
 
 /**
- * Hide post-entry which are assigned to generated or graphic iconsets.
+ * Hide post-entry which are assigned to generated iconsets.
  *
  * @param WP_Query $query The Query.
  * @return void
@@ -391,11 +393,20 @@ add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_ico
 function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 	if ( is_admin() && $query->is_main_query() && 'dl_icons' === $query->query['post_type'] ) {
 		$query->set(
+			'meta_query',
+			array(
+				array(
+					'key'     => 'generic-downloadlist',
+					'compare' => 'NOT EXISTS',
+				),
+			)
+		);
+		$query->set(
 			'tax_query',
 			array(
 				array(
 					'taxonomy' => 'dl_icon_set',
-					'terms'    => array_merge( Iconsets::get_instance()->get_generic_sets_as_slug_array(), Iconsets::get_instance()->get_gfx_sets_as_slug_array() ),
+					'terms'    => Iconsets::get_instance()->get_generic_sets_as_slug_array(),
 					'field'    => 'slug',
 					'operator' => 'NOT IN',
 				),
@@ -419,17 +430,63 @@ function downloadlist_update(): void {
 	$db_plugin_version = get_option( 'downloadlistVersion', '3.0.0' );
 
 	// compare version if we are not in development-mode.
-	if ( '@@VersionNumber@@' !== $installed_plugin_version && version_compare( $installed_plugin_version, $db_plugin_version, '>' ) ) {
+	if (
+		(
+			(
+				function_exists( 'wp_is_development_mode' ) && false === wp_is_development_mode( 'plugin' )
+			)
+			|| ! function_exists( 'wp_is_development_mode' )
+		)
+		&& version_compare( $installed_plugin_version, $db_plugin_version, '>' )
+	) {
 		$transient_obj = Transients::get_instance()->add();
 		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
 		$transient_obj->set_name( 'refresh_css' );
 		$transient_obj->save();
 
+		// run this on update from version before 3.4.0.
+		if ( version_compare( $db_plugin_version, '3.4.0', '<' ) ) {
+			downloadlist_cleanup();
+			delete_option( 'downloadlistVersion' );
+		}
+
 		// save new plugin-version in DB.
-		update_option( 'downloadlistVersion', $installed_plugin_version );
+		update_option( 'downloadlistVersion', $installed_plugin_version, true );
 	}
 }
 add_action( 'plugins_loaded', 'downloadlist_update' );
+
+/**
+ * Cleanup DB for duplicate entries of generic styles.
+ *
+ * Get all entries for generic icons.
+ * Add the new marker on them.
+ *
+ * @return void
+ */
+function downloadlist_cleanup(): void {
+	$query = array(
+		'post_type'      => 'dl_icons',
+		'post_status'    => array( 'any', 'trash' ),
+		'posts_per_page' => -1,
+		'fields'         => 'ids',
+		'meta_query'     => array(
+			'relation' => 'AND',
+			array(
+				'key'     => 'generic-downloadlist',
+				'compare' => 'NOT EXISTS',
+			),
+			array(
+				'key'     => 'icon',
+				'compare' => 'NOT EXISTS',
+			),
+		),
+	);
+	$posts = new WP_Query( $query );
+	foreach ( $posts->posts as $post_id ) {
+		update_post_meta( $post_id, 'generic-downloadlist', 1 );
+	}
+}
 
 /**
  * Show known transients only for users with rights.

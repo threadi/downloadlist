@@ -223,7 +223,7 @@ class Helper {
 		// return resulting values.
 		return array(
 			apply_filters( 'downloadlist_generate_classname', $type ),
-			apply_filters( 'downloadlist_generate_classname', $subtype )
+			apply_filters( 'downloadlist_generate_classname', $subtype ),
 		);
 	}
 
@@ -270,7 +270,6 @@ class Helper {
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
-				var_dump($post_id);
 				// get the attachment_id.
 				$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
 				if ( $attachment_id > 0 ) {
@@ -324,9 +323,14 @@ class Helper {
 	 *
 	 * @return void
 	 */
-	public static function add_generic_iconset(): void {
-		// add predefined terms to taxonomy if they do not exist.
+	public static function add_generic_iconsets(): void {
+		// add predefined iconsets to taxonomy if they do not exist.
 		foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
+			// bail if iconset has not our base-class.
+			if ( ! ( $iconset_obj instanceof Iconset_Base ) ) {
+				continue;
+			}
+
 			// bail if one necessary setting is missing.
 			if ( false === $iconset_obj->has_label() || false === $iconset_obj->has_type() ) {
 				continue;
@@ -362,17 +366,35 @@ class Helper {
 				update_term_meta( $term['term_id'], 'width', 24 );
 				update_term_meta( $term['term_id'], 'height', 24 );
 
-				// generate icon entry, if this is a generic or graphic iconset.
+				// generate icon entry, if this is a generic or graphic iconset, if it does not exist.
 				if ( $iconset_obj->is_generic() || $iconset_obj->is_gfx() ) {
-					$array   = array(
-						'post_type'   => 'dl_icons',
-						'post_status' => 'publish',
-						'post_title'  => $iconset_obj->get_label(),
+					$query = array(
+						'post_type'  => 'dl_icons',
+						'post_title' => $iconset_obj->get_label(),
+						'tax_query'  => array(
+							array(
+								'taxonomy' => 'dl_icon_set',
+								'terms'    => $term['term_id'],
+								'field'    => 'slug',
+								'operator' => 'IN',
+							),
+						),
+						'fields'     => 'ids',
 					);
-					$post_id = wp_insert_post( $array );
-					if ( $post_id > 0 ) {
-						// assign post to this taxonomy.
-						wp_set_object_terms( $post_id, $term['term_id'], 'dl_icon_set' );
+					$check = new \WP_Query( $query );
+					if ( 0 === $check->post_count ) {
+						$query   = array(
+							'post_type'   => 'dl_icons',
+							'post_status' => 'publish',
+							'post_title'  => $iconset_obj->get_label(),
+						);
+						$post_id = wp_insert_post( $query );
+						if ( $post_id > 0 ) {
+							// mark as generated.
+							update_post_meta( $post_id, 'generic-downloadlist', 1 );
+							// assign post to this taxonomy.
+							wp_set_object_terms( $post_id, $term['term_id'], 'dl_icon_set' );
+						}
 					}
 				}
 			}

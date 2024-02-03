@@ -6,7 +6,7 @@ Tested up to: 6.4.3
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.3.3
+Stable tag: 3.4.0
 
 == Description ==
 
@@ -204,6 +204,14 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 = 3.3.2 =
 * Fixed loading of translation scripts
 
-= 3.3.3 =
+= 3.4.0 =
+* Added possibility to use multiple custom iconsets
 * Now generating valid class names from mime types (thanks @dotsam)
+* Rename handles of enqueued styles to prevent conflicts with other plugins
 * Compatibility with WordPress 6.4.3
+* Updated performance
+* Updated dependencies
+* Plugin now won't be usable with PHP older than 8.0
+* Fixed error on search for iconsets during editing your own icon
+* Fixed visibility of custom icons in backend
+* Fixed problem with duplicate entries for each iconset
