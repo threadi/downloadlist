@@ -205,6 +205,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Fixed loading of translation scripts
 
 = 3.4.0 =
+* Added possibility to use multiple custom iconsets
 * Now generating valid class names from mime types (thanks @dotsam)
 * Rename handles of enqueued styles to prevent conflicts with other plugins
 * Compatibility with WordPress 6.4.3

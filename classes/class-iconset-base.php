@@ -63,7 +63,7 @@ class Iconset_Base {
 	/**
 	 * Constructor for every Iconbase-object.
 	 */
-	private function __construct() {
+	public function __construct() {
 		$this->init();
 	}
 
@@ -123,12 +123,22 @@ class Iconset_Base {
 	}
 
 	/**
-	 * Return the iconset-type.
+	 * Return the iconset-slug.
 	 *
 	 * @return string
 	 */
 	public function get_slug(): string {
 		return $this->slug;
+	}
+
+	/**
+	 * Set the iconset-type.
+	 *
+	 * @param string $slug The slug.
+	 * @return void
+	 */
+	public function set_slug( string $slug ): void {
+		$this->slug = $slug;
 	}
 
 	/**
