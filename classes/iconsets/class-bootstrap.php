@@ -153,6 +153,23 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		$bootstrapicons['video/x-ms-wm']                 = '\F21A';
 		$bootstrapicons['video/x-ms-wmv']                = '\F21A';
 		$bootstrapicons['video/x-ms-wmx']                = '\F21A';
+
+		/**
+		 * Filter the list of bootstrap icons. This list is an array with the not optimized
+		 * mime type as index and the bootstrap-unicode as value.
+		 *
+		 * Example:
+		 * ```
+		 * add_filter( 'downloadlist_bootstrap_icons', function( $list ) {
+		 *  $list['application/example'] = '\f42';
+		 *  return $list;
+		 * });
+		 * ```
+		 *
+		 * @param array $bootstrapicons List of the icons.
+		 *@since 3.0.0 Available since 3.0.0
+		 *
+		 */
 		return apply_filters( 'downloadlist_bootstrap_icons', $bootstrapicons );
 	}
 

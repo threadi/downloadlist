@@ -203,6 +203,23 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		$font_awesome_icons['video/x-ms-wm']                 = '\f03d';
 		$font_awesome_icons['video/x-ms-wmv']                = '\f03d';
 		$font_awesome_icons['video/x-ms-wmx']                = '\f03d';
+
+		/**
+		 * Filter the list of fontawesome icons. This list is an array with the not optimized
+		 * mime type as index and the bootstrap-unicode as value.
+		 *
+		 * Example:
+		 * ```
+		 * add_filter( 'downloadlist_fontawesome_icons', function( $list ) {
+		 *  $list['application/example'] = '\f42';
+		 *  return $list;
+		 * });
+		 * ```
+		 *
+		 * @param array $font_awesome_icons List of the icons.
+		 * @since 3.0.0 Available since 3.0.0
+		 *
+		 */
 		return apply_filters( 'downloadlist_fontawesome_icons', $font_awesome_icons );
 	}
 

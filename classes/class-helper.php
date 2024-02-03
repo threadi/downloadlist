@@ -222,7 +222,22 @@ class Helper {
 
 		// return resulting values.
 		return array(
+			/**
+			 * Filter the string name of a mime type.
+			 *
+			 * @since 3.4.0 Available since 3.4.0
+			 *
+			 * @param string $type The name of the mime type.
+			 */
 			apply_filters( 'downloadlist_generate_classname', $type ),
+
+			/**
+			 * Filter the string name of a mime type.
+			 *
+			 * @since 3.4.0 Available since 3.4.0
+			 *
+			 * @param string $type The name of the mime type.
+			 */
 			apply_filters( 'downloadlist_generate_classname', $subtype ),
 		);
 	}
