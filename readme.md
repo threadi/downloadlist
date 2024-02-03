@@ -80,3 +80,7 @@ Hint: will be called by ant-command mentioned above.
 ### Repair
 
 `vendor/bin/phpcbf --standard=ruleset.xml file`
+
+### Generate documentation
+
+`vendor/bin/wp-documentor parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_`

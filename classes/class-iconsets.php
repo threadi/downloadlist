@@ -7,6 +7,11 @@
 
 namespace downloadlist;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Object for general iconset-handling.
  */
@@ -53,7 +58,18 @@ class Iconsets {
 	 * @return array
 	 */
 	public function get_icon_sets(): array {
-		return apply_filters( 'downloadlist_register_iconset', array() );
+		$list = array();
+
+		/**
+		 * Register a single iconset through adding it to the list.
+		 *
+		 * The iconset must be an object extending Iconset_Base and implement Iconset.
+		 *
+		 * @since 3.0.0 Available since 3.0.0.
+		 *
+		 * @param array $list The list of iconsets.
+		 */
+		return apply_filters( 'downloadlist_register_iconset', $list );
 	}
 
 	/**

@@ -7,6 +7,11 @@
 
 namespace downloadlist;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Initialize a single transient-object.
  */

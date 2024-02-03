@@ -10,7 +10,7 @@ Stable tag: 3.4.0
 
 == Description ==
 
-This plugin provides a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary. The Block can be used immediately after installation.
+Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary. The Block can be used immediately after installation.
 
 = Features =
 
@@ -25,9 +25,9 @@ This plugin provides a Gutenberg Block to manage a download list with file type 
 - Display of file size, description and icon can be switched on and off
 - Choose what link should be published: direct link or attachment page
 - Choose an iconset for each Block; manage custom icons in unlimited lists
-- Usage of [multiple hooks](https://github.com/threadi/downloadlist/tree/master/docs/hooks.md) to change or add icons to generated iconsets
+- Usage of [multiple hooks](https://github.com/threadi/downloadlist/tree/master/docs/hooks.md) to change or add icons to shipped iconsets
 - Sort list by title or filesize with one click
-- The Block can be used in classic widgets
+- The Block can be used in widgets
 - Set colors, typography and borders for each Block
 - Use [External files in media library](https://wordpress.org/plugins/external-files-in-media-library/) if you want to link to external files
 
@@ -57,6 +57,8 @@ The description stored at the file in the Media Library itself is used as the de
 
 - Open the file in the Media Library for editing. There you will find the field "Description". Enter the desired description here.
 - Or open this editing mask via the pencil at the file in the block you have created.
+
+You can also add a custom title and description per file used only by the Block of this plugin.
 
 = Is there a limit to the number of files? =
 
@@ -206,6 +208,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.4.0 =
 * Added possibility to use multiple custom iconsets
+* Added automatic documentation of hooks in this plugin
 * Now generating valid class names from mime types (thanks @dotsam)
 * Rename handles of enqueued styles to prevent conflicts with other plugins
 * Compatibility with WordPress 6.4.3

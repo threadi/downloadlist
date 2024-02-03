@@ -7,6 +7,11 @@
 
 namespace downloadlist\iconsets;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
 use WP_Query;

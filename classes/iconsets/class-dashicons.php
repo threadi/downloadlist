@@ -7,6 +7,11 @@
 
 namespace downloadlist\iconsets;
 
+// prevent also other direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use downloadlist\Helper;
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
@@ -160,6 +165,23 @@ class Dashicons extends Iconset_Base implements Iconset {
 		$dashicons['video/x-ms-wm']                 = '\f126';
 		$dashicons['video/x-ms-wmv']                = '\f126';
 		$dashicons['video/x-ms-wmx']                = '\f126';
+
+		/**
+		 * Filter the list of dashicons. This list is an array with the not optimized
+		 * mime type as index and the bootstrap-unicode as value.
+		 *
+		 * Example:
+		 * ```
+		 * add_filter( 'downloadlist_dashicons_icons', function( $list ) {
+		 *  $list['application/example'] = '\f42';
+		 *  return $list;
+		 * });
+		 * ```
+		 *
+		 * @param array $dashicons List of the icons.
+		 * @since 3.0.0 Available since 3.0.0
+		 *
+		 */
 		return apply_filters( 'downloadlist_dashicons_icons', $dashicons );
 	}
 
