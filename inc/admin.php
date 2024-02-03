@@ -138,13 +138,13 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 			if ( $image_id > 0 && $image ) {
 				?>
 				<a href="#" class="downloadlist-image-choose"><img src="<?php echo esc_url( $image[0] ); ?>" alt="" /></a>
-				<a href="#" class="downloadlist-image-remove"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
+				<a href="#" class="downloadlist-image-remove button button-primary"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
 				<input type="hidden" name="icon" value="<?php echo esc_attr( $image_id ); ?>">
 				<?php
 			} else {
 				?>
 				<a href="#" class="downloadlist-image-choose"><?php echo esc_html__( 'Upload or choose image', 'download-list-block-with-icons' ); ?></a>
-				<a href="#" class="downloadlist-image-remove" style="display:none"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
+				<a href="#" class="downloadlist-image-remove button button-primary" style="display:none"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
 				<input type="hidden" name="icon" value="">
 				<?php
 			}
