@@ -209,6 +209,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Now generating valid class names from mime types (thanks @dotsam)
 * Rename handles of enqueued styles to prevent conflicts with other plugins
 * Compatibility with WordPress 6.4.3
+* Updated performance
 * Updated dependencies
 * Plugin now won't be usable with PHP older than 8.0
 * Fixed error on search for iconsets during editing your own icon

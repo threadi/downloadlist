@@ -21,24 +21,23 @@ function downloadlist_register_custom_iconset( array $iconset_list ): array {
 		'meta_query' => array(
 			'relation' => 'OR',
 			array(
-				'key' => 'type',
-				'value' => 'custom'
+				'key'   => 'type',
+				'value' => 'custom',
 			),
 			array(
-				'key' => 'type',
-				'compare' => 'NOT EXISTS'
-			)
-		)
+				'key'     => 'type',
+				'compare' => 'NOT EXISTS',
+			),
+		),
 	);
 	$icon_sets = new \WP_Term_Query( $query );
-	if( ! empty($icon_sets->terms) ) {
-		foreach ($icon_sets->get_terms() as $term) {
+	if ( ! empty( $icon_sets->terms ) ) {
+		foreach ( $icon_sets->get_terms() as $term ) {
 			$iconset_obj = new Custom();
-			$iconset_obj->set_slug($term->slug);
+			$iconset_obj->set_slug( $term->slug );
 			$iconset_list[] = $iconset_obj;
 		}
-	}
-	else {
+	} else {
 		// use initial custom iconset.
 		$iconset_list[] = Custom::get_instance();
 	}

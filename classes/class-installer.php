@@ -47,6 +47,10 @@ class Installer {
 	 * @return void
 	 */
 	public function activation(): void {
+		if ( ! get_option( 'downloadlistVersion', false ) ) {
+			add_option( 'downloadlistVersion', DL_VERSION, '', true );
+		}
+
 		// initialize our own post-type and taxonomies during installation.
 		downloadlist_add_position_posttype();
 		downloadlist_add_taxonomies();

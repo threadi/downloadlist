@@ -75,6 +75,9 @@
 
 	<!-- check WCS compatibility -->
 	<target name="check-wcs" depends="composer-install">
+		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/phpcbf">
+			<arg line="--extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml ."/>
+		</exec>
 		<exec dir="${src.dir}" failonerror="true" executable="vendor/bin/phpcs">
 			<arg line="--extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml ."/>
 		</exec>

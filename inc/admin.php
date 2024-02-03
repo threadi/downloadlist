@@ -35,8 +35,9 @@ function downloadlist_add_styles_and_js_admin(): void {
 		true
 	);
 
-	// embed media if not already done.
-	if ( ! did_action( 'wp_enqueue_media' ) ) {
+	// embed media if we edit our own cpt, if not already done.
+	$post_id = absint( filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT ) );
+	if ( ! did_action( 'wp_enqueue_media' ) && $post_id > 0 && get_post_type( $post_id ) === 'dl_icons' ) {
 		wp_enqueue_media();
 	}
 
@@ -443,12 +444,14 @@ function downloadlist_update(): void {
 		$transient_obj->set_name( 'refresh_css' );
 		$transient_obj->save();
 
+		// run this on update from version before 3.4.0.
 		if ( version_compare( $db_plugin_version, '3.4.0', '<' ) ) {
 			downloadlist_cleanup();
+			delete_option( 'downloadlistVersion' );
 		}
 
 		// save new plugin-version in DB.
-		update_option( 'downloadlistVersion', $installed_plugin_version );
+		update_option( 'downloadlistVersion', $installed_plugin_version, true );
 	}
 }
 add_action( 'plugins_loaded', 'downloadlist_update' );
