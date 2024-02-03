@@ -172,8 +172,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		 * ```
 		 *
 		 * @param array $bootstrapicons List of the icons.
-		 *@since 3.0.0 Available since 3.0.0
-		 *
+		 * @since 3.0.0 Available since 3.0.0
 		 */
 		return apply_filters( 'downloadlist_bootstrap_icons', $bootstrapicons );
 	}
@@ -234,12 +233,20 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	public function get_style_files(): array {
-		return array(
+		$files = array(
 			array(
 				'handle' => 'bootstrap',
 				'url'    => plugins_url( '/css/bootstrap/bootstrap-icons.css', DL_PLUGIN ),
 				'path'   => plugin_dir_path( DL_PLUGIN ) . '/css/bootstrap/bootstrap-icons.css',
 			),
 		);
+
+		/**
+		 * Filter the files used for bootstrap.
+		 *
+		 * @param array $files List of the files.
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		return apply_filters( 'downloadlist_bootstrap_files', $files );
 	}
 }
