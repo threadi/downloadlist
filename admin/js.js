@@ -4,12 +4,12 @@ jQuery(document).ready(function($) {
 		e.preventDefault();
 		let button = $(this),
 			custom_uploader = wp.media({
-				title: 'Insert image',
+				title: downloadlistAdminJsVars.title,
 				library: {
 					type: 'image'
 				},
 				button: {
-					text: 'Use this image'
+					text: downloadlistAdminJsVars.lbl_button
 				},
 				multiple: false
 			}).on('select', function () {
@@ -24,6 +24,6 @@ jQuery(document).ready(function($) {
 		e.preventDefault();
 		let button = $(this);
 		button.next().val('');
-		button.hide().prev().html('Upload image').addClass('button button-primary');
+		button.hide().prev().html(downloadlistAdminJsVars.lbl_upload_button).addClass('button button-primary');
 	});
 });

@@ -41,6 +41,17 @@ function downloadlist_add_styles_and_js_admin(): void {
 		wp_enqueue_media();
 	}
 
+	// add php-vars to our js-script.
+	wp_localize_script(
+		'downloadlist-admin',
+		'downloadlistAdminJsVars',
+		array(
+			'title'             => __( 'Insert image', 'download-list-block-with-icons' ),
+			'lbl_button'        => __( 'Use this image', 'download-list-block-with-icons' ),
+			'lbl_upload_button' => __( 'Upload image', 'download-list-block-with-icons' ),
+		)
+	);
+
 	// add ja-variables for block editor.
 	wp_add_inline_script(
 		'downloadlist-list-editor-script',

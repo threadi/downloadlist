@@ -145,7 +145,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.0.0 =
 * Added possibility to manage different iconsets and assign them to each Block
-* Added styling (e.g. color, typography ..) for Blocks using WordPress-standards
+* Added styling (e.g. color, typography ...) for Blocks using WordPress-standards
 * Compatible with WordPress Coding Standards
 * Minimum PHP-compatibility set to 8.0
 * Only compatible with WordPress 6.0 or newer
@@ -213,6 +213,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Updated performance
 * Updated dependencies
 * Plugin now won't be usable with PHP older than 8.0
+* Fixed missing translations
 * Fixed error on search for iconsets during editing your own icon
 * Fixed visibility of custom icons in backend
 * Fixed problem with duplicate entries for each iconset
