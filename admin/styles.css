@@ -7,3 +7,21 @@ body.post-type-dl_icons .subsubsub { display: none }
 	position: relative;
 	z-index: 1;
 }
+
+#downloadlist_custom_icons label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 0.4em;
+}
+
+#downloadlist_custom_icons .form-field {
+	margin-bottom: 1em;
+}
+
+#downloadlist_custom_icons .downloadlist-image-choose:not(.button) {
+	display: inline-block;
+}
+
+#downloadlist_custom_icons .downloadlist-image-choose img {
+	width: 150px;
+}
