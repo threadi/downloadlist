@@ -141,7 +141,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			foreach ( $iconset_obj->get_style_files() as $file ) {
 				if ( ! empty( $file['handle'] ) && ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
 					wp_enqueue_style(
-						$file['handle'],
+						'downloadlist-'.$file['handle'],
 						$file['url'],
 						array(),
 						filemtime( $file['path'] )
@@ -149,7 +149,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				}
 				if ( ! empty( $file['handle'] ) && empty( $file['path'] ) ) {
 					wp_enqueue_style(
-						$file['handle']
+						'downloadlist-'.$file['handle']
 					);
 				}
 			}

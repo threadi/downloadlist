@@ -54,7 +54,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 add_action( 'admin_enqueue_scripts', 'downloadlist_add_styles_and_js_admin', PHP_INT_MAX );
 
 /**
- * Check the set taxonomy on each icon-cpt-item.
+ * Check the taxonomy on each icon-cpt-item.
  *
  * @param int $post_id The post-ID.
  * @return void

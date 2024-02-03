@@ -270,7 +270,6 @@ class Helper {
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
-				var_dump($post_id);
 				// get the attachment_id.
 				$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
 				if ( $attachment_id > 0 ) {
