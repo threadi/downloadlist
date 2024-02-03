@@ -629,10 +629,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return array
 	 */
 	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
-		/* translators: $1%d: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%1$s icon moved to the Trash.', '%1$s icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
-		/* translators: $1%s: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%1$s icon restored from the Trash.', '%1$s icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
+		/* translators: %1$d: Number of pages. */
+		$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the Trash.', '%1$d icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
+		/* translators: %1$d: Number of pages. */
+		$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the Trash.', '%1$d icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
 
 		// return resulting list.
 		return $messages;
