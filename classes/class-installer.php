@@ -52,7 +52,7 @@ class Installer {
 		downloadlist_add_taxonomies();
 
 		// add generic iconset.
-		helper::add_generic_iconset();
+		helper::add_generic_iconsets();
 
 		// generate icons and styles.
 		Helper::regenerate_icons();
@@ -64,6 +64,5 @@ class Installer {
 	 *
 	 * @return void
 	 */
-	public function deactivation(): void {
-	}
+	public function deactivation(): void {}
 }

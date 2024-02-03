@@ -152,7 +152,7 @@ class Iconset_Base {
 	}
 
 	/**
-	 * Return whether this iconset used generated graphics.
+	 * Return whether this iconset is using graphics.
 	 *
 	 * @return bool
 	 * @noinspection PhpUnused

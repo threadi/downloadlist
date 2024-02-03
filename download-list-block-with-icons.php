@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// do nothing if PHP-version is not 8.0 or newer.
+if ( version_compare( PHP_VERSION, '8.0', '<' ) ) {
+	return;
+}
+
 use downloadlist\Helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
@@ -141,7 +146,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			foreach ( $iconset_obj->get_style_files() as $file ) {
 				if ( ! empty( $file['handle'] ) && ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
 					wp_enqueue_style(
-						'downloadlist-'.$file['handle'],
+						'downloadlist-' . $file['handle'],
 						$file['url'],
 						array(),
 						filemtime( $file['path'] )
@@ -149,7 +154,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				}
 				if ( ! empty( $file['handle'] ) && empty( $file['path'] ) ) {
 					wp_enqueue_style(
-						'downloadlist-'.$file['handle']
+						'downloadlist-' . $file['handle']
 					);
 				}
 			}
@@ -677,7 +682,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	/**
 	 * Sanitize the class names generated from mime types.
 	 *
-	 * @param string $class_name
+	 * @param string $class_name The given class name.
 	 * @return string
 	 */
 	function downloadlist_generate_classname( string $class_name ): string {

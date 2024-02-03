@@ -104,24 +104,4 @@ class Iconsets {
 		}
 		return false;
 	}
-
-	/**
-	 * Return the slugs if graphic iconsets.
-	 *
-	 * @return array
-	 */
-	public function get_gfx_sets_as_slug_array(): array {
-		// define list.
-		$list = array();
-
-		// loop through the iconsets.
-		foreach ( $this->get_icon_sets() as $iconset_obj ) {
-			if ( $iconset_obj->is_gfx() ) {
-				$list[] = $iconset_obj->get_slug();
-			}
-		}
-
-		// return results.
-		return $list;
-	}
 }
