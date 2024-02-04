@@ -264,7 +264,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'view_items'         => __( 'View Download List Icons', 'download-list-block-with-icons' ),
 			'search_items'       => __( 'Search Download List Icon', 'download-list-block-with-icons' ),
 			'not_found'          => __( 'Not Found', 'download-list-block-with-icons' ),
-			'not_found_in_trash' => __( 'Not found in Trash', 'download-list-block-with-icons' ),
 		);
 
 		// set arguments for our own cpt.
@@ -272,8 +271,8 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'label'               => $labels['name'],
 			'description'         => '',
 			'labels'              => $labels,
-			'supports'            => array(),
-			'public'              => true,
+			'supports'            => array( 'title' ),
+			'public'              => false,
 			'hierarchical'        => false,
 			'show_ui'             => true,
 			'show_in_menu'        => true,
@@ -281,7 +280,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'show_in_admin_bar'   => true,
 			'has_archive'         => false,
 			'can_export'          => false,
-			'exclude_from_search' => false,
+			'exclude_from_search' => true,
 			'taxonomies'          => array( 'dl_icon_set' ),
 			'publicly_queryable'  => false,
 			'show_in_rest'        => false,
@@ -292,9 +291,6 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			'menu_icon'           => trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'gfx/dl_icon.png',
 		);
 		register_post_type( 'dl_icons', $args );
-
-		// disable block editor for our own cpt.
-		remove_post_type_support( 'dl_icons', 'editor' );
 	}
 	add_action( 'init', 'downloadlist_add_position_posttype', 10 );
 
@@ -338,9 +334,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 			),
 		);
 
-		// remove slugs for not logged in users.
+		// remove this taxonomy from views for not logged-in users.
 		if ( ! is_user_logged_in() ) {
 			$icon_set_array['rewrite'] = false;
+			$icon_set_array['show_in_rest'] = false;
 		}
 
 		// register taxonomy.
@@ -635,9 +632,9 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 */
 	function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
 		/* translators: %1$d: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the Trash.', '%1$d icons moved to the Trash.', absint( $bulk_counts['trashed'] ) );
+		$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the trash.', '%1$d icons moved to the trash.', absint( $bulk_counts['trashed'] ) );
 		/* translators: %1$d: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the Trash.', '%1$d icon restored from the Trash.', absint( $bulk_counts['untrashed'] ) );
+		$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the trash.', '%1$d icon restored from the trash.', absint( $bulk_counts['untrashed'] ) );
 
 		// return resulting list.
 		return $messages;

@@ -49,6 +49,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 			'title'             => __( 'Insert image', 'download-list-block-with-icons' ),
 			'lbl_button'        => __( 'Use this image', 'download-list-block-with-icons' ),
 			'lbl_upload_button' => __( 'Upload image', 'download-list-block-with-icons' ),
+			'title_rate_us'     => __( 'Rate this plugin', 'download-list-block-with-icons' ),
 		)
 	);
 
@@ -77,8 +78,8 @@ function downloadlist_check_taxonomy( int $post_id ): void {
 		return;
 	}
 
-	// do nothing if post is in trash.
-	if ( in_array( get_post_status( $post_id ), array( 'trash', 'draft', 'auto-draft' ), true ) ) {
+	// do nothing if post is in trash or auto-draft.
+	if ( in_array( get_post_status( $post_id ), array( 'trash', 'auto-draft' ), true ) ) {
 		return;
 	}
 
@@ -90,7 +91,7 @@ function downloadlist_check_taxonomy( int $post_id ): void {
 	// save assigned file-type.
 	if ( ! empty( $_POST['file_type'] ) ) {
 		update_post_meta( $post_id, 'file_type', sanitize_text_field( wp_unslash( $_POST['file_type'] ) ) );
-	} else {
+	} elseif ( 'draft' !== get_post_status( $post_id ) ) {
 		delete_post_meta( $post_id, 'file_type' );
 	}
 
@@ -107,15 +108,9 @@ add_filter( 'save_post_dl_icons', 'downloadlist_check_taxonomy', 10, 2 );
 /**
  * Show meta-box for cpts where the assigned term has the type "custom".
  *
- * @param WP_Post $post The post.
  * @return void
  */
-function downloadlist_admin_meta_boxes( WP_Post $post ): void {
-	// bail if post-status is draft.
-	if ( 'draft' === $post->post_status ) {
-		return;
-	}
-
+function downloadlist_admin_meta_boxes(): void {
 	// add meta-box to add icons.
 	add_meta_box(
 		'downloadlist_custom_icons',
@@ -124,7 +119,7 @@ function downloadlist_admin_meta_boxes( WP_Post $post ): void {
 		'dl_icons'
 	);
 }
-add_action( 'add_meta_boxes_dl_icons', 'downloadlist_admin_meta_boxes', 10, 1 );
+add_action( 'add_meta_boxes_dl_icons', 'downloadlist_admin_meta_boxes', 10, 0 );
 
 /**
  * Form to choose a single icon image from media library and set the file-type for this entry.
@@ -332,7 +327,7 @@ add_action( 'edit_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
  * @return array
  */
 function downloadlist_admin_iconset_columns( array $columns ): array {
-	// add our column.
+	// add column for iconset.
 	$columns['downloadlist_iconset_default'] = __( 'Default iconset', 'download-list-block-with-icons' );
 
 	// remove count-row.
@@ -343,6 +338,25 @@ function downloadlist_admin_iconset_columns( array $columns ): array {
 	return $columns;
 }
 add_filter( 'manage_edit-dl_icon_set_columns', 'downloadlist_admin_iconset_columns', 10, 1 );
+
+/**
+ * Re-order table for icons with custom columns.
+ *
+ * @param array $columns List of columns.
+ * @return array
+ */
+function downloadlist_admin_icons_columns( array $columns ): array {
+	$new_columns                           = array();
+	$new_columns['cb']                     = $columns['cb'];
+	$new_columns['title']                  = $columns['title'];
+	$new_columns['downloadlist_file_type'] = __( 'File type', 'download-list-block-with-icons' );
+	$new_columns['taxonomy-dl_icon_set']   = $columns['taxonomy-dl_icon_set'];
+	$new_columns['date']                   = $columns['date'];
+
+	// return resulting array.
+	return $new_columns;
+}
+add_filter( 'manage_edit-dl_icons_columns', 'downloadlist_admin_icons_columns', 10, 1 );
 
 /**
  * Set content for new column in iconset-table.
@@ -373,6 +387,24 @@ function downloadlist_admin_iconset_column( string $content, string $column_name
 	return $content;
 }
 add_filter( 'manage_dl_icon_set_custom_column', 'downloadlist_admin_iconset_column', 10, 3 );
+
+/**
+ * Show file type for single icon in listing.
+ *
+ * @param string $column_name The column name.
+ * @param int    $post_id The ID of the post.
+ * @return void
+ */
+function downloadlist_admin_icons_column( string $column_name, int $post_id ): void {
+	if ( 'downloadlist_file_type' === $column_name ) {
+		$file_type  = get_post_meta( $post_id, 'file_type', true );
+		$file_types = helper::get_mime_types();
+		if ( in_array( $file_type, $file_types, true ) ) {
+			echo esc_html( array_search( $file_type, $file_types, true ) );
+		}
+	}
+}
+add_filter( 'manage_dl_icons_posts_custom_column', 'downloadlist_admin_icons_column', 10, 2 );
 
 /**
  * Set iconset as default via link-request.
@@ -426,6 +458,26 @@ function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
 	}
 }
 add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
+
+/**
+ * Reduce the count of items in statistic for list view.
+ *
+ * @param stdClass $counts Object with counts.
+ * @param string   $type The requested post type.
+ * @return stdClass
+ */
+function downloadlist_reduce_count( stdClass $counts, string $type ): stdClass {
+	if ( 'dl_icons' !== $type ) {
+		return $counts;
+	}
+
+	// reduce the count with the amount of generic sets.
+	$counts->publish -= count( Iconsets::get_instance()->get_generic_sets_cpts() );
+
+	// return resulting object.
+	return $counts;
+}
+add_filter( 'wp_count_posts', 'downloadlist_reduce_count', 10, 2 );
 
 /**
  * Check on each load if plugin-version has been changed.
@@ -571,3 +623,53 @@ function downloadlist_save_custom_text_attachment_field( array $post, array $fie
 	return $post;
 }
 add_filter( 'attachment_fields_to_save', 'downloadlist_save_custom_text_attachment_field', null, 2 );
+
+/**
+ * Regenerate styles if icon is sent to trash.
+ *
+ * @param int $post_id The ID of the requested post.
+ * @return void
+ */
+function downloadlist_trash_post( int $post_id ): void {
+	if ( 'dl_icons' === get_post_type( $post_id ) ) {
+		Helper::regenerate_icons();
+		Helper::generate_css();
+	}
+}
+add_action( 'trashed_post', 'downloadlist_trash_post' );
+
+/**
+ * Exclude our own cpt from Easy Language.
+ *
+ * @param array $post_types List of post types.
+ * @return array
+ */
+function downloadlist_remove_easy_language_support( array $post_types ): array {
+	if ( ! empty( $post_types['dl_icons'] ) ) {
+		unset( $post_types['dl_icons'] );
+	}
+	return $post_types;
+}
+add_filter( 'easy_language_possible_post_types', 'downloadlist_remove_easy_language_support' );
+
+/**
+ * Add link to icon management in plugin list.
+ *
+ * @param array $links List of links.
+ * @return array
+ */
+function downloadlist_plugin_list_add_setting_link( array $links ): array {
+	$url = add_query_arg(
+		array(
+			'post_type' => 'dl_icons',
+		),
+		admin_url() . 'edit.php'
+	);
+
+	// adds the link to the end of the array.
+	$links[] = '<a href="' . esc_url( $url ) . '">' . __( 'Manage icons', 'download-list-block-with-icons' ) . '</a>';
+
+	// return resulting list.
+	return $links;
+}
+add_filter( 'plugin_action_links_' . plugin_basename( DL_PLUGIN ), 'downloadlist_plugin_list_add_setting_link' );

@@ -1,8 +1,6 @@
 body.taxonomy-dl_icon_set .term-description-wrap, body.taxonomy-dl_icon_set .term-slug-wrap { display: none }
 body.taxonomy-dl_icon_set input[type="number"] { width: auto }
 
-body.post-type-dl_icons .subsubsub { display: none }
-
 .downloadlist-transient {
 	position: relative;
 	z-index: 1;
@@ -24,4 +22,12 @@ body.post-type-dl_icons .subsubsub { display: none }
 
 #downloadlist_custom_icons .downloadlist-image-choose img {
 	width: 150px;
+}
+
+body .review-hint-button:after {
+	color: #d4af37;
+	content: "\f155 \f155 \f155 \f155 \f155";
+	display: inline-block;
+	font-family: "dashicons", sans-serif;
+	margin-left: 8px;
 }

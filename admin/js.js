@@ -1,4 +1,13 @@
 jQuery(document).ready(function($) {
+	$('body.post-type-dl_icons h1').each(function() {
+		let button = document.createElement('a');
+		button.className = 'review-hint-button page-title-action';
+		button.href = 'https://wordpress.org/plugins/download-list-block-with-icons/#reviews';
+		button.innerHTML = downloadlistAdminJsVars.title_rate_us;
+		button.target = '_blank';
+		this.after(button);
+	})
+
 	// image handling: on upload button click.
 	$('body.post-type-dl_icons').on('click', '.downloadlist-image-choose', function (e) {
 		e.preventDefault();
