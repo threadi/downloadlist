@@ -43,7 +43,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0.
 
-Source: [classes/class-iconsets.php](class-iconsets.php), [line 63](class-iconsets.php#L63-L72)
+Source: [classes/class-iconsets.php](class-iconsets.php), [line 65](class-iconsets.php#L65-L74)
 
 ### `downloadlist_dashicons_icons`
 

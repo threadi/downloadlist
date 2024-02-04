@@ -8,6 +8,8 @@
 namespace downloadlist;
 
 // prevent also other direct access.
+use WP_Query;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -90,6 +92,29 @@ class Iconsets {
 
 		// return results.
 		return $list;
+	}
+
+	/**
+	 * Return generic custom post types.
+	 *
+	 * @return array
+	 */
+	public function get_generic_sets_cpts(): array {
+		$query = array(
+			'post_type'      => 'dl_icons',
+			'post_status'    => array( 'any', 'trash' ),
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				'relation' => 'AND',
+				array(
+					'key'     => 'generic-downloadlist',
+					'compare' => 'EXISTS',
+				),
+			),
+		);
+		$posts = new WP_Query( $query );
+		return $posts->posts;
 	}
 
 	/**

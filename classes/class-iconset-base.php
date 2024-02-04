@@ -66,7 +66,7 @@ class Iconset_Base {
 	private static ?Iconset_Base $instance = null;
 
 	/**
-	 * Constructor for every Iconbase-object.
+	 * Constructor for every Iconset-base-object.
 	 */
 	public function __construct() {
 		$this->init();

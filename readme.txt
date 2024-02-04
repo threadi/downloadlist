@@ -209,11 +209,11 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 = 3.4.0 =
 * Added possibility to use multiple custom iconsets
 * Added automatic documentation of hooks in this plugin
-* Now generating valid class names from mime types (thanks @dotsam)
+* Now generating valid class names from mime types (thanks @samedwards)
 * Rename handles of enqueued styles to prevent conflicts with other plugins
 * Compatibility with WordPress 6.4.3
 * Optimized style for editing custom icons
-* Updated performance
+* Optimized performance
 * Updated dependencies
 * Plugin now won't be usable with PHP older than 8.0
 * Fixed missing translations
