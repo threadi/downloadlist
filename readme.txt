@@ -223,4 +223,5 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.4.1 =
 * Prevent uninstall with PHP older than 8.0 to prevent errors
+* Updated dependencies
 * Fixed possible notice in transient-handler
