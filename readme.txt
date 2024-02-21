@@ -6,7 +6,7 @@ Tested up to: 6.4.3
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.4.0
+Stable tag: 3.4.1
 
 == Description ==
 
@@ -220,3 +220,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Fixed error on search for iconsets during editing your own icon
 * Fixed visibility of custom icons in backend
 * Fixed problem with duplicate entries for each iconset
+
+= 3.4.1 =
+* Fixed possible notice in transient-handler
