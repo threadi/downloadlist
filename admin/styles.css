@@ -31,3 +31,5 @@ body .review-hint-button:after {
 	font-family: "dashicons", sans-serif;
 	margin-left: 8px;
 }
+
+body.post-type-dl_icons .mine { display: none }
