@@ -1,4 +1,4 @@
-=== Download List with Icons ===
+=== Download List Block with Icons ===
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
