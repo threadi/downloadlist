@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.4.3
+Tested up to: 6.5
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -223,5 +223,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.4.1 =
 * Prevent uninstall with PHP older than 8.0 to prevent errors
+* Hide "Mine" in icon list in backend
 * Updated dependencies
+* Compatibility with WordPress 6.5
 * Fixed possible notice in transient-handler
