@@ -227,3 +227,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Updated dependencies
 * Compatibility with WordPress 6.5
 * Fixed possible notice in transient-handler
+* Fixed removing of our own iconset taxonomy on uninstall

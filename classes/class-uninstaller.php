@@ -54,6 +54,8 @@ class Uninstaller {
 	 * @return void
 	 */
 	public function run(): void {
+		global $wpdb;
+
 		// delete our own post-type-entries.
 		$query = array(
 			'post_type'      => 'dl_icons',
@@ -83,15 +85,30 @@ class Uninstaller {
 			wp_delete_post( $post_id, true );
 		}
 
-		// delete entries of our own taxonomy for iconsets.
-		$query     = array(
-			'taxonomy'   => 'dl_icon_set',
-			'hide_empty' => false,
+		// delete all terms of our taxonomy.
+		$taxonomy = 'dl_icon_set';
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM ' . $wpdb->terms . '
+			WHERE term_id IN
+			(
+				SELECT ' . $wpdb->terms . '.term_id
+				FROM ' . $wpdb->terms . '
+				JOIN ' . $wpdb->term_taxonomy . '
+				ON ' . $wpdb->term_taxonomy . '.term_id = ' . $wpdb->terms . '.term_id
+				WHERE taxonomy = %s
+			)',
+				array(
+					$taxonomy,
+				)
+			)
 		);
-		$icon_sets = new \WP_Term_Query( $query );
-		foreach ( $icon_sets->get_terms() as $term ) {
-			wp_delete_term( $term->term_id, 'dl_icon_set' );
-		}
+
+		// delete all taxonomy-entries.
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->term_taxonomy . ' WHERE taxonomy = %s', array( $taxonomy ) ) );
+
+		// cleanup options from our taxonomy.
+		delete_option( $taxonomy . '_children' );
 
 		// delete style-file.
 		$path = helper::get_style_path();
