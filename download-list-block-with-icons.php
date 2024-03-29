@@ -252,18 +252,18 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	function downloadlist_add_position_posttype(): void {
 		// set labels for our own cpt.
 		$labels = array(
-			'name'               => __( 'Download List Icons', 'download-list-block-with-icons' ),
-			'singular_name'      => __( 'Download List Icon', 'download-list-block-with-icons' ),
-			'menu_name'          => __( 'Download List Icons', 'download-list-block-with-icons' ),
-			'parent_item_colon'  => __( 'Parent Download List  Icon', 'download-list-block-with-icons' ),
-			'all_items'          => __( 'All Icons', 'download-list-block-with-icons' ),
-			'add_new'            => __( 'Add new Icon', 'download-list-block-with-icons' ),
-			'add_new_item'       => __( 'Add new Icon', 'download-list-block-with-icons' ),
-			'edit_item'          => __( 'Edit Icon', 'download-list-block-with-icons' ),
-			'view_item'          => __( 'View Download List Icon', 'download-list-block-with-icons' ),
-			'view_items'         => __( 'View Download List Icons', 'download-list-block-with-icons' ),
-			'search_items'       => __( 'Search Download List Icon', 'download-list-block-with-icons' ),
-			'not_found'          => __( 'Not Found', 'download-list-block-with-icons' ),
+			'name'              => __( 'Download List Icons', 'download-list-block-with-icons' ),
+			'singular_name'     => __( 'Download List Icon', 'download-list-block-with-icons' ),
+			'menu_name'         => __( 'Download List Icons', 'download-list-block-with-icons' ),
+			'parent_item_colon' => __( 'Parent Download List  Icon', 'download-list-block-with-icons' ),
+			'all_items'         => __( 'All Icons', 'download-list-block-with-icons' ),
+			'add_new'           => __( 'Add new Icon', 'download-list-block-with-icons' ),
+			'add_new_item'      => __( 'Add new Icon', 'download-list-block-with-icons' ),
+			'edit_item'         => __( 'Edit Icon', 'download-list-block-with-icons' ),
+			'view_item'         => __( 'View Download List Icon', 'download-list-block-with-icons' ),
+			'view_items'        => __( 'View Download List Icons', 'download-list-block-with-icons' ),
+			'search_items'      => __( 'Search Download List Icon', 'download-list-block-with-icons' ),
+			'not_found'         => __( 'Not Found', 'download-list-block-with-icons' ),
 		);
 
 		// set arguments for our own cpt.
@@ -336,7 +336,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 
 		// remove this taxonomy from views for not logged-in users.
 		if ( ! is_user_logged_in() ) {
-			$icon_set_array['rewrite'] = false;
+			$icon_set_array['rewrite']      = false;
 			$icon_set_array['show_in_rest'] = false;
 		}
 
@@ -537,9 +537,11 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				$attachment->post_content = $file_meta['description'];
 
 				// get the file size.
-				$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
-				if ( ! empty( $attributes['hideFileSize'] ) ) {
-					$filesize = '';
+				if ( ! empty( $file_meta['filesizeHumanReadable'] ) ) {
+					$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
+					if ( ! empty( $attributes['hideFileSize'] ) ) {
+						$filesize = '';
+					}
 				}
 
 				// get the description.

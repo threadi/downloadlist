@@ -37,7 +37,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 
 	// embed media if we edit our own cpt, if not already done.
 	$post_id = absint( filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT ) );
-	if ( ! did_action( 'wp_enqueue_media' ) && $post_id > 0 && get_post_type( $post_id ) === 'dl_icons' ) {
+	if ( ! did_action( 'wp_enqueue_media' ) && get_post_type( $post_id ) === 'dl_icons' ) {
 		wp_enqueue_media();
 	}
 
