@@ -232,8 +232,8 @@ class Helper {
 				continue;
 			}
 
-			// bail if this iconset-slug has already been generated.
-			if ( ! empty( $iconset_generated_slugs[ $iconset_obj->get_slug() ] ) ) {
+			// bail if this generic iconset-slug has already been generated.
+			if ( $iconset_obj->is_generic() && ! empty( $iconset_generated_slugs[ $iconset_obj->get_slug() ] ) ) {
 				continue;
 			}
 

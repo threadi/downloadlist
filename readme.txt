@@ -6,7 +6,7 @@ Tested up to: 6.5
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 
 == Description ==
 
@@ -228,3 +228,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Compatibility with WordPress 6.5
 * Fixed possible notice in transient-handler
 * Fixed removing of our own iconset taxonomy on uninstall
+
+= 3.4.2 =
+* Optimized output of file size in list
+* Updated dependencies
+* Fixed choosing or uploading images button
+* Fixed generating of styles for custom iconsets
