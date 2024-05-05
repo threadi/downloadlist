@@ -87,6 +87,10 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 							'type'    => 'string',
 							'default' => 'direct',
 						),
+						'robots'         => array(
+							'type'    => 'string',
+							'default' => 'follow',
+						),
 						'iconset'            => array(
 							'type'    => 'string',
 							'default' => '',
@@ -561,6 +565,21 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					$download_attribute = '';
 				}
 
+				// set rel-attribute.
+				$rel_attribute = '';
+				if ( ! empty( $attributes['robots'] ) && 'follow' !== $attributes['robots'] ) {
+					$rel_attribute = $attributes['robots'];
+				}
+
+				/**
+				 * Filter the rel-attribute.
+				 *
+				 * @since 3.5.0 Available since 3.5.0
+				 * @param string $rel_attribute The rel-value.
+				 * @param array $file The attributes for single file.
+				 */
+				$rel_attribute = apply_filters( 'downloadlist_rel_attribute', $rel_attribute, $file );
+
 				// get individual styles for this file from used iconset.
 				if ( $iconset_obj instanceof Iconset_Base ) {
 					$styles .= $iconset_obj->get_style_for_file( $file_id );
@@ -569,7 +588,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get optional download-button.
 				$download_button = '';
 				if ( ! empty( $attributes['showDownloadButton'] ) ) {
-					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . '>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
+					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ).'>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
 				}
 
 				// add it to output.

@@ -21,7 +21,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 285](class-helper.php#L285-L292)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 285](classes/class-helper.php#L285-L292)
 
 ## Filters
 
@@ -43,7 +43,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0.
 
-Source: [classes/class-iconsets.php](class-iconsets.php), [line 65](class-iconsets.php#L65-L74)
+Source: [./classes/class-iconsets.php](classes/class-iconsets.php), [line 65](classes/class-iconsets.php#L65-L74)
 
 ### `downloadlist_dashicons_icons`
 
@@ -70,7 +70,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0
 
-Source: [classes/iconsets/class-dashicons.php](iconsets/class-dashicons.php), [line 169](iconsets/class-dashicons.php#L169-L184)
+Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 169](classes/iconsets/class-dashicons.php#L169-L184)
 
 ### `downloadlist_dashicons_files`
 
@@ -88,7 +88,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/iconsets/class-dashicons.php](iconsets/class-dashicons.php), [line 249](iconsets/class-dashicons.php#L249-L255)
+Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 249](classes/iconsets/class-dashicons.php#L249-L255)
 
 ### `downloadlist_fontawesome_icons`
 
@@ -115,7 +115,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0
 
-Source: [classes/iconsets/class-fontawesome.php](iconsets/class-fontawesome.php), [line 212](iconsets/class-fontawesome.php#L212-L227)
+Source: [./classes/iconsets/class-fontawesome.php](classes/iconsets/class-fontawesome.php), [line 212](classes/iconsets/class-fontawesome.php#L212-L227)
 
 ### `downloadlist_fontawesome_files`
 
@@ -133,7 +133,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/iconsets/class-fontawesome.php](iconsets/class-fontawesome.php), [line 244](iconsets/class-fontawesome.php#L244-L250)
+Source: [./classes/iconsets/class-fontawesome.php](classes/iconsets/class-fontawesome.php), [line 244](classes/iconsets/class-fontawesome.php#L244-L250)
 
 ### `downloadlist_bootstrap_icons`
 
@@ -160,7 +160,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0
 
-Source: [classes/iconsets/class-bootstrap.php](iconsets/class-bootstrap.php), [line 162](iconsets/class-bootstrap.php#L162-L177)
+Source: [./classes/iconsets/class-bootstrap.php](classes/iconsets/class-bootstrap.php), [line 162](classes/iconsets/class-bootstrap.php#L162-L177)
 
 ### `downloadlist_bootstrap_files`
 
@@ -178,7 +178,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/iconsets/class-bootstrap.php](iconsets/class-bootstrap.php), [line 244](iconsets/class-bootstrap.php#L244-L250)
+Source: [./classes/iconsets/class-bootstrap.php](classes/iconsets/class-bootstrap.php), [line 244](classes/iconsets/class-bootstrap.php#L244-L250)
 
 ### `downloadlist_fontawesome_files`
 
@@ -196,7 +196,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 39](class-helper.php#L39-L45)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 39](classes/class-helper.php#L39-L45)
 
 ### `downloadlist_style_filename`
 
@@ -214,7 +214,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0.
 
-Source: [classes/class-helper.php](class-helper.php), [line 56](class-helper.php#L56-L63)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 56](classes/class-helper.php#L56-L63)
 
 ### `downloadlist_css_path`
 
@@ -224,7 +224,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$path` |  | 
 
-Source: [classes/class-helper.php](class-helper.php), [line 83](class-helper.php#L83-L83)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 83](classes/class-helper.php#L83-L83)
 
 ### `downloadlist_css_url`
 
@@ -234,7 +234,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$url` |  | 
 
-Source: [classes/class-helper.php](class-helper.php), [line 103](class-helper.php#L103-L103)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 103](classes/class-helper.php#L103-L103)
 
 ### `downloadlist_prevent_css_generation`
 
@@ -252,7 +252,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 137](class-helper.php#L137-L143)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 137](classes/class-helper.php#L137-L143)
 
 ### `downloadlist_generate_css`
 
@@ -270,7 +270,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 273](class-helper.php#L273-L280)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 273](classes/class-helper.php#L273-L280)
 
 ### `downloadlist_generate_classname`
 
@@ -288,7 +288,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 319](class-helper.php#L319-L326)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 319](classes/class-helper.php#L319-L326)
 
 ### `downloadlist_generate_classname`
 
@@ -306,7 +306,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 328](class-helper.php#L328-L335)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 328](classes/class-helper.php#L328-L335)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -324,7 +324,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 347](class-helper.php#L347-L353)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 347](classes/class-helper.php#L347-L353)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -342,7 +342,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 390](class-helper.php#L390-L396)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 390](classes/class-helper.php#L390-L396)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -361,7 +361,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [classes/class-helper.php](class-helper.php), [line 420](class-helper.php#L420-L427)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 420](classes/class-helper.php#L420-L427)
 
 
 <p align="center"><a href="https://github.com/pronamic/wp-documentor"><img src="https://cdn.jsdelivr.net/gh/pronamic/wp-documentor@main/logos/pronamic-wp-documentor.svgo-min.svg" alt="Pronamic WordPress Documentor" width="32" height="32"></a><br><em>Generated by <a href="https://github.com/pronamic/wp-documentor">Pronamic WordPress Documentor</a> <code>1.2.0</code></em><p>
