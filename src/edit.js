@@ -284,6 +284,16 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * On change of robots.
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeLinkRobots( newValue, object ) {
+		object.setAttributes({ robots: newValue });
+	}
+
+	/**
 	 * On change of do not force download
 	 *
 	 * @param newValue
@@ -474,6 +484,15 @@ export default function Edit( object ) {
 								onChange={ value => onChangeDoNotForceDownload( value, object ) }
 							/>
 						}
+						<SelectControl
+							label={__('Robots', 'download-list-block-with-icons')}
+							value={ object.attributes.robots }
+							options={ [
+								{ label: __('follow', 'download-list-block-with-icons'), value: 'follow' },
+								{ label: __('nofollow', 'download-list-block-with-icons'), value: 'nofollow' },
+							] }
+							onChange={ value => onChangeLinkRobots( value, object ) }
+						/>
 					</PanelBody>
 				</InspectorControls>
 			}

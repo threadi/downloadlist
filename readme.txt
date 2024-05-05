@@ -2,11 +2,11 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.5.3
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.4.2
+Stable tag: 3.5.0
 
 == Description ==
 
@@ -234,3 +234,11 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Updated dependencies
 * Fixed choosing or uploading images button
 * Fixed generating of styles for custom iconsets
+
+= 3.5.0 =
+* Added SEO-relevant rel-attribute to optionally prevent bots to follow download-links
+* Added new hook for rel-attribute
+* Compatibility with WordPress 6.5.3
+* Updated dependencies
+* Updated fontawesome and bootstrap icon libraries
+* Fixed potential PHP warning for files without sizes

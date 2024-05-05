@@ -86,7 +86,7 @@
 	<!-- generate documentation -->
 	<target name="generate-documentation" depends="composer-install">
 		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/wp-documentor">
-			<arg line="parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_"/>
+			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn  --exclude=vendor  --exclude=src --output=docs/hooks.md --prefix=downloadlist_"/>
 		</exec>
 	</target>
 

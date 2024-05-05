@@ -49,6 +49,10 @@
 			"type": "string",
 			"default": "direct"
 		},
+		"robots": {
+			"type": "string",
+			"default": "follow"
+		},
 		"iconset": {
 			"type": "string",
 			"default": ""
