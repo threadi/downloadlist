@@ -8,6 +8,8 @@ License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 3.5.0
 
+Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary.
+
 == Description ==
 
 Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary. The Block can be used immediately after installation.
