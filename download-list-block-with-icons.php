@@ -537,11 +537,9 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				$attachment->post_content = $file_meta['description'];
 
 				// get the file size.
-				if ( ! empty( $file_meta['filesizeHumanReadable'] ) ) {
+				$filesize = '';
+				if ( empty( $attributes['hideFileSize'] ) && ! empty( $file_meta['filesizeHumanReadable'] ) ) {
 					$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
-					if ( ! empty( $attributes['hideFileSize'] ) ) {
-						$filesize = '';
-					}
 				}
 
 				// get the description.
