@@ -243,6 +243,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 		$files = array(
 			array(
 				'handle' => 'dashicons',
+				'depends' => array( 'dashicons' )
 			),
 		);
 

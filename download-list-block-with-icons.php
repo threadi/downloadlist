@@ -160,6 +160,9 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					wp_enqueue_style(
 						'downloadlist-' . $file['handle']
 					);
+					if( ! empty( $file['depends'] ) ) {
+						wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends']);
+					}
 				}
 			}
 		}
