@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.5.3
+Tested up to: 6.6
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -246,4 +246,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Fixed potential PHP warning for files without sizes
 
 = 3.5.1 =
+* Updated dependencies
+* Compatibility with WordPress 6.6
 * Fixed visibility of Dashicons in frontend if user is not logged in
