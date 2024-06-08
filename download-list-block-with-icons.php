@@ -87,7 +87,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 							'type'    => 'string',
 							'default' => 'direct',
 						),
-						'robots'         => array(
+						'robots'             => array(
 							'type'    => 'string',
 							'default' => 'follow',
 						),
@@ -160,8 +160,8 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 					wp_enqueue_style(
 						'downloadlist-' . $file['handle']
 					);
-					if( ! empty( $file['depends'] ) ) {
-						wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends']);
+					if ( ! empty( $file['depends'] ) ) {
+						wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends'], DL_VERSION );
 					}
 				}
 			}
@@ -591,7 +591,7 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 				// get optional download-button.
 				$download_button = '';
 				if ( ! empty( $attributes['showDownloadButton'] ) ) {
-					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ).'>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
+					$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ) . '>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
 				}
 
 				// add it to output.
