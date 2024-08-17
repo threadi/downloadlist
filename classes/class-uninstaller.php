@@ -126,13 +126,13 @@ class Uninstaller {
 				'relation' => 'OR',
 				array(
 					'key'     => 'dl_title',
-					'compare' => 'EXIST'
+					'compare' => 'EXIST',
 				),
 				array(
 					'key'     => 'dl_description',
-					'compare' => 'EXIST'
-				)
-			)
+					'compare' => 'EXIST',
+				),
+			),
 		);
 		$posts = new WP_Query( $query );
 		foreach ( $posts->posts as $post_id ) {
