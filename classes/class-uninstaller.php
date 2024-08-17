@@ -116,6 +116,30 @@ class Uninstaller {
 			wp_delete_file( $path );
 		}
 
+		// get media files with title and/or description to delete these entries.
+		$query = array(
+			'post_type'      => 'attachment',
+			'post_status'    => array( 'any', 'trash' ),
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				'relation' => 'OR',
+				array(
+					'key'     => 'dl_title',
+					'compare' => 'EXIST'
+				),
+				array(
+					'key'     => 'dl_description',
+					'compare' => 'EXIST'
+				)
+			)
+		);
+		$posts = new WP_Query( $query );
+		foreach ( $posts->posts as $post_id ) {
+			delete_post_meta( $post_id, 'dl_title' );
+			delete_post_meta( $post_id, 'dl_description' );
+		}
+
 		// delete transients.
 		$transients_obj = Transients::get_instance();
 		foreach ( $transients_obj->get_transients() as $transient_obj ) {

@@ -6,7 +6,7 @@ Tested up to: 6.6
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.5.1
+Stable tag: 3.5.2
 
 Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary.
 
@@ -249,3 +249,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Updated dependencies
 * Compatibility with WordPress 6.6
 * Fixed visibility of Dashicons in frontend if user is not logged in
+
+= 3.5.2 =
+* Remove custom attachment title und description on uninstall (solves #92)
