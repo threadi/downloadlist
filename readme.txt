@@ -252,3 +252,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.5.2 =
 * Remove custom attachment title und description on uninstall (solves #92)
+* Prevent to use WP/scripts >= 28.x for better compatibility with WordPress < 6.6
+* Updated dependencies
+* Updated fontawesome and bootstrap icon libraries
