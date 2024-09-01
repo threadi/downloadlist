@@ -10,7 +10,17 @@ use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
 use downloadlist\Transients;
 
-add_action( 'enqueue_block_editor_assets', 'downloadlist_enqueue_styles' );
+/**
+ * Register styles for block editor.
+ */
+add_action( 'enqueue_block_editor_assets', 'downloadlist_register_styles' );
+
+/**
+ * Enqueue styles in block editor.
+ *
+ * @return void
+ */
+add_action( 'enqueue_block_editor_assets', 'downloadlist_enqueue_styles_run', 10, 0 );
 
 /**
  * Add our own styles and js in backend.
