@@ -257,4 +257,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Updated fontawesome and bootstrap icon libraries
 
 = 3.5.3 =
-* Load our own styles on frontend only if our block is used
+* Load our own styles on frontend only if our block is used in actual page
+* Optimized Font Awesome styles regarding font-weight
+* Updated dependencies

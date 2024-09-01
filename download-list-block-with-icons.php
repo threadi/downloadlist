@@ -173,7 +173,12 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	 * @return string
 	 */
 	function downloadlist_enqueue_styles( string $block_content, array $block ): string {
-		// make sure we have the blockName.
+		// bail if script is already enqueued.
+		if( wp_script_is( 'downloadlist-iconsets' ) ) {
+			return $block_content;
+		}
+
+		// bail if no block name is set.
 		if ( empty( $block['blockName'] ) ) {
 			return $block_content;
 		}
