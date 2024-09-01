@@ -4,5 +4,4 @@ ToDo-List for this plugin
 * add possibility to load files from a given directory
 -> which title and description to use?
 * set default settings for all blocks (e.g. hide things) incl. auto-update them in one task
-* generate only used iconset-css in frontend (but complete in editor)
 * minimize css-output in frontend

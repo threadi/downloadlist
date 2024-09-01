@@ -128,17 +128,17 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 	add_action( 'init', 'downloadlist_init' );
 
 	/**
-	 * Embed iconset-css.
+	 * Register our own iconset-css-files for enqueuing.
 	 *
 	 * @return void
 	 */
-	function downloadlist_enqueue_styles(): void {
+	function downloadlist_register_styles(): void {
 		if ( false === file_exists( Helper::get_style_path() ) ) {
 			Helper::generate_css();
 		}
 
 		// get global styles.
-		wp_enqueue_style(
+		wp_register_style(
 			'downloadlist-iconsets',
 			Helper::get_style_url(),
 			array(),
@@ -149,25 +149,58 @@ if ( version_compare( PHP_VERSION, '8.0.0' ) >= 0 ) {
 		foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
 			foreach ( $iconset_obj->get_style_files() as $file ) {
 				if ( ! empty( $file['handle'] ) && ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
-					wp_enqueue_style(
+					wp_register_style(
 						'downloadlist-' . $file['handle'],
 						$file['url'],
 						array(),
 						filemtime( $file['path'] )
 					);
 				}
-				if ( ! empty( $file['handle'] ) && empty( $file['path'] ) ) {
-					wp_enqueue_style(
-						'downloadlist-' . $file['handle']
-					);
-					if ( ! empty( $file['depends'] ) ) {
-						wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends'], DL_VERSION );
-					}
+				if ( ! empty( $file['handle'] ) && empty( $file['path'] ) && ! empty( $file['depends'] ) ) {
+					wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends'], DL_VERSION );
 				}
 			}
 		}
 	}
-	add_action( 'wp_enqueue_scripts', 'downloadlist_enqueue_styles', PHP_INT_MAX );
+	add_action( 'wp_enqueue_scripts', 'downloadlist_register_styles' );
+
+	/**
+	 * Enqueue style if our block is used anywhere in the output.
+	 *
+	 * @param string $block_content The block content.
+	 * @param array $block The used block.
+	 *
+	 * @return string
+	 */
+	function downloadlist_enqueue_styles( string $block_content, array $block ): string {
+		// make sure we have the blockName.
+		if ( empty( $block['blockName'] ) ) {
+			return $block_content;
+		}
+
+		// if this is a pagination block, enqueue the pagination script.
+		if ( 'downloadlist/list' === $block['blockName'] ) {
+			downloadlist_enqueue_styles_run();
+		}
+
+		// return the block content.
+		return $block_content;
+	}
+	add_action( 'render_block', 'downloadlist_enqueue_styles', 10, 2 );
+
+	/**
+	 * Run the enqueuing (used in frontend and block editor).
+	 *
+	 * @return void
+	 */
+	function downloadlist_enqueue_styles_run(): void {
+		wp_enqueue_style( 'downloadlist-iconsets' );
+		foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
+			foreach ($iconset_obj->get_style_files() as $file) {
+				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
+			}
+		}
+	}
 
 	/**
 	 * Filter query from media library to show single attachment.
