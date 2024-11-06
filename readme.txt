@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -259,4 +259,10 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 = 3.5.3 =
 * Load our own styles on frontend only if our block is used in actual page
 * Optimized Font Awesome styles regarding font-weight
+* Updated dependencies
+
+= 3.5.4 =
+* Added warning if PHP 8.0 or older is used
+* Compatibility with WordPress 6.7
+* Updated some styles in editor
 * Updated dependencies
