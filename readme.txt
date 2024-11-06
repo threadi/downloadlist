@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.5.3
+Stable tag: 3.5.5
 
 Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary.
 
