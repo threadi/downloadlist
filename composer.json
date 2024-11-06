@@ -1,6 +1,6 @@
 {
     "name": "threadi/downloadlist",
-	"version": "3.5.2",
+	"version": "3.5.5",
     "scripts": {
         "post-install-cmd": [
             "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra"
