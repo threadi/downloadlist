@@ -267,3 +267,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Compatibility with WordPress 6.7
 * Updated some styles in editor
 * Updated dependencies
+
+= 3.5.5 =
+* Fixed missing style optimizations from last release
