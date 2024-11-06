@@ -258,6 +258,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.5.3 =
 * Load our own styles on frontend only if our block is used in actual page
+* Load only actually used iconset(s) styles in frontend
 * Optimized Font Awesome styles regarding font-weight
 * Updated dependencies
 

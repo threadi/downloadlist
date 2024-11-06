@@ -162,6 +162,19 @@ function downloadlist_register_styles(): void {
 }
 add_action( 'wp_enqueue_scripts', 'downloadlist_register_styles' );
 
+	/**
+	 * Enqueue style if our block is used anywhere in the output.
+	 *
+	 * @param string $block_content The block content.
+	 * @param array  $block The used block.
+	 *
+	 * @return string
+	 */
+	function downloadlist_enqueue_styles( string $block_content, array $block ): string {
+		// bail if no block name is set.
+		if ( empty( $block['blockName'] ) ) {
+			return $block_content;
+		}
 /**
  * Enqueue style if our block is used anywhere in the output.
  *
@@ -181,6 +194,19 @@ function downloadlist_enqueue_styles( string $block_content, array $block ): str
 		return $block_content;
 	}
 
+		// if this is a pagination block, enqueue the pagination script.
+		if ( 'downloadlist/list' === $block['blockName'] ) {
+			// set empty iconset list.
+			$iconsets = array();
+
+			// check which iconset is used by this block and get its object.
+			if ( ! empty( $block['attrs']['iconset'] ) ) {
+				$iconsets = array( \downloadlist\Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
+			}
+
+			// enqueue them.
+			downloadlist_enqueue_styles_run( $iconsets );
+		}
 	// if this is a pagination block, enqueue the pagination script.
 	if ( 'downloadlist/list' === $block['blockName'] ) {
 		downloadlist_enqueue_styles_run();
@@ -191,6 +217,32 @@ function downloadlist_enqueue_styles( string $block_content, array $block ): str
 }
 add_action( 'render_block', 'downloadlist_enqueue_styles', 10, 2 );
 
+	/**
+	 * Run the enqueuing (used in frontend and block editor).
+	 *
+	 * @param array $iconsets List of iconsets to enqueue.
+	 * @return void
+	 */
+	function downloadlist_enqueue_styles_run( array $iconsets = array() ): void {
+		// enqueue the main styles.
+		wp_enqueue_style( 'downloadlist-iconsets' );
+
+		// if no iconsets are given, use all.
+		if ( empty( $iconsets ) ) {
+			$iconsets = Iconsets::get_instance()->get_icon_sets();
+		}
+		foreach ( $iconsets as $iconset_obj ) {
+			// bail if it is not an iconset-object.
+			if ( ! $iconset_obj instanceof Iconset_Base ) {
+				continue;
+			}
+
+			// add the files of this iconset in frontend.
+			foreach ( $iconset_obj->get_style_files() as $file ) {
+				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
+			}
+		}
+	}
 /**
  * Run the enqueuing (used in frontend and block editor).
  *
