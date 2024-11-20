@@ -273,3 +273,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.6.0 =
 * Added template for download button
+* Added new versioning for styles
+* Changed internal transient names for better compatibility with other plugins
+* Optimized code
+* Fixed possible double enqueuing of styles in frontend

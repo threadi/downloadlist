@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 use WP_Query;
 
@@ -147,7 +145,7 @@ class Uninstaller {
 			$transient_obj->delete();
 
 			// delete dismiss-marker for this transient.
-			delete_option( 'pi-dismissed-' . md5( $transient_obj->get_name() ) );
+			delete_option( 'dl-dismissed-' . md5( $transient_obj->get_name() ) );
 		}
 
 		// delete options.

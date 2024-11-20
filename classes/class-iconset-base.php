@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Define the base-functions for each iconset.

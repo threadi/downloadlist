@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Initialize the transients-object.
@@ -81,7 +79,7 @@ class Transients {
 			$transients[ $transient ] = $transient_obj;
 		}
 
-		// return list as array.
+		// return the resulting list of transients as array.
 		return $transients;
 	}
 

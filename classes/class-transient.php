@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Initialize a single transient-object.
@@ -251,7 +249,7 @@ class Transient {
 	 * @return string|int|false
 	 */
 	private function get_admin_transient_dismiss_cache(): string|int|false {
-		$cache_key = 'pi-dismissed-' . md5( $this->get_name() );
+		$cache_key = 'dl-dismissed-' . md5( $this->get_name() );
 		$timeout   = get_option( $cache_key );
 		$timeout   = 'forever' === $timeout ? time() + 60 : $timeout;
 
