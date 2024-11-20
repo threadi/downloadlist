@@ -566,4 +566,13 @@ class Helper {
 		 */
 		return apply_filters( 'downloadlist_file_version', $plugin_version, $filepath );
 	}
+
+	/**
+	 * Return the support URL.
+	 *
+	 * @return string
+	 */
+    public static function get_support_url(): string {
+		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
+    }
 }

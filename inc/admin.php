@@ -72,6 +72,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'window.downloadlist_config = ' . wp_json_encode(
 			array(
 				'iconsets_url' => trailingslashit( get_admin_url() ) . 'edit-tags.php?taxonomy=dl_icon_set&post_type=dl_icons',
+				'support_url' => Helper::get_support_url()
 			)
 		),
 		'before'

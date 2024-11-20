@@ -7,10 +7,8 @@
 
 namespace downloadlist\iconsets;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
@@ -63,14 +61,18 @@ class Custom extends Iconset_Base implements Iconset {
 
 		// get the icon of the given post.
 		$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
-		if ( $attachment_id > 0 ) {
-			// get image url.
-			$url = wp_get_attachment_image_url( $attachment_id, 'downloadlist-icon-' . $term_slug );
 
-			// add output of this image for given file-type.
-			if ( false !== $url ) {
-				$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: url("' . esc_url( $url ) . '"); }';
-			}
+		// bail if no id for icon is given.
+		if ( 0 === $attachment_id ) {
+			return $styles;
+		}
+
+		// get image url.
+		$url = wp_get_attachment_image_url( $attachment_id, 'downloadlist-icon-' . $term_slug );
+
+		// add output of this image for given file-type.
+		if ( false !== $url ) {
+			$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: url("' . esc_url( $url ) . '"); }';
 		}
 
 		// return resulting styles.

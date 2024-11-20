@@ -45,6 +45,10 @@
 			"type": "boolean",
 			"default": false
 		},
+		"hideLink": {
+			"type": "boolean",
+			"default": false
+		},
 		"linkTarget": {
 			"type": "string",
 			"default": "direct"
@@ -72,6 +76,22 @@
 		"showDownloadButton": {
 			"type": "boolean",
 			"default": false
+		},
+		"downloadLinkTarget": {
+			"type": "string",
+			"default": ""
+		},
+		"downloadLinkTargetName": {
+			"type": "string",
+			"default": ""
+		},
+		"linkBrowserTarget": {
+			"type": "string",
+			"default": ""
+		},
+		"linkBrowserTargetName": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"example": {
