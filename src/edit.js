@@ -489,7 +489,7 @@ export default function Edit( object ) {
 			}
 			{
 				<InspectorControls>
-					<PanelBody title={ __( 'Icon settings', 'download-list-block-with-icons' ) } initialOpen={ true }>
+					<PanelBody title={ __( 'Icon', 'download-list-block-with-icons' ) } initialOpen={ true }>
 						<CheckboxControl
 							label={__('Hide icons', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideIcon }
@@ -505,7 +505,7 @@ export default function Edit( object ) {
 							/>
 						}
 					</PanelBody>
-					<PanelBody title={ __( 'Link settings', 'download-list-block-with-icons' ) } initialOpen={ false }>
+					<PanelBody title={ __( 'Link', 'download-list-block-with-icons' ) } initialOpen={ false }>
 						<CheckboxControl
 							label={__('Show text instead of link', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideLink }
@@ -545,7 +545,7 @@ export default function Edit( object ) {
 							{'own' === object.attributes.linkBrowserTarget && <TextControl label={__( 'Set frame name', 'download-list-block-with-icons' )} value={ object.attributes.linkBrowserTargetName } onChange={ value => onChangeLinkBrowserTargetName( value, object ) } />}
 						</div>}
 					</PanelBody>
-					<PanelBody title={ __( 'Download button settings', 'download-list-block-with-icons' ) } initialOpen={ false }>
+					<PanelBody title={ __( 'Download button', 'download-list-block-with-icons' ) } initialOpen={ false }>
 						<CheckboxControl
 							label={__('Show download-button', 'download-list-block-with-icons')}
 							checked={ object.attributes.showDownloadButton }
