@@ -1,6 +1,18 @@
 <?php
 /**
- * Template for list item
+ * Template for list item.
+ *
+ * @param int $file_id The ID of the file.
+ * @param string $type The file type.
+ * @param string $subtype The file subtype.
+ * @param string $hide_icon The class to hide the icon.
+ * @param string $url The URL for the file.
+ * @param string $download_attribute The attributes for the download.
+ * @param string $rel_attribute The rel attribute.
+ * @param WP_Post $attachment The attachment as WP_Post object.
+ * @param string $filesize The formatted file size.
+ * @param string $download_button The download button.
+ * @param string $description The description.
  *
  * @package download-list-block-with-icons
  */

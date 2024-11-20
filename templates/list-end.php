@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for ending list
+ * Template for ending list.
  *
  * @package download-list-block-with-icons
  */
