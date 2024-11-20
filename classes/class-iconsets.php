@@ -7,12 +7,10 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-use WP_Query;
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+use WP_Query;
 
 /**
  * Object for general iconset-handling.
@@ -125,9 +123,13 @@ class Iconsets {
 	 */
 	public function get_iconset_by_slug( string $slug ): Iconset_Base|false {
 		foreach ( $this->get_icon_sets() as $iconset_obj ) {
-			if ( $slug === $iconset_obj->get_slug() ) {
-				return $iconset_obj;
+			// bail if it does not match.
+			if ( $slug !== $iconset_obj->get_slug() ) {
+				continue;
 			}
+
+			// return this object as it matches the slug.
+			return $iconset_obj;
 		}
 		return false;
 	}
@@ -139,9 +141,13 @@ class Iconsets {
 	 */
 	public function get_default_iconset(): Iconset_Base|false {
 		foreach ( $this->get_icon_sets() as $iconset_obj ) {
-			if ( $iconset_obj->should_be_default() ) {
-				return $iconset_obj;
+			// bail if this should not be default.
+			if ( ! $iconset_obj->should_be_default() ) {
+				continue;
 			}
+
+			// return the default iconset.
+			return $iconset_obj;
 		}
 		return false;
 	}

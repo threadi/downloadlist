@@ -5,6 +5,9 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Add autoloader for each php-class in this plugin.
  */

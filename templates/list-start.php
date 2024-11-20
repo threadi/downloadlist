@@ -1,6 +1,9 @@
 <?php
 /**
- * Template for starting list
+ * Template for starting list.
+ *
+ * @param string $wrapper_attributes List of attributes.
+ * @param string $iconset Style-classes for used iconset.
  *
  * @package download-list-block-with-icons
  */

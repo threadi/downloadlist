@@ -2,7 +2,7 @@
 	"$schema": "https://json.schemastore.org/block.json",
 	"apiVersion": 2,
 	"name": "downloadlist/list",
-	"version": "3.3.0",
+	"version": "3.6.0",
 	"title": "Download List Block with Icons",
 	"category": "widgets",
 	"icon": "list-view",
@@ -45,6 +45,10 @@
 			"type": "boolean",
 			"default": false
 		},
+		"hideLink": {
+			"type": "boolean",
+			"default": false
+		},
 		"linkTarget": {
 			"type": "string",
 			"default": "direct"
@@ -72,6 +76,22 @@
 		"showDownloadButton": {
 			"type": "boolean",
 			"default": false
+		},
+		"downloadLinkTarget": {
+			"type": "string",
+			"default": ""
+		},
+		"downloadLinkTargetName": {
+			"type": "string",
+			"default": ""
+		},
+		"linkBrowserTarget": {
+			"type": "string",
+			"default": ""
+		},
+		"linkBrowserTargetName": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"example": {

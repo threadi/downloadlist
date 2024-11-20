@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.5.5
+Stable tag: 3.6.0
 
 Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary.
 
@@ -270,3 +270,14 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.5.5 =
 * Fixed missing style optimizations from last release
+
+= 3.6.0 =
+* Added template for download button
+* Added new options to chose target-attribut value for link and download-button
+* Added option to hide the link and show just the file title instead
+* Added new versioning for styles
+* Added some new hooks
+* Re-arranged the settings in block in multiple sections for better overview
+* Changed internal transient names for better compatibility with other plugins
+* Optimized code
+* Fixed possible double enqueuing of styles in frontend

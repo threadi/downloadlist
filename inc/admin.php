@@ -5,6 +5,9 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
 use downloadlist\helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
@@ -33,7 +36,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'downloadlist-admin',
 		trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'admin/styles.css',
 		array(),
-		filemtime( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . 'admin/styles.css' ),
+		Helper::get_file_version( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . 'admin/styles.css' ),
 	);
 
 	// backend-JS.
@@ -41,13 +44,13 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'downloadlist-admin',
 		trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'admin/js.js',
 		array( 'jquery' ),
-		filemtime( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . '/admin/js.js' ),
+		Helper::get_file_version( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . '/admin/js.js' ),
 		true
 	);
 
 	// embed media if we edit our own cpt, if not already done.
 	$post_id = absint( filter_input( INPUT_GET, 'post', FILTER_SANITIZE_NUMBER_INT ) );
-	if ( ! did_action( 'wp_enqueue_media' ) && get_post_type( $post_id ) === 'dl_icons' ) {
+	if ( ! did_action( 'wp_enqueue_media' ) && 'dl_icons' === get_post_type( $post_id ) ) {
 		wp_enqueue_media();
 	}
 
@@ -69,6 +72,7 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'window.downloadlist_config = ' . wp_json_encode(
 			array(
 				'iconsets_url' => trailingslashit( get_admin_url() ) . 'edit-tags.php?taxonomy=dl_icon_set&post_type=dl_icons',
+				'support_url' => Helper::get_support_url()
 			)
 		),
 		'before'
@@ -109,11 +113,11 @@ function downloadlist_check_taxonomy( int $post_id ): void {
 	$iconset_terms = wp_get_object_terms( $post_id, 'dl_icon_set' );
 	if ( ! empty( $iconset_terms ) ) {
 		// regenerate icons and style of the chosen iconset.
-		helper::regenerate_icons( $iconset_terms[0]->term_id );
-		helper::generate_css( $iconset_terms[0]->term_id );
+		Helper::regenerate_icons( $iconset_terms[0]->term_id );
+		Helper::generate_css( $iconset_terms[0]->term_id );
 	}
 }
-add_filter( 'save_post_dl_icons', 'downloadlist_check_taxonomy', 10, 2 );
+add_action( 'save_post_dl_icons', 'downloadlist_check_taxonomy', 10, 2 );
 
 /**
  * Show meta-box for cpts where the assigned term has the type "custom".
@@ -292,39 +296,47 @@ add_action( 'dl_icon_set_edit_form_fields', 'downloadlist_admin_icon_set_fields'
  * @noinspection PhpUnusedParameterInspection
  */
 function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, string $taxonomy = '' ): void {
-	if ( 'dl_icon_set' === $taxonomy ) {
-		// bail if nonce does not match.
-		if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) ) {
-			return;
-		}
+	// bail if this is not our taxonomy.
+	if ( 'dl_icon_set' !== $taxonomy ) {
+		return;
+	}
 
-		// marker if the term has been changed that should result in new style generation.
-		$generate_styles = false;
+	// bail if nonce does not match.
+	if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) ) {
+		return;
+	}
 
-		if ( ! empty( $_POST['default'] ) ) {
-			helper::set_iconset_default( $term_id );
-		} else {
-			// delete markier for default icon-set if checkbox is not set.
-			delete_term_meta( $term_id, 'default' );
-		}
+	// marker if the term has been changed that should result in new style generation.
+	$generate_styles = false;
 
-		// save size for icons if they have been changed.
-		$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
-		$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
-		if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset( $_POST['width'] ) ) {
-			update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
-			$generate_styles = true;
-		}
-		if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset( $_POST['height'] ) ) {
-			update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
-			$generate_styles = true;
-		}
+	// delete markier for default icon-set.
+	delete_term_meta( $term_id, 'default' );
 
-		// run style-generation if changes have been saved.
-		if ( $generate_styles ) {
-			Helper::regenerate_icons( $term_id );
-			Helper::generate_css( $term_id );
-		}
+	// mark the icon-set as default if checkbox is set.
+	if ( ! empty( $_POST['default'] ) ) {
+		Helper::set_iconset_default( $term_id );
+	}
+
+	// get sizes for icons if they have been changed.
+	$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
+	$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
+
+	// save the width.
+	if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset( $_POST['width'] ) ) {
+		update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
+		$generate_styles = true;
+	}
+
+	// save the height.
+	if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset( $_POST['height'] ) ) {
+		update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
+		$generate_styles = true;
+	}
+
+	// run style-generation for this iconset if changes have been saved.
+	if ( $generate_styles ) {
+		Helper::regenerate_icons( $term_id );
+		Helper::generate_css( $term_id );
 	}
 }
 add_action( 'created_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
@@ -377,23 +389,28 @@ add_filter( 'manage_edit-dl_icons_columns', 'downloadlist_admin_icons_columns', 
  * @return string
  */
 function downloadlist_admin_iconset_column( string $content, string $column_name, int $term_id ): string {
-	if ( 'downloadlist_iconset_default' === $column_name ) {
-		// define link to set iconset as default.
-		$link = add_query_arg(
-			array(
-				'action'  => 'downloadlist_iconset_default',
-				'nonce'   => wp_create_nonce( 'downloadlist-set_iconset-default' ),
-				'term_id' => $term_id,
-			),
-			get_admin_url() . 'admin.php'
-		);
-
-		// define output.
-		$content = '<a href="' . esc_url( $link ) . '" class="dashicons dashicons-no" title="' . esc_attr__( 'Set this as default iconset', 'download-list-block-with-icons' ) . '">&nbsp;</a>';
-		if ( get_term_meta( $term_id, 'default', true ) ) {
-			$content = '<span class="dashicons dashicons-yes" title="' . esc_attr__( 'This is the default iconset', 'download-list-block-with-icons' ) . '"></span>';
-		}
+	// bail if this is not our column.
+	if ( 'downloadlist_iconset_default' !== $column_name ) {
+		return $content;
 	}
+
+	// define link to set iconset as default.
+	$link = add_query_arg(
+		array(
+			'action'  => 'downloadlist_iconset_default',
+			'nonce'   => wp_create_nonce( 'downloadlist-set_iconset-default' ),
+			'term_id' => $term_id,
+		),
+		get_admin_url() . 'admin.php'
+	);
+
+	// define output.
+	$content = '<a href="' . esc_url( $link ) . '" class="dashicons dashicons-no" title="' . esc_attr__( 'Set this as default iconset', 'download-list-block-with-icons' ) . '">&nbsp;</a>';
+	if ( get_term_meta( $term_id, 'default', true ) ) {
+		$content = '<span class="dashicons dashicons-yes" title="' . esc_attr__( 'This is the default iconset', 'download-list-block-with-icons' ) . '"></span>';
+	}
+
+	// return the resulting content.
 	return $content;
 }
 add_filter( 'manage_dl_icon_set_custom_column', 'downloadlist_admin_iconset_column', 10, 3 );
@@ -406,20 +423,32 @@ add_filter( 'manage_dl_icon_set_custom_column', 'downloadlist_admin_iconset_colu
  * @return void
  */
 function downloadlist_admin_icons_column( string $column_name, int $post_id ): void {
-	if ( 'downloadlist_file_type' === $column_name ) {
-		$file_type  = get_post_meta( $post_id, 'file_type', true );
-		$file_types = helper::get_mime_types();
-		if ( in_array( $file_type, $file_types, true ) ) {
-			echo esc_html( array_search( $file_type, $file_types, true ) );
-		}
+	// bail if this is not our column.
+	if ( 'downloadlist_file_type' !== $column_name ) {
+		return;
 	}
+
+	// get the file type.
+	$file_type = get_post_meta( $post_id, 'file_type', true );
+
+	// get all types.
+	$file_types = Helper::get_mime_types();
+
+	// bail if type is not in list of types.
+	if ( ! in_array( $file_type, $file_types, true ) ) {
+		return;
+	}
+
+	// show the name of the type.
+	echo esc_html( array_search( $file_type, $file_types, true ) );
 }
-add_filter( 'manage_dl_icons_posts_custom_column', 'downloadlist_admin_icons_column', 10, 2 );
+add_action( 'manage_dl_icons_posts_custom_column', 'downloadlist_admin_icons_column', 10, 2 );
 
 /**
  * Set iconset as default via link-request.
  *
  * @return void
+ * @noinspection PhpNoReturnAttributeCanBeAddedInspection
  */
 function downloadlist_admin_iconset_set_default(): void {
 	check_ajax_referer( 'downloadlist-set_iconset-default', 'nonce' );
@@ -429,11 +458,12 @@ function downloadlist_admin_iconset_set_default(): void {
 
 	if ( $term_id > 0 ) {
 		// set this term-ID as default.
-		helper::set_iconset_default( $term_id );
+		Helper::set_iconset_default( $term_id );
 	}
 
 	// redirect user.
-	wp_safe_redirect( ! empty( $_SERVER['HTTP_REFERER'] ) ? wp_unslash( $_SERVER['HTTP_REFERER'] ) : '' );
+	wp_safe_redirect( wp_get_referer() );
+	exit;
 }
 add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_iconset_set_default' );
 
@@ -444,28 +474,34 @@ add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_ico
  * @return void
  */
 function downloadlist_hide_generated_iconsets( WP_Query $query ): void {
-	if ( is_admin() && $query->is_main_query() && 'dl_icons' === $query->query['post_type'] ) {
-		$query->set(
-			'meta_query',
-			array(
-				array(
-					'key'     => 'generic-downloadlist',
-					'compare' => 'NOT EXISTS',
-				),
-			)
-		);
-		$query->set(
-			'tax_query',
-			array(
-				array(
-					'taxonomy' => 'dl_icon_set',
-					'terms'    => Iconsets::get_instance()->get_generic_sets_as_slug_array(),
-					'field'    => 'slug',
-					'operator' => 'NOT IN',
-				),
-			)
-		);
+	// bail if condition is not met.
+	if ( ! ( is_admin() && $query->is_main_query() && 'dl_icons' === $query->query['post_type'] ) ) {
+		return;
 	}
+
+	// add filter for generic iconsets.
+	$query->set(
+		'meta_query',
+		array(
+			array(
+				'key'     => 'generic-downloadlist',
+				'compare' => 'NOT EXISTS',
+			),
+		)
+	);
+
+	// add filter for slugs which are marked as generic iconsets.
+	$query->set(
+		'tax_query',
+		array(
+			array(
+				'taxonomy' => 'dl_icon_set',
+				'terms'    => Iconsets::get_instance()->get_generic_sets_as_slug_array(),
+				'field'    => 'slug',
+				'operator' => 'NOT IN',
+			),
+		)
+	);
 }
 add_action( 'pre_get_posts', 'downloadlist_hide_generated_iconsets' );
 
@@ -512,6 +548,7 @@ function downloadlist_update(): void {
 		)
 		&& version_compare( $installed_plugin_version, $db_plugin_version, '>' )
 	) {
+		// force refresh of css on every plugin update.
 		$transient_obj = Transients::get_instance()->add();
 		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
 		$transient_obj->set_name( 'refresh_css' );
@@ -567,10 +604,14 @@ function downloadlist_cleanup(): void {
  * @return void
  */
 function downloadlist_admin_notices(): void {
-	if ( current_user_can( 'manage_options' ) ) {
-		$transients_obj = Transients::get_instance();
-		$transients_obj->check_transients();
+	// bail if capabilities does not match.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
 	}
+
+	// check for transients of our plugin to show them as admin notices.
+	$transients_obj = Transients::get_instance();
+	$transients_obj->check_transients();
 }
 add_action( 'admin_notices', 'downloadlist_admin_notices' );
 
@@ -641,10 +682,16 @@ add_filter( 'attachment_fields_to_save', 'downloadlist_save_custom_text_attachme
  * @return void
  */
 function downloadlist_trash_post( int $post_id ): void {
-	if ( 'dl_icons' === get_post_type( $post_id ) ) {
-		Helper::regenerate_icons();
-		Helper::generate_css();
+	// bail if type is not ours.
+	if ( 'dl_icons' !== get_post_type( $post_id ) ) {
+		return;
 	}
+
+	// regenerate all icons.
+	Helper::regenerate_icons();
+
+	// regenerate the css.
+	Helper::generate_css();
 }
 add_action( 'trashed_post', 'downloadlist_trash_post' );
 

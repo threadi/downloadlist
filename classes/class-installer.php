@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Object to handle installer-tasks.
@@ -61,7 +59,7 @@ class Installer {
 		downloadlist_add_taxonomies();
 
 		// add generic iconset.
-		helper::add_generic_iconsets();
+		Helper::add_generic_iconsets();
 
 		// generate icons and styles.
 		Helper::regenerate_icons();

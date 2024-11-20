@@ -39,9 +39,9 @@ const DL_VERSION = '@@VersionNumber@@';
 const DL_TRANSIENT_LIST = 'downloadlist_transients';
 
 // embed necessary files.
-require_once 'inc/autoload.php';
+require_once __DIR__ . '/inc/autoload.php';
 if ( is_admin() ) {
-	require_once 'inc/admin.php';
+	require_once __DIR__ . '/inc/admin.php';
 }
 // include all icon-set-files.
 foreach ( glob( plugin_dir_path( DL_PLUGIN ) . 'inc/iconsets/*.php' ) as $filename ) {
@@ -59,69 +59,92 @@ register_deactivation_hook( DL_PLUGIN, array( Installer::get_instance(), 'deacti
  * @noinspection PhpUnused
  */
 function downloadlist_init(): void {
-	// Include block only if Gutenberg exists.
-	if ( function_exists( 'register_block_type' ) ) {
-		register_block_type(
-			__DIR__,
-			array(
-				'render_callback' => 'downloadlist_render_block',
-				'attributes'      => array(
-					'files'              => array(
-						'type' => 'array',
-					),
-					'hideFileSize'       => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'hideDescription'    => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'hideIcon'           => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'linkTarget'         => array(
-						'type'    => 'string',
-						'default' => 'direct',
-					),
-					'robots'             => array(
-						'type'    => 'string',
-						'default' => 'follow',
-					),
-					'iconset'            => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'file_types_set'     => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'preview'            => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'doNotForceDownload' => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'showDownloadButton' => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-				),
-			)
-		);
-
-		// add php-vars to our js-script.
-		wp_localize_script(
-			'downloadlist-list-editor-script',
-			'downloadlistJsVars',
-			array(
-				'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
-			)
-		);
+	// bail if block editor is not enabled.
+	if ( ! function_exists( 'register_block_type' ) ) {
+		return;
 	}
+
+	// register our custom block type.
+	register_block_type(
+		__DIR__,
+		array(
+			'render_callback' => 'downloadlist_render_block',
+			'attributes'      => array(
+				'files'              => array(
+					'type' => 'array',
+				),
+				'hideFileSize'       => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideDescription'    => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideIcon'           => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideLink'           => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'linkTarget'         => array(
+					'type'    => 'string',
+					'default' => 'direct',
+				),
+				'robots'             => array(
+					'type'    => 'string',
+					'default' => 'follow',
+				),
+				'iconset'            => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+				'file_types_set'     => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'preview'            => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'doNotForceDownload' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'showDownloadButton' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'downloadLinkTarget'         => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+				'downloadLinkTargetName'         => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+				'linkBrowserTarget'         => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+				'linkBrowserTargetName'         => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+			),
+		)
+	);
+
+	// add php-vars to our js-script.
+	wp_localize_script(
+		'downloadlist-list-editor-script',
+		'downloadlistJsVars',
+		array(
+			'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
+		)
+	);
 }
 add_action( 'init', 'downloadlist_init' );
 
@@ -140,21 +163,29 @@ function downloadlist_register_styles(): void {
 		'downloadlist-iconsets',
 		Helper::get_style_url(),
 		array(),
-		filemtime( Helper::get_style_path() ),
+		Helper::get_file_version( Helper::get_style_path() ),
 	);
 
 	// get iconset-styles.
 	foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
 		foreach ( $iconset_obj->get_style_files() as $file ) {
-			if ( ! empty( $file['handle'] ) && ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
+			// bail if handle is empty.
+			if ( empty( $file['handle'] ) ) {
+				continue;
+			}
+
+			// register style if path and URL are given.
+			if ( ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
 				wp_register_style(
 					'downloadlist-' . $file['handle'],
 					$file['url'],
 					array(),
-					filemtime( $file['path'] )
+					Helper::get_file_version( $file['path'] )
 				);
 			}
-			if ( ! empty( $file['handle'] ) && empty( $file['path'] ) && ! empty( $file['depends'] ) ) {
+
+			// register style if only dependent style name is given.
+			if ( empty( $file['path'] ) && ! empty( $file['depends'] ) ) {
 				wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends'], DL_VERSION );
 			}
 		}
@@ -181,23 +212,21 @@ function downloadlist_enqueue_styles( string $block_content, array $block ): str
 		return $block_content;
 	}
 
-		// if this is a pagination block, enqueue the pagination script.
-		if ( 'downloadlist/list' === $block['blockName'] ) {
-			// set empty iconset list.
-			$iconsets = array();
-
-			// check which iconset is used by this block and get its object.
-			if ( ! empty( $block['attrs']['iconset'] ) ) {
-				$iconsets = array( \downloadlist\Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
-			}
-
-			// enqueue them.
-			downloadlist_enqueue_styles_run( $iconsets );
-		}
-	// if this is a pagination block, enqueue the pagination script.
-	if ( 'downloadlist/list' === $block['blockName'] ) {
-		downloadlist_enqueue_styles_run();
+	// bail if this is not our block.
+	if ( 'downloadlist/list' !== $block['blockName'] ) {
+		return $block_content;
 	}
+
+	// bail if no iconset is configured.
+	if ( empty( $block['attrs']['iconset'] ) ) {
+		return $block_content;
+	}
+
+	// get the object of the used iconset.
+	$iconsets = array( \downloadlist\Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
+
+	// enqueue the iconset.
+	downloadlist_enqueue_styles_run( $iconsets );
 
 	// return the block content.
 	return $block_content;
@@ -218,6 +247,8 @@ function downloadlist_enqueue_styles_run( array $iconsets = array() ): void {
 	if ( empty( $iconsets ) ) {
 		$iconsets = Iconsets::get_instance()->get_icon_sets();
 	}
+
+	// enqueue each style of the configured iconsets.
 	foreach ( $iconsets as $iconset_obj ) {
 		// bail if it is not an iconset-object.
 		if ( ! $iconset_obj instanceof Iconset_Base ) {
@@ -277,24 +308,27 @@ add_action( 'rest_api_init', 'downloadlist_add_rest_api' );
 function downloadlist_api_return_file_data( WP_REST_Request $request ): array {
 	// get the post_ids from request.
 	$post_ids = $request->get_param( 'post_id' );
-	if ( ! empty( $post_ids ) ) {
-		// get the file data.
-		$array = array();
-		foreach ( $post_ids as $post_id ) {
-			$js = wp_prepare_attachment_for_js( $post_id );
-			if ( ! empty( $js ) ) {
-				$array[] = $js;
-			}
-		}
 
-		// return the collected file data.
-		return $array;
+	// bail if no ids are given.
+	if ( empty( $post_ids ) ) {
+		return array();
 	}
-	return array();
+
+	// get the file data.
+	$array = array();
+	foreach ( $post_ids as $post_id ) {
+		$js = wp_prepare_attachment_for_js( $post_id );
+		if ( ! empty( $js ) ) {
+			$array[] = $js;
+		}
+	}
+
+	// return the collected file data.
+	return $array;
 }
 
 /**
- * Get template from own plugin or theme.
+ * Get template from our own plugin or the used theme.
  *
  * @param string $template The template-path.
  * @return string
@@ -309,6 +343,8 @@ function downloadlist_get_template( string $template ): string {
 	if ( $theme_template ) {
 		return $theme_template;
 	}
+
+	// return the path to the plugin-own template.
 	return plugin_dir_path( __FILE__ ) . 'templates/' . $template;
 }
 
@@ -535,144 +571,230 @@ add_action( 'after_setup_theme', 'downloadlist_add_image_size' );
 /**
  * Render a single downloadlist-block.
  *
+ * This is the main function for output in editor and frontend.
+ *
  * @param array $attributes List of attributes for this block.
  * @return string
  * @noinspection PhpUnused
  */
 function downloadlist_render_block( array $attributes ): string {
+	// bail if no files are given.
+	if ( empty( $attributes['files'] ) ) {
+		return '';
+	}
+
+	// collect the output.
 	$output = '';
 
-	if ( ! empty( $attributes['files'] ) ) {
-		// hide icon if set.
-		$hide_icon = '';
-		if ( ! empty( $attributes['hideIcon'] ) ) {
-			$hide_icon = ' hide-icon';
-		}
+	// hide icon if set.
+	$hide_icon = '';
+	if ( ! empty( $attributes['hideIcon'] ) ) {
+		$hide_icon = ' hide-icon';
+	}
 
-		// marker for icon-set to use.
-		$iconset     = '';
-		$iconset_obj = null;
-		if ( ! empty( $attributes['iconset'] ) ) {
-			$iconset     = 'iconset-' . $attributes['iconset'];
-			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
-			// if no iconset could be detected, get the default iconset.
-			if ( false === $iconset_obj ) {
-				$iconset_obj = Iconsets::get_instance()->get_default_iconset();
-				$iconset     = 'iconset-' . $iconset_obj->get_slug();
-			}
-		} else {
-			// set default iconset if none is set (for lists from < 3.0).
+	// marker for icon-set to use.
+	$iconset     = '';
+	$iconset_obj = null;
+	if ( ! empty( $attributes['iconset'] ) ) {
+		$iconset     = 'iconset-' . $attributes['iconset'];
+		$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
+		// if no iconset could be detected, get the default iconset.
+		if ( false === $iconset_obj ) {
 			$iconset_obj = Iconsets::get_instance()->get_default_iconset();
 			$iconset     = 'iconset-' . $iconset_obj->get_slug();
 		}
+	} else {
+		// set default iconset if none is set (for lists from < 3.0).
+		$iconset_obj = Iconsets::get_instance()->get_default_iconset();
+		$iconset     = 'iconset-' . $iconset_obj->get_slug();
+	}
 
-		// variable for block-specific styles.
-		$styles = '';
+	// variable for block-specific styles.
+	$styles = '';
 
-		// get Block Editor wrapper attributes.
-		$wrapper_attributes = get_block_wrapper_attributes();
+	// get Block Editor wrapper attributes.
+	$wrapper_attributes = get_block_wrapper_attributes();
 
-		// generate begin of the file-list.
-		ob_start();
-		include downloadlist_get_template( 'list-start.php' );
-		$output = ob_get_clean();
+	// generate begin of the file-list.
+	ob_start();
+	include downloadlist_get_template( 'list-start.php' );
+	$output = ob_get_clean();
 
-		// get the configured files for this Block.
-		foreach ( $attributes['files'] as $file ) {
-			// get the file-id.
-			$file_id = $file['id'];
+	// get the configured files for this Block.
+	foreach ( $attributes['files'] as $file ) {
+		// get the file-id.
+		$file_id = $file['id'];
 
-			// get the mimetype.
-			$mimetype = get_post_mime_type( $file_id );
+		// get the mimetype.
+		$mimetype = get_post_mime_type( $file_id );
 
-			// if nothing could be loaded do not output anything.
-			if ( empty( $mimetype ) ) {
-				continue;
+		// if nothing could be loaded do not output anything.
+		if ( empty( $mimetype ) ) {
+			continue;
+		}
+
+		// split the mimetype to get type and subtype.
+		list( $type, $subtype ) = helper::get_type_and_subtype_from_mimetype( $mimetype );
+
+		// get the post.
+		$attachment = get_post( $file_id );
+
+		// bail if attachment could not be loaded.
+		if ( ! $attachment instanceof WP_Post ) {
+			continue;
+		}
+
+		// get the meta-data like JS (like human-readable filesize).
+		$file_meta = wp_prepare_attachment_for_js( $file_id );
+
+		// get custom attachment title, if set.
+		$attachment->post_title = $file_meta['title'];
+
+		// get custom attachment description, if set.
+		$attachment->post_content = $file_meta['description'];
+
+		// get the file size.
+		$filesize = '';
+		if ( empty( $attributes['hideFileSize'] ) && ! empty( $file_meta['filesizeHumanReadable'] ) ) {
+			$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
+		}
+
+		// get the description.
+		$description = '<br />' . $attachment->post_content;
+		if ( ! empty( $attributes['hideDescription'] ) || empty( $attachment->post_content ) ) {
+			$description = '';
+		}
+
+		// get the download URL of the file.
+		$url                = wp_get_attachment_url( $file_id );
+		$download_link_attribute = ' download';
+		if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint( get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
+			$url                = get_permalink( $file_id );
+			$download_link_attribute = '';
+		}
+
+		// prevent forcing of download via html-attribute.
+		if ( ! empty( $attributes['linkTarget'] ) && 'direct' === $attributes['linkTarget'] && ! empty( $attributes['doNotForceDownload'] ) && false !== $attributes['doNotForceDownload'] ) {
+			$download_link_attribute = '';
+		}
+
+		/**
+		 * Filter the download attribute for the link.
+		 *
+		 * @since 3.6.0 Available since 3.6.0.
+		 * @param string $download_link_attribute The value.
+		 * @param array $file The attributes for single file.
+		 */
+		$download_link_attribute = apply_filters( 'downloadlist_link_download_attribute', $download_link_attribute, $file );
+
+		// if we have a link target set, use this
+		$link_target = '';
+		if( ! empty( $attributes['linkBrowserTarget'] ) ) {
+			$link_target = $attributes['linkBrowserTarget'];
+			if( 'own' === $link_target ) {
+				$link_target = '';
+				if( ! empty( $attributes['linkBrowserTargetName'] ) ) {
+					$link_target = $attributes['linkBrowserTargetName'];
+				}
 			}
+		}
 
-			// split the mimetype to get type and subtype.
-			list( $type, $subtype ) = helper::get_type_and_subtype_from_mimetype( $mimetype );
+		/**
+		 * Filter the target attribute for the link.
+		 *
+		 * @since 3.6.0 Available since 3.6.0.
+		 * @param string $link_target The value.
+		 * @param array $file The attributes for single file.
+		 */
+		$link_target = apply_filters( 'downloadlist_link_target_attribute', $link_target, $file );
 
-			// get the post.
-			$attachment = get_post( $file_id );
+		// set rel-attribute.
+		$rel_attribute = '';
+		if ( ! empty( $attributes['robots'] ) && 'follow' !== $attributes['robots'] ) {
+			$rel_attribute = $attributes['robots'];
+		}
 
-			// get the meta-data like JS (like human-readable filesize).
-			$file_meta = wp_prepare_attachment_for_js( $file_id );
+		/**
+		 * Filter the rel-attribute.
+		 *
+		 * @since 3.5.0 Available since 3.5.0
+		 * @param string $rel_attribute The rel-value.
+		 * @param array $file The attributes for single file.
+		 */
+		$rel_attribute = apply_filters( 'downloadlist_rel_attribute', $rel_attribute, $file );
 
-			// get custom attachment title, if set.
-			$attachment->post_title = $file_meta['title'];
+		// get individual styles for this file from used iconset.
+		if ( $iconset_obj instanceof Iconset_Base ) {
+			$styles .= $iconset_obj->get_style_for_file( $file_id );
+		}
 
-			// get custom attachment description, if set.
-			$attachment->post_content = $file_meta['description'];
+		// get optional download-button.
+		$download_button = '';
+		if ( ! empty( $attributes['showDownloadButton'] ) ) {
+			// add the download attribute.
+			$download_button_attribute = ' download';
 
-			// get the file size.
-			$filesize = '';
-			if ( empty( $attributes['hideFileSize'] ) && ! empty( $file_meta['filesizeHumanReadable'] ) ) {
-				$filesize = ' (' . $file_meta['filesizeHumanReadable'] . ')';
-			}
+			/**
+			 * Filter the download attribute for the download button.
+			 *
+			 * @since 3.6.0 Available since 3.6.0.
+			 * @param string $download_button The value.
+			 * @param array $file The attributes for single file.
+			 */
+			$download_button = apply_filters( 'downloadlist_download_button_download_attribute', $download_button, $file );
 
-			// get the description.
-			$description = '<br />' . $attachment->post_content;
-			if ( ! empty( $attributes['hideDescription'] ) ) {
-				$description = '';
-			}
-
-			// get download URL.
-			$url                = wp_get_attachment_url( $file_id );
-			$download_attribute = ' download';
-			if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint( get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
-				$url                = get_permalink( $file_id );
-				$download_attribute = '';
-			}
-
-			// prevent forcing of download via html-attribute.
-			if ( ! empty( $attributes['linkTarget'] ) && 'direct' === $attributes['linkTarget'] && ! empty( $attributes['doNotForceDownload'] ) && false !== $attributes['doNotForceDownload'] ) {
-				$download_attribute = '';
-			}
-
-			// set rel-attribute.
-			$rel_attribute = '';
-			if ( ! empty( $attributes['robots'] ) && 'follow' !== $attributes['robots'] ) {
-				$rel_attribute = $attributes['robots'];
+			// get the link target for the download button.
+			$download_target_attribute = '';
+			if( ! empty( $attributes['downloadLinkTarget'] ) ) {
+				$download_target_attribute = $attributes['downloadLinkTarget'];
+				if( 'own' === $download_target_attribute ) {
+					$download_target_attribute = '';
+					if( ! empty( $attributes['downloadLinkTargetName'] ) ) {
+						$download_target_attribute = $attributes['downloadLinkTargetName'];
+					}
+				}
 			}
 
 			/**
-			 * Filter the rel-attribute.
+			 * Filter the target attribute for the download button.
 			 *
-			 * @since 3.5.0 Available since 3.5.0
-			 * @param string $rel_attribute The rel-value.
+			 * @since 3.6.0 Available since 3.6.0.
+			 * @param string $download_target_attribute The value.
 			 * @param array $file The attributes for single file.
 			 */
-			$rel_attribute = apply_filters( 'downloadlist_rel_attribute', $rel_attribute, $file );
+			$download_target_attribute = apply_filters( 'downloadlist_download_button_target_attribute', $download_target_attribute, $file );
 
-			// get individual styles for this file from used iconset.
-			if ( $iconset_obj instanceof Iconset_Base ) {
-				$styles .= $iconset_obj->get_style_for_file( $file_id );
-			}
-
-			// get optional download-button.
-			$download_button = '';
-			if ( ! empty( $attributes['showDownloadButton'] ) ) {
-				$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ) . '>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
-			}
-
-			// add it to output.
 			ob_start();
-			include downloadlist_get_template( 'list-item.php' );
-			$output .= ob_get_clean();
+			include downloadlist_get_template( 'button-download.php' );
+			$download_button = ob_get_clean();
 		}
 
-		// generate end of the file-list.
-		ob_start();
-		include downloadlist_get_template( 'list-end.php' );
-		$output .= ob_get_clean();
-
-		// output block-specific style.
-		if ( ! empty( $styles ) ) {
-			$output .= '<style>' . $styles . '</style>';
+		// if text should be output instead of link, use the other template.
+		if( false !== $attributes['hideLink'] ) {
+			// add the not-linked entry to output.
+			ob_start();
+			include downloadlist_get_template('list-item-not-linked.php');
+			$output .= ob_get_clean();
+		}
+		else {
+			// add the linked entry to output.
+			ob_start();
+			include downloadlist_get_template('list-item.php');
+			$output .= ob_get_clean();
 		}
 	}
 
+	// generate end of the file-list.
+	ob_start();
+	include downloadlist_get_template( 'list-end.php' );
+	$output .= ob_get_clean();
+
+	// output block-specific style.
+	if ( ! empty( $styles ) ) {
+		$output .= '<style>' . $styles . '</style>';
+	}
+
+	// return resulting output.
 	return $output;
 }
 

@@ -7,10 +7,8 @@
 
 namespace downloadlist;
 
-// prevent also other direct access.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 use WP_Query;
 use WP_Term_Query;
@@ -539,4 +537,42 @@ class Helper {
 			}
 		}
 	}
+
+	/**
+	 * Return the version of the given file.
+	 *
+	 * With WP_DEBUG or plugin-debug enabled its @filemtime().
+	 * Without this it's the plugin-version.
+	 *
+	 * @param string $filepath The absolute path to the requested file.
+	 *
+	 * @return string
+	 */
+	public static function get_file_version( string $filepath ): string {
+		// check for WP_DEBUG.
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			return filemtime( $filepath );
+		}
+
+		$plugin_version = DL_VERSION;
+
+		/**
+		 * Filter the used file version (for JS- and CSS-files which get enqueued).
+		 *
+		 * @since 3.6.0 Available since 3.6.0.
+		 *
+		 * @param string $plugin_version The plugin-version.
+		 * @param string $filepath The absolute path to the requested file.
+		 */
+		return apply_filters( 'downloadlist_file_version', $plugin_version, $filepath );
+	}
+
+	/**
+	 * Return the support URL.
+	 *
+	 * @return string
+	 */
+    public static function get_support_url(): string {
+		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
+    }
 }
