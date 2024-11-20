@@ -653,7 +653,9 @@ function downloadlist_render_block( array $attributes ): string {
 			// get optional download-button.
 			$download_button = '';
 			if ( ! empty( $attributes['showDownloadButton'] ) ) {
-				$download_button = '<a href="' . esc_url( $url ) . '" class="download-button button button-secondary"' . esc_attr( $download_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ) . '>' . __( 'Download', 'download-list-block-with-icons' ) . '</a>';
+				ob_start();
+				include downloadlist_get_template( 'button-download.php' );
+				$download_button = ob_get_clean();
 			}
 
 			// add it to output.
@@ -673,6 +675,7 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 	}
 
+	// return resulting output.
 	return $output;
 }
 
