@@ -572,7 +572,7 @@ class Helper {
 	 *
 	 * @return string
 	 */
-    public static function get_support_url(): string {
+	public static function get_support_url(): string {
 		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
-    }
+	}
 }
