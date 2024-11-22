@@ -70,66 +70,66 @@ function downloadlist_init(): void {
 		array(
 			'render_callback' => 'downloadlist_render_block',
 			'attributes'      => array(
-				'files'              => array(
+				'files'                  => array(
 					'type' => 'array',
 				),
-				'hideFileSize'       => array(
+				'hideFileSize'           => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'hideDescription'    => array(
+				'hideDescription'        => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'hideIcon'           => array(
+				'hideIcon'               => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'hideLink'           => array(
+				'hideLink'               => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'linkTarget'         => array(
+				'linkTarget'             => array(
 					'type'    => 'string',
 					'default' => 'direct',
 				),
-				'robots'             => array(
+				'robots'                 => array(
 					'type'    => 'string',
 					'default' => 'follow',
 				),
-				'iconset'            => array(
+				'iconset'                => array(
 					'type'    => 'string',
 					'default' => '',
 				),
-				'file_types_set'     => array(
+				'file_types_set'         => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'preview'            => array(
+				'preview'                => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'doNotForceDownload' => array(
+				'doNotForceDownload'     => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'showDownloadButton' => array(
+				'showDownloadButton'     => array(
 					'type'    => 'boolean',
 					'default' => false,
 				),
-				'downloadLinkTarget'         => array(
+				'downloadLinkTarget'     => array(
 					'type'    => 'string',
 					'default' => '',
 				),
-				'downloadLinkTargetName'         => array(
+				'downloadLinkTargetName' => array(
 					'type'    => 'string',
 					'default' => '',
 				),
-				'linkBrowserTarget'         => array(
+				'linkBrowserTarget'      => array(
 					'type'    => 'string',
 					'default' => '',
 				),
-				'linkBrowserTargetName'         => array(
+				'linkBrowserTargetName'  => array(
 					'type'    => 'string',
 					'default' => '',
 				),
@@ -666,10 +666,10 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 
 		// get the download URL of the file.
-		$url                = wp_get_attachment_url( $file_id );
+		$url                     = wp_get_attachment_url( $file_id );
 		$download_link_attribute = ' download';
 		if ( ! empty( $attributes['linkTarget'] ) && 'attachmentpage' === $attributes['linkTarget'] && 1 === absint( get_option( 'wp_attachment_pages_enabled', 1 ) ) ) {
-			$url                = get_permalink( $file_id );
+			$url                     = get_permalink( $file_id );
 			$download_link_attribute = '';
 		}
 
@@ -687,13 +687,13 @@ function downloadlist_render_block( array $attributes ): string {
 		 */
 		$download_link_attribute = apply_filters( 'downloadlist_link_download_attribute', $download_link_attribute, $file );
 
-		// if we have a link target set, use this
+		// if we have a link target set, use this.
 		$link_target = '';
-		if( ! empty( $attributes['linkBrowserTarget'] ) ) {
+		if ( ! empty( $attributes['linkBrowserTarget'] ) ) {
 			$link_target = $attributes['linkBrowserTarget'];
-			if( 'own' === $link_target ) {
+			if ( 'own' === $link_target ) {
 				$link_target = '';
-				if( ! empty( $attributes['linkBrowserTargetName'] ) ) {
+				if ( ! empty( $attributes['linkBrowserTargetName'] ) ) {
 					$link_target = $attributes['linkBrowserTargetName'];
 				}
 			}
@@ -745,11 +745,11 @@ function downloadlist_render_block( array $attributes ): string {
 
 			// get the link target for the download button.
 			$download_target_attribute = '';
-			if( ! empty( $attributes['downloadLinkTarget'] ) ) {
+			if ( ! empty( $attributes['downloadLinkTarget'] ) ) {
 				$download_target_attribute = $attributes['downloadLinkTarget'];
-				if( 'own' === $download_target_attribute ) {
+				if ( 'own' === $download_target_attribute ) {
 					$download_target_attribute = '';
-					if( ! empty( $attributes['downloadLinkTargetName'] ) ) {
+					if ( ! empty( $attributes['downloadLinkTargetName'] ) ) {
 						$download_target_attribute = $attributes['downloadLinkTargetName'];
 					}
 				}
@@ -771,13 +771,12 @@ function downloadlist_render_block( array $attributes ): string {
 
 		// if text should be output instead of link, use the other template.
 		ob_start();
-		if( false !== $attributes['hideLink'] ) {
+		if ( false !== $attributes['hideLink'] ) {
 			// add the not-linked entry to output.
-			include downloadlist_get_template('list-item-not-linked.php');
-		}
-		else {
+			include downloadlist_get_template( 'list-item-not-linked.php' );
+		} else {
 			// add the linked entry to output.
-			include downloadlist_get_template('list-item.php');
+			include downloadlist_get_template( 'list-item.php' );
 		}
 		$output .= ob_get_clean();
 	}
