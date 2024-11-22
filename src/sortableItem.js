@@ -136,7 +136,7 @@ export function SortableItem(props) {
 			<Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
-			<a href={linkTarget}>{title}</a>{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
+			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
 		</div>
 	);
 }

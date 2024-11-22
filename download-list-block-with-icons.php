@@ -770,18 +770,16 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 
 		// if text should be output instead of link, use the other template.
+		ob_start();
 		if( false !== $attributes['hideLink'] ) {
 			// add the not-linked entry to output.
-			ob_start();
 			include downloadlist_get_template('list-item-not-linked.php');
-			$output .= ob_get_clean();
 		}
 		else {
 			// add the linked entry to output.
-			ob_start();
 			include downloadlist_get_template('list-item.php');
-			$output .= ob_get_clean();
 		}
+		$output .= ob_get_clean();
 	}
 
 	// generate end of the file-list.
