@@ -53,8 +53,26 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableItem } from "./sortableItem";
 import { getActualDate } from "./components";
-const { useSelect, dispatch } = wp.data;
-const { useEffect } = wp.element;
+import { useSelect, dispatch } from '@wordpress/data';
+
+/**
+ * Prepare our custom endpoints.
+ */
+wp.domReady(() => {
+	dispatch('core').addEntities([
+		{
+			name: 'files',
+			label: __('Files', 'download-list-block-with-icons'),
+			kind: 'downloadlist/v1',
+			baseURL: '/downloadlist/v1/files'
+		},
+		{
+			name: 'filetypes',
+			kind: 'downloadlist/v1',
+			baseURL: '/downloadlist/v1/filetypes'
+		}
+	])
+});
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -89,17 +107,6 @@ export default function Edit( object ) {
 	let allowed_file_types = [];
 	let iconsets = [];
 	if( !object.attributes.preview ) {
-		// let js know our custom endpoint
-		useEffect(() => {
-			dispatch('core').addEntities([
-				{
-					name: 'files',           // route name
-					kind: 'downloadlist/v1', // namespace
-					baseURL: '/downloadlist/v1/files' // API path without /wp-json
-				}
-			])
-		});
-
 		// set actual date if it is not present
 		if (!object.attributes.date) {
 			object.attributes.date = getActualDate()
@@ -108,7 +115,7 @@ export default function Edit( object ) {
 		// send request to our custom endpoint to get the data of the files
 		let attachments = useSelect((select) => {
 			return select('core').getEntityRecords('downloadlist/v1', 'files', {
-				post_id: fileIds,
+				post_ids: fileIds,
 				date: object.attributes.date,
 				per_page: fileIds.length
 			}, []) || null;
@@ -168,27 +175,16 @@ export default function Edit( object ) {
 		}
 
 		// retrieve all possible file types
-		if (!object.attributes.preview) {
-			useEffect(() => {
-				dispatch('core').addEntities([
-					{
-						name: 'filetypes', // route name
-						kind: 'downloadlist/v1', // namespace
-						baseURL: '/downloadlist/v1/filetypes' // API path without /wp-json
-					}
-				]);
-			}, []);
-			let allowed_file_types_server_result = useSelect((select) => {
-				return select('core').getEntityRecords('downloadlist/v1', 'filetypes', {
-					per_page: -1,
-					iconset: object.attributes.iconset
-				});
-			}, [object.attributes.iconset]) || [];
+		let allowed_file_types_server_result = useSelect((select) => {
+			return select('core').getEntityRecords('downloadlist/v1', 'filetypes', {
+				per_page: -1,
+				iconset: object.attributes.iconset
+			});
+		}, [object.attributes.iconset]) || [];
 
-			allowed_file_types = allowed_file_types_server_result.map(
-				(filetype) => filetype.value
-			);
-		}
+		allowed_file_types = allowed_file_types_server_result.map(
+			(filetype) => filetype.value
+		);
 	}
 
 	/**
