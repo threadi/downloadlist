@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 3.6.0
+Stable tag: 3.6.1
 
 Use a Gutenberg Block to manage a download list with file type specific icons. No configuration is necessary.
 
@@ -281,3 +281,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 * Changed internal transient names for better compatibility with other plugins
 * Optimized code
 * Fixed possible double enqueuing of styles in frontend
+
+= 3.6.1 =
+* Updated compatibility with other plugins like Block Visibility
+* Optimized some variable names
+* Optimized uninstall-tasks if they are run via WP CLI
+* Updated dependencies

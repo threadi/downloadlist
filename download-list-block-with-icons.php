@@ -307,7 +307,7 @@ add_action( 'rest_api_init', 'downloadlist_add_rest_api' );
  */
 function downloadlist_api_return_file_data( WP_REST_Request $request ): array {
 	// get the post_ids from request.
-	$post_ids = $request->get_param( 'post_id' );
+	$post_ids = $request->get_param( 'post_ids' );
 
 	// bail if no ids are given.
 	if ( empty( $post_ids ) ) {
@@ -473,7 +473,7 @@ function downloadlist_cli_register_commands(): void {
 add_action( 'cli_init', 'downloadlist_cli_register_commands' );
 
 /**
- * Add endpoint for requests from our own Blocks.
+ * Add endpoint for requests from our own Block.
  *
  * @return void
  * @noinspection PhpUnused

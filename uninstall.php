@@ -32,7 +32,7 @@ const DL_VERSION = '@@VersionNumber@@';
 const DL_TRANSIENT_LIST = 'downloadlist_transients';
 
 // embed necessary files.
-require_once 'inc/autoload.php';
+require_once __DIR__ . '/inc/autoload.php';
 
 // run installer.
 Uninstaller::get_instance()->run();
