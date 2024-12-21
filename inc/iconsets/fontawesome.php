@@ -1,6 +1,6 @@
 <?php
 /**
- * File which holds the list of possible fontawesome.
+ * File which register the fontawesome iconset.
  *
  * @package download-list-block-with-icons
  */
@@ -8,7 +8,7 @@
 use downloadlist\iconsets\Fontawesome;
 
 /**
- * Register the custom iconset.
+ * Register the fontawesome iconset.
  *
  * @param array $iconset_list The list of iconsets.
  * @return array

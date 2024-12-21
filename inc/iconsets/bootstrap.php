@@ -1,6 +1,6 @@
 <?php
 /**
- * File which holds the list of possible bootstrap-icons.
+ * File which register the bootstrap iconset.
  *
  * @package download-list-block-with-icons
  */
@@ -8,7 +8,7 @@
 use downloadlist\iconsets\Bootstrap;
 
 /**
- * Register the custom iconset.
+ * Register the bootstrap iconset.
  *
  * @param array $iconset_list The list of iconsets.
  * @return array

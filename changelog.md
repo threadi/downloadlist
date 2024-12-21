@@ -8,8 +8,17 @@
 
 ### Changed
 
-- Move changelog to GitHub
+- Moved changelog to GitHub
+- Small code optimizations
 - Updated dependencies
+
+### Fixed
+
+- Fixed missing WPML-configuration in release file
+
+### Removed
+
+- Removed unused test with auto-release via build.xml
 
 ## [3.6.1] - 30.11.2024
 

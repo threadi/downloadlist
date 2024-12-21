@@ -223,7 +223,7 @@ function downloadlist_enqueue_styles( string $block_content, array $block ): str
 	}
 
 	// get the object of the used iconset.
-	$iconsets = array( \downloadlist\Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
+	$iconsets = array( Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
 
 	// enqueue the iconset.
 	downloadlist_enqueue_styles_run( $iconsets );
@@ -674,7 +674,7 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 
 		// prevent forcing of download via html-attribute.
-		if ( ! empty( $attributes['linkTarget'] ) && 'direct' === $attributes['linkTarget'] && ! empty( $attributes['doNotForceDownload'] ) && false !== $attributes['doNotForceDownload'] ) {
+		if ( ! empty( $attributes['linkTarget'] ) && 'direct' === $attributes['linkTarget'] && ! empty( $attributes['doNotForceDownload'] ) ) {
 			$download_link_attribute = '';
 		}
 
