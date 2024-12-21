@@ -1,0 +1,29 @@
+name: Update Hook documentation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Update Hook documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run package installs and builds
+        run: |
+          composer install
+          composer update
+
+      - name: Generate hooks documentation file
+        run: vendor/bin/wp-documentor parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn  --exclude=vendor  --exclude=src --output=docs/hooks.md --prefix=downloadlist_
+
+      - name: Update file
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: update hook documentation
+          branch: feature/updateHookDocumentation
+          create_branch: true
+          commit_options: '--no-verify --signoff'
+          file_pattern: docs/hooks.md
