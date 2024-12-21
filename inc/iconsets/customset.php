@@ -1,6 +1,6 @@
 <?php
 /**
- * File which holds the list of possible custom sets.
+ * File which register the custom iconset.
  *
  * @package download-list-block-with-icons
  */
@@ -30,7 +30,7 @@ function downloadlist_register_custom_iconset( array $iconset_list ): array {
 			),
 		),
 	);
-	$icon_sets = new \WP_Term_Query( $query );
+	$icon_sets = new WP_Term_Query( $query );
 	if ( ! empty( $icon_sets->terms ) ) {
 		foreach ( $icon_sets->get_terms() as $term ) {
 			$iconset_obj = new Custom();

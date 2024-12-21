@@ -98,6 +98,13 @@ class Iconset_Base {
 	}
 
 	/**
+	 * Initialize this object.
+	 *
+	 * @return void
+	 */
+	public function init(): void {}
+
+	/**
 	 * Return whether the iconset has a label set.
 	 *
 	 * @return bool
@@ -213,5 +220,17 @@ class Iconset_Base {
 	 */
 	public function get_style_files(): array {
 		return array();
+	}
+
+	/**
+	 * Get style for given file-type.
+	 *
+	 * @param int    $post_id ID of the icon-post.
+	 * @param string $term_slug ID of the iconset-term.
+	 * @param string $filetype Name for the filetype to add.
+	 * @return string
+	 */
+	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
+		return '';
 	}
 }

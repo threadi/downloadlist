@@ -127,6 +127,7 @@ class Helper {
 	 *
 	 * @param int $term_id Only generate styles for the given term_id.
 	 * @return void
+	 * @noinspection PhpConditionAlreadyCheckedInspection
 	 */
 	public static function generate_css( int $term_id = 0 ): void {
 		global $wp_filesystem;
@@ -339,6 +340,7 @@ class Helper {
 	 *
 	 * @param int $term_id Only regenerate file of the given iconset (optional).
 	 * @return void
+	 * @noinspection PhpConditionAlreadyCheckedInspection
 	 */
 	public static function regenerate_icons( int $term_id = 0 ): void {
 		$false = false;
