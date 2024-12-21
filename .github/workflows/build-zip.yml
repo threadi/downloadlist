@@ -53,6 +53,8 @@ jobs:
           rm -fr releases
           rm -fr svn
           rm -fr languages
+          rm -fr src
+          rm changelog.md
           rm readme.md
           rm ruleset.xml
           cd ..
