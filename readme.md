@@ -75,11 +75,11 @@ Hint: will be called by ant-command mentioned above.
 
 ### Run
 
-`vendor/bin/phpcs --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml file`
+`vendor/bin/phpcs --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml .`
 
 ### Repair
 
-`vendor/bin/phpcbf --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml file`
+`vendor/bin/phpcbf --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=ruleset.xml .`
 
 ## Check for WordPress VIP Coding Standards
 

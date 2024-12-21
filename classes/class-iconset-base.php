@@ -231,6 +231,17 @@ class Iconset_Base {
 	 * @return string
 	 */
 	public function get_style_for_filetype( int $post_id, string $term_slug, string $filetype ): string {
+		// bail without post ID.
+		if ( 0 === $post_id ) {
+			return '';
+		}
+
+		// bail without slug or filetype.
+		if ( empty( $term_slug ) || empty( $filetype ) ) {
+			return '';
+		}
+
+		// return default value: nothing.
 		return '';
 	}
 }
