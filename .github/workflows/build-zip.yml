@@ -25,10 +25,10 @@ jobs:
           mkdir -p css/fontawesome/
           mkdir -p css/webfonts/
           cp node_modules/@fortawesome/fontawesome-free/css/all.css css/fontawesome/fontawesome6.css
-          cp -r node_modules/@fortawesome/fontawesome-free/webfonts/ css/webfonts/
+          cp -r node_modules/@fortawesome/fontawesome-free/webfonts/ css/
           mkdir -p css/bootstrap/fonts/
           cp node_modules/bootstrap-icons/font/bootstrap-icons.css css/bootstrap/bootstrap-icons.css
-          cp -r node_modules/bootstrap-icons/font/fonts/ css/bootstrap/fonts/
+          cp -r node_modules/bootstrap-icons/font/fonts/ css/bootstrap/
 
       - name: Generate autoloader
         run: composer dump-autoload -oa --no-dev
