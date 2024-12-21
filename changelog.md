@@ -9,6 +9,7 @@
 ### Changed
 
 - Move changelog to GitHub
+- Updated dependencies
 
 ## [3.6.1] - 30.11.2024
 
