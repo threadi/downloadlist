@@ -18,6 +18,8 @@ jobs:
 
       - name: Run package installs and builds
         run: |
+          composer install
+          composer update
           npm i
           npm run build
 
