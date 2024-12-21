@@ -92,4 +92,4 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added GitHub actions for plugin releases and documentation
 - Move changelog to GitHub
 
-[older changes](https://github.com/threadi/external-files-in-media-library/changelog.md)
+[older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
