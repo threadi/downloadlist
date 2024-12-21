@@ -89,7 +89,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = 3.6.2 =
 
-- Added GitHub actions for plugin releases and documentation
-- Move changelog to GitHub
+* Added GitHub actions for plugin releases and documentation
+* Move changelog to GitHub
+* Updated dependencies
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
