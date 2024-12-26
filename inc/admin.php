@@ -761,3 +761,69 @@ function downloadlist_check_php(): void {
 	$transient_obj->save();
 }
 add_action( 'admin_init', 'downloadlist_check_php' );
+
+/**
+ * Creates a new subpage to manage iconsets via DataViews.
+ */
+function downloadlist_add_dataviews_menus(): void {
+	// bail if project is not in dev-mode.
+	if( ! downloadlist_is_dataviews_used() ) {
+		return;
+	}
+
+	// add the subpage to manage iconsets.
+	add_submenu_page(
+		'edit.php?post_type=dl_icons',
+		__( 'Iconsets', 'download-list-block-with-icons' ),
+		__( 'Iconsets', 'download-list-block-with-icons' ),
+		'manage_options',
+		'dl_icons_iconsets',
+		function () {
+			printf(
+				'<h1>%s</h1><div id="download-list-iconsets"></div>',
+				esc_html__( 'Iconsets', 'download-list-block-with-icons' )
+			);
+		}
+	);
+}
+add_action( 'admin_menu', 'downloadlist_add_dataviews_menus' );
+
+/**
+ * Embed the script to start dataviews.
+ *
+ * @param $hook_suffix
+ * @return void
+ */
+function downloadlist_add_dataview_scripts( $hook_suffix ): void {
+	// load this only in the necessary page.
+	if ( 'dl_icons_page_dl_icons_iconsets' !== $hook_suffix ) {
+		return;
+	}
+
+	// get paths.
+	$dir = plugin_dir_path( DL_PLUGIN );
+	$url = plugin_dir_url( DL_PLUGIN );
+
+	// get asset file.
+	$asset_file = $dir . 'block/dataviews.asset.php';
+
+	// bail if asset file does not exist.
+	if ( ! file_exists( $asset_file ) ) {
+		return;
+	}
+
+	// include the asset file.
+	$asset = include $asset_file;
+
+	// enqueue the script itself.
+	wp_enqueue_script(
+		'downloadlist-dataviews',
+		$url . 'block/dataviews.js',
+		$asset['dependencies'],
+		$asset['version'],
+		array(
+			'in_footer' => true,
+		)
+	);
+}
+add_action( 'admin_enqueue_scripts', 'downloadlist_add_dataview_scripts' );

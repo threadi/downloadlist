@@ -422,9 +422,9 @@ function downloadlist_add_taxonomies(): void {
 			'back_to_items' => __( 'Go to iconsets', 'download-list-block-with-icons' ),
 		),
 		'public'             => false,
-		'show_ui'            => true,
-		'show_in_menu'       => true,
-		'show_in_nav_menus'  => true,
+		'show_ui'            => ! downloadlist_is_dataviews_used(),
+		'show_in_menu'       => ! downloadlist_is_dataviews_used(),
+		'show_in_nav_menus'  => ! downloadlist_is_dataviews_used(),
 		'show_admin_column'  => true,
 		'show_tagcloud'      => true,
 		'show_in_quick_edit' => true,
@@ -889,3 +889,12 @@ function downloadlist_generate_classname( string $class_name ): string {
 	return sanitize_html_class( $class_name );
 }
 add_filter( 'downloadlist_generate_classname', 'downloadlist_generate_classname' );
+
+/**
+ * Return whether DataViews are used for this plugin (only in plugin-dev-mode atm).
+ *
+ * @return bool
+ */
+function downloadlist_is_dataviews_used(): bool {
+	return function_exists( 'wp_is_development_mode' ) && wp_is_development_mode( 'plugin' );
+}

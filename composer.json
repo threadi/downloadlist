@@ -1,6 +1,6 @@
 {
     "name": "threadi/downloadlist",
-	"version": "3.6.0",
+	"version": "3.6.3",
 	"scripts": {
 		"post-install-cmd": [
 			"\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra,vendor/sirbrillig/phpcs-variable-analysis,vendor/automattic/vipwpcs"
