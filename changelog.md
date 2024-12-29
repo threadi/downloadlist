@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed wrong hook usage for "downloadlist_fontawesome_files" in Helper object
+
 ## [3.6.2] - 21.12.2024
 
 ### Added

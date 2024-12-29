@@ -40,7 +40,7 @@ class Helper {
 		 * @param array $mime_types List of the mime types.
 		 * @since 3.4.0 Available since 3.4.0
 		 */
-		return apply_filters( 'downloadlist_fontawesome_files', $mime_types );
+		return apply_filters( 'downloadlist_mime_types', $mime_types );
 	}
 
 	/**
