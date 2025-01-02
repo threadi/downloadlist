@@ -6,6 +6,7 @@
 
 - Fixed wrong path for templates in child-theme
 - Fixed wrong hook usage for "downloadlist_fontawesome_files" in Helper object
+- Fixed wrong plugin slug path in GitHub action during building the release
 
 ## [3.6.2] - 21.12.2024
 
