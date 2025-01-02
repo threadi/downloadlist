@@ -339,7 +339,7 @@ function downloadlist_get_template( string $template ): string {
 	}
 
 	// get the template from theme-directory, if available.
-	$theme_template = locate_template( trailingslashit( basename( DL_PLUGIN ) ) . $template );
+	$theme_template = locate_template( trailingslashit( basename( dirname( DL_PLUGIN ) ) ) . $template );
 	if ( $theme_template ) {
 		return $theme_template;
 	}

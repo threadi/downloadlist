@@ -1,9 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [3.6.3]
 
 ### Fixed
 
+- Fixed wrong path for templates in child-theme
 - Fixed wrong hook usage for "downloadlist_fontawesome_files" in Helper object
 
 ## [3.6.2] - 21.12.2024
