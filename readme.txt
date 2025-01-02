@@ -87,13 +87,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 == Changelog ==
 
-= 3.6.2 =
+= @@VersionNumber@@ =
 
-* Added GitHub actions for plugin releases and documentation
-* Small code optimizations
-* Moved changelog to GitHub
-* Updated dependencies
-* Fixed missing WPML-configuration in release file
-* Removed unused test with auto-release via build.xml
+- Fixed wrong path for templates in child-theme
+- Fixed wrong hook usage for "downloadlist_fontawesome_files" in Helper object
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
