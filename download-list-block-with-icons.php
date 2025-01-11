@@ -651,7 +651,7 @@ function downloadlist_render_block( array $attributes ): string {
 		$attachment->post_title = $file_meta['title'];
 
 		// use filename if no title is set.
-		if( empty( $attachment->post_title ) ) {
+		if ( empty( $attachment->post_title ) ) {
 			$attachment->post_title = $file_meta['filename'];
 		}
 

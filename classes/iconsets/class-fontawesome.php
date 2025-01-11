@@ -107,7 +107,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	private function get_icon_codes(): array {
-		$font_awesome_icons = array_flip( helper::get_mime_types() );
+		$font_awesome_icons = array_flip( Helper::get_mime_types() );
 		ksort( $font_awesome_icons );
 		$font_awesome_icons['application']                                    = '\f013';
 		$font_awesome_icons['application/java']                               = '\f4e4';

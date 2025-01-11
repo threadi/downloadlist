@@ -176,7 +176,7 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 		<select name="file_type" id="file_type">
 			<option value="">&nbsp;</option>
 			<?php
-			foreach ( helper::get_mime_types() as $label => $mime_type ) {
+			foreach ( Helper::get_mime_types() as $label => $mime_type ) {
 				?>
 					<option value="<?php echo esc_attr( $mime_type ); ?>"<?php echo $mime_type === $file_type ? ' selected="selected"' : ''; ?>><?php echo esc_html( $label ); ?></option>
 					<?php
