@@ -258,7 +258,7 @@ class Helper {
 		}
 
 		// write resulting code in upload-directory.
-		$style_path = Helper::get_style_path();
+		$style_path = self::get_style_path();
 		if ( ! empty( $styles ) ) {
 			// Make sure that the above variable is properly setup.
 			require_once ABSPATH . 'wp-admin/includes/file.php';
