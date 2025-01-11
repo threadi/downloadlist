@@ -634,7 +634,7 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 
 		// split the mimetype to get type and subtype.
-		list( $type, $subtype ) = helper::get_type_and_subtype_from_mimetype( $mimetype );
+		list( $type, $subtype ) = Helper::get_type_and_subtype_from_mimetype( $mimetype );
 
 		// get the post.
 		$attachment = get_post( $file_id );
@@ -649,6 +649,11 @@ function downloadlist_render_block( array $attributes ): string {
 
 		// get custom attachment title, if set.
 		$attachment->post_title = $file_meta['title'];
+
+		// use filename if no title is set.
+		if( empty( $attachment->post_title ) ) {
+			$attachment->post_title = $file_meta['filename'];
+		}
 
 		// get custom attachment description, if set.
 		$attachment->post_content = $file_meta['description'];
