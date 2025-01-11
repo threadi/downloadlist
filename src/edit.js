@@ -365,10 +365,10 @@ export default function Edit( object ) {
 	 */
 	function sortFilesByTitle() {
 		if( 'descending' === getSortDirectionByTitle(files) ) {
-			files.sort((a, b) => a.title.localeCompare(b.title))
+			files.sort((a, b) => a.title.localeCompare(b.title, undefined, {numeric: true, sensitivity: 'base'}))
 		}
 		else {
-			files.sort((a, b) => b.title.localeCompare(a.title))
+			files.sort((a, b) => b.title.localeCompare(a.title, undefined, {numeric: true, sensitivity: 'base'}))
 		}
 		object.setAttributes({ files: files, date: getActualDate() })
 	}
@@ -382,7 +382,7 @@ export default function Edit( object ) {
 	function getSortDirectionByTitle(file_array) {
 		const c = [];
 		for (let i = 1; i < file_array.length; i++) {
-			c.push(file_array[i - 1].title.localeCompare(file_array[i].title));
+			c.push(file_array[i - 1].title.localeCompare(file_array[i].title, undefined, {numeric: true, sensitivity: 'base'}));
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';

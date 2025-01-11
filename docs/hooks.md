@@ -21,7 +21,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 285](classes/class-helper.php#L285-L292)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 284](classes/class-helper.php#L284-L291)
 
 ## Filters
 
@@ -43,7 +43,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0.
 
-Source: [./classes/class-iconsets.php](classes/class-iconsets.php), [line 65](classes/class-iconsets.php#L65-L74)
+Source: [./classes/class-iconsets.php](classes/class-iconsets.php), [line 63](classes/class-iconsets.php#L63-L72)
 
 ### `downloadlist_dashicons_icons`
 
@@ -70,7 +70,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0
 
-Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 169](classes/iconsets/class-dashicons.php#L169-L184)
+Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 167](classes/iconsets/class-dashicons.php#L167-L182)
 
 ### `downloadlist_dashicons_files`
 
@@ -88,7 +88,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 249](classes/iconsets/class-dashicons.php#L249-L255)
+Source: [./classes/iconsets/class-dashicons.php](classes/iconsets/class-dashicons.php), [line 250](classes/iconsets/class-dashicons.php#L250-L256)
 
 ### `downloadlist_fontawesome_icons`
 
@@ -160,7 +160,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0
 
-Source: [./classes/iconsets/class-bootstrap.php](classes/iconsets/class-bootstrap.php), [line 162](classes/iconsets/class-bootstrap.php#L162-L177)
+Source: [./classes/iconsets/class-bootstrap.php](classes/iconsets/class-bootstrap.php), [line 160](classes/iconsets/class-bootstrap.php#L160-L175)
 
 ### `downloadlist_bootstrap_files`
 
@@ -180,7 +180,7 @@ Version | Description
 
 Source: [./classes/iconsets/class-bootstrap.php](classes/iconsets/class-bootstrap.php), [line 244](classes/iconsets/class-bootstrap.php#L244-L250)
 
-### `downloadlist_fontawesome_files`
+### `downloadlist_mime_types`
 
 *Filter the list of possible mimetypes.*
 
@@ -196,7 +196,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 39](classes/class-helper.php#L39-L45)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 37](classes/class-helper.php#L37-L43)
 
 ### `downloadlist_style_filename`
 
@@ -214,7 +214,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0.
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 56](classes/class-helper.php#L56-L63)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 54](classes/class-helper.php#L54-L61)
 
 ### `downloadlist_css_path`
 
@@ -224,7 +224,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$path` |  | 
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 83](classes/class-helper.php#L83-L83)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 81](classes/class-helper.php#L81-L81)
 
 ### `downloadlist_css_url`
 
@@ -234,7 +234,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$url` |  | 
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 103](classes/class-helper.php#L103-L103)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 101](classes/class-helper.php#L101-L101)
 
 ### `downloadlist_prevent_css_generation`
 
@@ -252,7 +252,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 137](classes/class-helper.php#L137-L143)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 136](classes/class-helper.php#L136-L142)
 
 ### `downloadlist_generate_css`
 
@@ -270,7 +270,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 273](classes/class-helper.php#L273-L280)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 272](classes/class-helper.php#L272-L279)
 
 ### `downloadlist_generate_classname`
 
@@ -288,7 +288,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 319](classes/class-helper.php#L319-L326)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 318](classes/class-helper.php#L318-L325)
 
 ### `downloadlist_generate_classname`
 
@@ -306,7 +306,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./classes/class-helper.php](classes/class-helper.php), [line 328](classes/class-helper.php#L328-L335)
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 327](classes/class-helper.php#L327-L334)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -362,6 +362,25 @@ Version | Description
 `3.4.0` | Available since 3.4.0
 
 Source: [./classes/class-helper.php](classes/class-helper.php), [line 420](classes/class-helper.php#L420-L427)
+
+### `downloadlist_file_version`
+
+*Filter the used file version (for JS- and CSS-files which get enqueued).*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$plugin_version` | `string` | The plugin-version.
+`$filepath` | `string` | The absolute path to the requested file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.6.0` | Available since 3.6.0.
+
+Source: [./classes/class-helper.php](classes/class-helper.php), [line 561](classes/class-helper.php#L561-L569)
 
 
 <p align="center"><a href="https://github.com/pronamic/wp-documentor"><img src="https://cdn.jsdelivr.net/gh/pronamic/wp-documentor@main/logos/pronamic-wp-documentor.svgo-min.svg" alt="Pronamic WordPress Documentor" width="32" height="32"></a><br><em>Generated by <a href="https://github.com/pronamic/wp-documentor">Pronamic WordPress Documentor</a> <code>1.2.0</code></em><p>

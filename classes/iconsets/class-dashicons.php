@@ -62,7 +62,7 @@ class Dashicons extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	private function get_icon_codes(): array {
-		$dashicons = array_flip( helper::get_mime_types() );
+		$dashicons = array_flip( Helper::get_mime_types() );
 		ksort( $dashicons );
 		$dashicons['application']                                    = '\f497';
 		$dashicons['application/java']                               = '\f497';

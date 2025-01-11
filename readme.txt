@@ -89,8 +89,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Fixed wrong path for templates in child-theme
-- Fixed wrong hook usage for "downloadlist_fontawesome_files" in Helper object
-- Fixed wrong plugin slug path in GitHub action during building the release
+- Use natural sort for alphabetic sorting for files in the list
+- Files without title will now be visible with their filename
+- Optimized internal object spelling
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

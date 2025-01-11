@@ -1,6 +1,14 @@
 # Changelog
 
-## [3.6.3]
+## [3.6.4] - 11.01.2025
+
+### Changed
+
+- Use natural sort for alphabetic sorting for files in the list
+- Files without title will now be visible with their filename
+- Optimized internal object spelling
+
+## [3.6.3] - 02.01.2025
 
 ### Fixed
 

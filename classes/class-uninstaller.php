@@ -109,7 +109,7 @@ class Uninstaller {
 		delete_option( $taxonomy . '_children' );
 
 		// delete style-file.
-		$path = helper::get_style_path();
+		$path = Helper::get_style_path();
 		if ( file_exists( $path ) ) {
 			wp_delete_file( $path );
 		}

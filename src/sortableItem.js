@@ -122,6 +122,9 @@ export function SortableItem(props) {
 	if( props.file.title ) {
 		title = props.file.title;
 	}
+	else if( props.file.filename ) {
+		title = props.file.filename;
+	}
 
 	/**
 	 * Add download-button

@@ -55,7 +55,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	 * @return array
 	 */
 	private function get_icon_codes(): array {
-		$bootstrapicons = array_flip( helper::get_mime_types() );
+		$bootstrapicons = array_flip( Helper::get_mime_types() );
 		ksort( $bootstrapicons );
 		$bootstrapicons['application']                                    = '\F10B';
 		$bootstrapicons['application/java']                               = '\F10B';
