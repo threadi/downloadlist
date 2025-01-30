@@ -110,10 +110,16 @@ class Custom extends Iconset_Base implements Iconset {
 		);
 		$results = new WP_Query( $query );
 		foreach ( $results->posts as $post_id ) {
+			// get the file type setting.
 			$file_type = get_post_meta( $post_id, 'file_type', true );
-			if ( ! in_array( $file_type, $file_types, true ) ) {
-				$file_types[] = $file_type;
+
+			// bail if file type is already on list.
+			if ( in_array( $file_type, $file_types, true ) ) {
+				continue;
 			}
+
+			// add file type to the list.
+			$file_types[ $post_id ] = $file_type;
 		}
 
 		// return resulting list.

@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.6.5] - 30.01.2025
+
+## Fixed
+
+- Fixed less favorable index for file types of custom iconsets
+
 ## [3.6.4] - 11.01.2025
 
 ### Changed
