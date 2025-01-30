@@ -89,8 +89,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Use natural sort for alphabetic sorting for files in the list
-- Files without title will now be visible with their filename
-- Optimized internal object spelling
+- Fixed less favorable index for file types of custom iconsets
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
