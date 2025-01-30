@@ -59,9 +59,16 @@
 		<replace file="${src.dir}/${plugin.slug}-release.php">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
+
 		<delete file="${build.dir}/uninstall-release.php"/>
 		<copy file="${src.dir}/uninstall.php" tofile="${src.dir}/uninstall-release.php"/>
 		<replace file="${src.dir}/uninstall-release.php">
+			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
+		</replace>
+
+		<delete file="${build.dir}/readme-release.php"/>
+		<copy file="${src.dir}/readme.txt" tofile="${src.dir}/readme-release.txt"/>
+		<replace file="${src.dir}/readme-release.txt">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
 	</target>
@@ -99,12 +106,14 @@
 			<zipfileset dir="${src.dir}/gfx" prefix="${plugin.slug}/gfx" />
 			<zipfileset dir="${src.dir}/inc" prefix="${plugin.slug}/inc" />
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
-			<zipfileset dir="${src.dir}" includes="readme.txt,block.json,wpml-config.xml" prefix="${plugin.slug}" />
+			<zipfileset dir="${src.dir}" includes="block.json,wpml-config.xml" prefix="${plugin.slug}" />
 			<zipfileset dir="${src.dir}" includes="${plugin.slug}-release.php" fullpath="${plugin.slug}/${plugin.slug}.php" />
+			<zipfileset dir="${src.dir}" includes="readme-release.txt" fullpath="${plugin.slug}/readme.txt" />
 			<zipfileset dir="${src.dir}" includes="uninstall-release.php" fullpath="${plugin.slug}/uninstall.php" />
 		</zip>
 		<delete file="${src.dir}/${plugin.slug}-release.php"/>
 		<delete file="${src.dir}/uninstall-release.php"/>
+		<delete file="${src.dir}/readme-release.txt"/>
 	</target>
 
 	<!-- show help -->
