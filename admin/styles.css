@@ -1,7 +1,7 @@
 body.taxonomy-dl_icon_set .term-description-wrap, body.taxonomy-dl_icon_set .term-slug-wrap { display: none }
 body.taxonomy-dl_icon_set input[type="number"] { width: auto }
 
-.downloadlist-transient {
+.download-list-block-with-icons-transient {
 	position: relative;
 	z-index: 1;
 }

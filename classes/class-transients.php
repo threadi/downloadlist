@@ -47,6 +47,36 @@ class Transients {
 	}
 
 	/**
+	 * Initialize the transients.
+	 *
+	 * @return void
+	 */
+	public function init(): void {
+		// enable our own notices.
+		add_action( 'admin_notices', array( $this, 'init_notices' ) );
+
+		// process AJAX-requests to dismiss transient notices.
+		add_action( 'wp_ajax_downloadlist_dismiss_admin_notice', array( $this, 'dismiss_transient_via_ajax' ) );
+	}
+
+	/**
+	 * Initialize the visibility of any transients as notices.
+	 *
+	 * Only visible for users with capability to manage settings of this plugin.
+	 *
+	 * @return void
+	 */
+	public function init_notices(): void {
+		// return if user has no capability for this.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// check the transients.
+		$this->check_transients();
+	}
+
+	/**
 	 * Adds a single transient.
 	 *
 	 * @return Transient
@@ -161,5 +191,38 @@ class Transients {
 	 */
 	public function get_transient_by_name( string $transient ): Transient {
 		return new Transient( $transient );
+	}
+
+	/**
+	 * Handles Ajax request to persist notices dismissal.
+	 * Uses check_ajax_referer to verify nonce.
+	 *
+	 * @return void
+	 * @noinspection PhpUnused
+	 * @noinspection PhpNoReturnAttributeCanBeAddedInspection
+	 */
+	public function dismiss_transient_via_ajax(): void {
+		// check nonce.
+		check_ajax_referer( 'downloadlist-dismiss-nonce', 'nonce' );
+
+		// get values.
+		$option_name        = isset( $_POST['option_name'] ) ? sanitize_text_field( wp_unslash( $_POST['option_name'] ) ) : false;
+		$dismissible_length = isset( $_POST['dismissible_length'] ) ? sanitize_text_field( wp_unslash( $_POST['dismissible_length'] ) ) : 14;
+
+		if ( 'forever' !== $dismissible_length ) {
+			// if $dismissible_length is not an integer default to 14.
+			$dismissible_length = ( 0 === absint( $dismissible_length ) ) ? 14 : $dismissible_length;
+			$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
+		}
+
+		// save value.
+		delete_option( 'dl-dismissed-' . md5( $option_name ) );
+		add_option( 'dl-dismissed-' . md5( $option_name ), $dismissible_length, '', true );
+
+		// remove transient.
+		$this->get_transient_by_name( $option_name )->delete();
+
+		// return nothing.
+		wp_die();
 	}
 }

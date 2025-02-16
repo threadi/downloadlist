@@ -164,12 +164,14 @@ class Transient {
 		// output, if message is given.
 		if ( $this->has_message() ) {
 			?>
-			<div class="downloadlist-transient updated <?php echo esc_attr( $this->get_type() ); ?>" data-dismissible="<?php echo esc_attr( $this->get_name() ); ?>-<?php echo absint( $this->get_dismissible_days() ); ?>">
+			<div class="download-list-block-with-icons-transient updated <?php echo esc_attr( $this->get_type() ); ?>" data-dismissible="<?php echo esc_attr( $this->get_name() ); ?>-<?php echo absint( $this->get_dismissible_days() ); ?>">
 				<?php
 				echo wp_kses_post( wpautop( $this->get_message() ) );
 				if ( $this->get_dismissible_days() > 0 ) {
+					/* translators: %1$d will be replaced by the days this message will be hidden. */
+					$title = sprintf( __( 'Hide this message for %1$d days.', 'download-list-block-with-icons' ), $this->get_dismissible_days() );
 					?>
-					<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php echo esc_html__( 'Dismiss this notice.', 'download-list-block-with-icons' ); ?></span></button>
+					<button type="button" class="notice-dismiss" title="<?php echo esc_attr( $title ); ?>"><span class="screen-reader-text"><?php echo esc_html( $title ); ?></span></button>
 					<?php
 				}
 				?>

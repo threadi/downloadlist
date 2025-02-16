@@ -15,6 +15,7 @@
  * @param string $description The description.
  * @param string $link_target The value for the target attribute.
  *
+ * @version: 3.7.0
  * @package download-list-block-with-icons
  */
 

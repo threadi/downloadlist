@@ -577,4 +577,59 @@ class Helper {
 	public static function get_support_url(): string {
 		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
 	}
+
+	/**
+	 * Get all files of directory recursively.
+	 *
+	 * @param string $path The path.
+	 * @return array
+	 */
+	public static function get_files_from_directory( string $path = '.' ): array {
+		// get WP_Filesystem as object.
+		global $wp_filesystem;
+		WP_Filesystem();
+
+		// load files recursive in array and return resulting list.
+		return self::get_files( $wp_filesystem->dirlist( $path, true, true ), $path );
+	}
+
+	/**
+	 * Recursively load files from given array.
+	 *
+	 * @param array  $files Array of file we iterate through.
+	 * @param string $path Absolute path where the files are located.
+	 * @param array  $file_list List of files.
+	 *
+	 * @return array
+	 */
+	private static function get_files( array $files, string $path, array $file_list = array() ): array {
+		foreach ( $files as $filename => $settings ) {
+			if ( 'f' === $settings['type'] ) {
+				$file_list[ $filename ] = $path . $filename;
+			}
+			if ( 'd' === $settings['type'] ) {
+				$file_list = self::get_files( $settings['files'], $path . trailingslashit( $filename ), $file_list );
+			}
+		}
+
+		return $file_list;
+	}
+
+	/**
+	 * Return the absolute URL to the plugin (already trailed with slash).
+	 *
+	 * @return string
+	 */
+	public static function get_plugin_url(): string {
+		return trailingslashit( plugin_dir_url( DL_PLUGIN ) );
+	}
+
+	/**
+	 * Return the absolute local filesystem-path (already trailed with slash) to the plugin.
+	 *
+	 * @return string
+	 */
+	public static function get_plugin_path(): string {
+		return trailingslashit( plugin_dir_path( DL_PLUGIN ) );
+	}
 }
