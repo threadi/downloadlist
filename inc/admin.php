@@ -11,7 +11,14 @@ defined( 'ABSPATH' ) || exit;
 use downloadlist\helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
+use downloadlist\Templates;
 use downloadlist\Transients;
+
+// initialize the template support in backend.
+Templates::get_instance()->init();
+
+// initialize the transient support in backend.
+Transients::get_instance()->init();
 
 /**
  * Register styles for block editor.
@@ -59,6 +66,8 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'downloadlist-admin',
 		'downloadlistAdminJsVars',
 		array(
+			'ajax_url'                           => admin_url( 'admin-ajax.php' ),
+			'dismiss_nonce'                      => wp_create_nonce( 'downloadlist-dismiss-nonce' ),
 			'title'             => __( 'Insert image', 'download-list-block-with-icons' ),
 			'lbl_button'        => __( 'Use this image', 'download-list-block-with-icons' ),
 			'lbl_upload_button' => __( 'Upload image', 'download-list-block-with-icons' ),
@@ -309,7 +318,7 @@ function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, 
 	// marker if the term has been changed that should result in new style generation.
 	$generate_styles = false;
 
-	// delete markier for default icon-set.
+	// delete marker for default icon-set.
 	delete_term_meta( $term_id, 'default' );
 
 	// mark the icon-set as default if checkbox is set.
@@ -597,23 +606,6 @@ function downloadlist_cleanup(): void {
 		update_post_meta( $post_id, 'generic-downloadlist', 1 );
 	}
 }
-
-/**
- * Show known transients only for users with rights.
- *
- * @return void
- */
-function downloadlist_admin_notices(): void {
-	// bail if capabilities does not match.
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	// check for transients of our plugin to show them as admin notices.
-	$transients_obj = Transients::get_instance();
-	$transients_obj->check_transients();
-}
-add_action( 'admin_notices', 'downloadlist_admin_notices' );
 
 /**
  * Add new field for attachments.

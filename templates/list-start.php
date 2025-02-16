@@ -5,6 +5,7 @@
  * @param string $wrapper_attributes List of attributes.
  * @param string $iconset Style-classes for used iconset.
  *
+ * @version: 3.7.0
  * @package download-list-block-with-icons
  */
 

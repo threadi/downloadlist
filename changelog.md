@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added version numbers for each template file
+- Added hint for user in backend if customized template files should be updated to new version
+
+### Optimized
+
+- Admin notices of this plugin can now be hidden for X days
+
 ## [3.6.5] - 30.01.2025
 
 ## Fixed
