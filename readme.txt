@@ -89,6 +89,10 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Fixed less favorable index for file types of custom iconsets
+- Added version numbers for each template file
+- Added hint for user in backend if customized template files should be updated to new version
+- Added hooks for any returning lists on REST endpoints of this plugin
+- Admin notices of this plugin can now be hidden for X days
+- Optimized styling on editing a custom icon
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

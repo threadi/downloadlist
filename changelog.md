@@ -15,7 +15,7 @@
 
 ## [3.6.5] - 30.01.2025
 
-## Fixed
+### Fixed
 
 - Fixed less favorable index for file types of custom iconsets
 
