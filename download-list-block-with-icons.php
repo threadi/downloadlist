@@ -315,16 +315,28 @@ function downloadlist_api_return_file_data( WP_REST_Request $request ): array {
 	}
 
 	// get the file data.
-	$array = array();
+	$file_data = array();
 	foreach ( $post_ids as $post_id ) {
+		// get the JS-data of this attachment.
 		$js = wp_prepare_attachment_for_js( $post_id );
-		if ( ! empty( $js ) ) {
-			$array[] = $js;
+
+		// bail if it is empty.
+		if ( empty( $js ) ) {
+			continue;
 		}
+
+		// add the JS-data of this attachment to the list.
+		$file_data[] = $js;
 	}
 
-	// return the collected file data.
-	return $array;
+	/**
+	 * Filter the resulting file data before we return them.
+	 *
+	 * @since 3.7.0 Available since 3.7.0.
+	 * @param array $file_data The response as array.
+	 * @param WP_REST_Request $request The request.
+	 */
+	return apply_filters( 'downloadlist_api_return_file_data', $file_data, $request );
 }
 
 /**
@@ -520,16 +532,22 @@ function downloadlist_rest_api_filetypes( WP_REST_Request $request ): array {
 	$file_types = $iconset_obj->get_file_types();
 
 	// convert array to object-array so every entry has its own index.
-	$resulting_array = array();
+	$iconsets = array();
 	foreach ( $file_types as $key => $file_type ) {
-		$resulting_array[] = array(
+		$iconsets[] = array(
 			'id'    => $key,
 			'value' => $file_type,
 		);
 	}
 
-	// return resulting list.
-	return $resulting_array;
+	/**
+	 * Filter the resulting list of iconsets before we return them.
+	 *
+	 * @3.7.0 Available since 3.7.0.
+	 * @param array $iconsets List of iconsets.
+	 * @param WP_REST_Request $request The request.
+	 */
+	return apply_filters( 'downloadlist_rest_api_filetypes', $iconsets, $request );
 }
 
 /**
