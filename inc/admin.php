@@ -66,8 +66,8 @@ function downloadlist_add_styles_and_js_admin(): void {
 		'downloadlist-admin',
 		'downloadlistAdminJsVars',
 		array(
-			'ajax_url'                           => admin_url( 'admin-ajax.php' ),
-			'dismiss_nonce'                      => wp_create_nonce( 'downloadlist-dismiss-nonce' ),
+			'ajax_url'          => admin_url( 'admin-ajax.php' ),
+			'dismiss_nonce'     => wp_create_nonce( 'downloadlist-dismiss-nonce' ),
 			'title'             => __( 'Insert image', 'download-list-block-with-icons' ),
 			'lbl_button'        => __( 'Use this image', 'download-list-block-with-icons' ),
 			'lbl_upload_button' => __( 'Upload image', 'download-list-block-with-icons' ),

@@ -13,8 +13,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Handler for templates.
  */
-class Templates
-{
+class Templates {
+
 	/**
 	 * Instance of this object.
 	 *
@@ -38,7 +38,7 @@ class Templates
 	 * Return the instance of this Singleton object.
 	 */
 	public static function get_instance(): Templates {
-		if (!static::$instance instanceof static) {
+		if ( ! static::$instance instanceof static ) {
 			static::$instance = new static();
 		}
 		return static::$instance;
@@ -51,7 +51,7 @@ class Templates
 	 */
 	public function init(): void {
 		// check for changed templates.
-		add_action('admin_init', array($this, 'check_child_theme_templates'));
+		add_action( 'admin_init', array( $this, 'check_child_theme_templates' ) );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Templates
 		$transients_obj = Transients::get_instance();
 
 		// bail if user has not the capabilities.
-		if( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			$transients_obj->get_transient_by_name( 'downloadlist_old_templates' )->delete();
 			return;
 		}
