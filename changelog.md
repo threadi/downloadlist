@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.7.0] - 16.02.2025
 
 ### Added
 
@@ -11,6 +11,7 @@
 ### Optimized
 
 - Admin notices of this plugin can now be hidden for X days
+- Optimized styling on editing a custom icon
 
 ## [3.6.5] - 30.01.2025
 
