@@ -6,6 +6,7 @@
 
 - Added version numbers for each template file
 - Added hint for user in backend if customized template files should be updated to new version
+- Added hooks for any returning lists on REST endpoints of this plugin
 
 ### Optimized
 
