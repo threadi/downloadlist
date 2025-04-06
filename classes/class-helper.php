@@ -632,4 +632,13 @@ class Helper {
 	public static function get_plugin_path(): string {
 		return trailingslashit( plugin_dir_path( DL_PLUGIN ) );
 	}
+
+	/**
+	 * Return the plugin support url: the forum on WordPress.org.
+	 *
+	 * @return string
+	 */
+	public static function get_plugin_support_url(): string {
+		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
+	}
 }

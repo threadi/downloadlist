@@ -708,6 +708,7 @@ add_filter( 'easy_language_possible_post_types', 'downloadlist_remove_easy_langu
  * @return array
  */
 function downloadlist_plugin_list_add_setting_link( array $links ): array {
+	// create link to custom icon list.
 	$url = add_query_arg(
 		array(
 			'post_type' => 'dl_icons',
@@ -718,10 +719,53 @@ function downloadlist_plugin_list_add_setting_link( array $links ): array {
 	// adds the link to the end of the array.
 	$links[] = '<a href="' . esc_url( $url ) . '">' . __( 'Manage icons', 'download-list-block-with-icons' ) . '</a>';
 
+	// get language-dependent URL for the how-to.
+	$url = 'https://github.com/threadi/downloadlist/tree/master/docs/how_to_use.md';
+	if ( str_starts_with( 'de_', get_locale() ) ) {
+		$url = 'https://github.com/threadi/downloadlist/tree/master/docs/how_to_use_de.md';
+	}
+
+	// add the link to the list.
+	$links[] = '<a href="' . esc_url( $url ) . '" target="_blank"><strong>' . esc_html__( 'How to use', 'download-list-block-with-icons' ) . '</strong></a>';
+
 	// return resulting list.
 	return $links;
 }
 add_filter( 'plugin_action_links_' . plugin_basename( DL_PLUGIN ), 'downloadlist_plugin_list_add_setting_link' );
+
+
+/**
+ * Add links in row meta in plugin list.
+ *
+ * @param array  $links List of links.
+ * @param string $file The requested plugin file name.
+ *
+ * @return array
+ */
+function downloadlist_add_row_meta_links( array $links, string $file ): array {
+	// bail if this is not our plugin.
+	if ( DL_PLUGIN !== WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $file ) {
+		return $links;
+	}
+
+	// add our custom links.
+	$row_meta = array(
+		'support' => '<a href="' . esc_url( Helper::get_plugin_support_url() ) . '" target="_blank" title="' . esc_attr__( 'Support Forum', 'download-list-block-with-icons' ) . '">' . esc_html__( 'Support Forum', 'download-list-block-with-icons' ) . '</a>',
+	);
+
+	/**
+	 * Filter the links in row meta of our plugin in plugin list.
+	 *
+	 * @since 3.7.1 Available since 3.7.1.
+	 * @param array $row_meta List of links.
+	 */
+	$row_meta = apply_filters( 'downloadlist_plugin_row_meta', $row_meta );
+
+	// return the resulting list of links.
+	return array_merge( $links, $row_meta );
+}
+add_filter( 'plugin_row_meta', 'downloadlist_add_row_meta_links', 10, 2 );
+
 
 /**
  * Check if website is using a valid SSL and show warning if not.
