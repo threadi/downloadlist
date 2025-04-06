@@ -1,6 +1,6 @@
 {
 	"name": "downloadlist",
-	"version": "3.7.1",
+	"version": "3.8.0",
 	"description": "Provides a Gutenberg block to manage a download list with file type specific icons.",
 	"author": "threadi",
 	"license": "GPL-2.0-or-later",
