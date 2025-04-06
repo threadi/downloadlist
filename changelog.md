@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added link to support forum in plugin list
+- Added new hooks
+
 ## [3.7.0] - 16.02.2025
 
 ### Added
