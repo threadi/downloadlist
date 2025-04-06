@@ -7,6 +7,10 @@
 - Added link to support forum in plugin list
 - Added new hooks
 
+### Changed
+
+- Updated dependencies
+
 ## [3.7.0] - 16.02.2025
 
 ### Added
@@ -15,7 +19,7 @@
 - Added hint for user in backend if customized template files should be updated to new version
 - Added hooks for any returning lists on REST endpoints of this plugin
 
-### Optimized
+### Changed
 
 - Admin notices of this plugin can now be hidden for X days
 - Optimized styling on editing a custom icon
