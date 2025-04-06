@@ -141,6 +141,14 @@ function downloadlist_admin_meta_boxes(): void {
 		'downloadlist_admin_meta_boxes_settings',
 		'dl_icons'
 	);
+
+	// add meta-box with help options.
+	add_meta_box(
+		'downloadlist_help',
+		__( 'Need help?', 'download-list-block-with-icons' ),
+		'downloadlist_admin_meta_boxes_help',
+		'dl_icons'
+	);
 }
 add_action( 'add_meta_boxes_dl_icons', 'downloadlist_admin_meta_boxes', 10, 0 );
 
@@ -194,6 +202,16 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 		</select>
 	</div>
 	<?php
+}
+
+/**
+ * Show help options.
+ *
+ * @return void
+ */
+function downloadlist_admin_meta_boxes_help(): void {
+	/* translators: %1$s will be replaced by the URL for our support forum. */
+	echo sprintf( __( 'You are welcome to contact <a href="%1$s" target="_blank">our support forum (opens new window)</a> if you have any questions.', 'download-list-block-with-icons' ), Helper::get_plugin_support_url() );
 }
 
 /**
@@ -756,7 +774,7 @@ function downloadlist_add_row_meta_links( array $links, string $file ): array {
 	/**
 	 * Filter the links in row meta of our plugin in plugin list.
 	 *
-	 * @since 3.7.1 Available since 3.7.1.
+	 * @since 3.8.0 Available since 3.8.0.
 	 * @param array $row_meta List of links.
 	 */
 	$row_meta = apply_filters( 'downloadlist_plugin_row_meta', $row_meta );
@@ -797,3 +815,13 @@ function downloadlist_check_php(): void {
 	$transient_obj->save();
 }
 add_action( 'admin_init', 'downloadlist_check_php' );
+
+/**
+ * Load help system.
+ *
+ * @return void
+ */
+function downloadlist_load_help_system(): void {
+	\downloadlist\Help_System::get_instance()->init();
+}
+add_action( 'admin_init', 'downloadlist_load_help_system' );
