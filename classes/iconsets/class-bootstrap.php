@@ -202,8 +202,8 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		$types = array();
 
 		// loop through the icons and add them to styling.
-		foreach ( $this->get_icon_codes() as $filetype => $icon ) {
-			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $filetype );
+		foreach ( $this->get_icon_codes() as $icon_filetype => $icon ) {
+			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $icon_filetype );
 			if ( empty( $types[ $type ] ) ) {
 				$style         .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $type . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $type ] = 1;

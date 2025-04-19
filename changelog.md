@@ -10,6 +10,7 @@
 
 ### Changed
 
+- Optimization on code for better speed and to prevent potential errors
 - Updated dependencies
 
 ## [3.7.0] - 16.02.2025

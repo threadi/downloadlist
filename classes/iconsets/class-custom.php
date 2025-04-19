@@ -147,7 +147,12 @@ class Custom extends Iconset_Base implements Iconset {
 		);
 		$results = new WP_Query( $query );
 
-		// return resulting list.
-		return $results->posts;
+		// bail on no results.
+		if( 0 === $results->found_posts ) {
+			return array();
+		}
+
+		// return the resulting list.
+		return $results->get_posts();
 	}
 }

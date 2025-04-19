@@ -238,11 +238,7 @@ class Transient {
 		$db_record = $this->get_admin_transient_dismiss_cache();
 
 		// return bool depending on value.
-		if ( 'forever' === $db_record || absint( $db_record ) >= time() ) {
-			return false;
-		} else {
-			return true;
-		}
+		return !('forever' === $db_record || absint($db_record) >= time());
 	}
 
 	/**
