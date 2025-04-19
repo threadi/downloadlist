@@ -112,7 +112,14 @@ class Iconsets {
 			),
 		);
 		$posts = new WP_Query( $query );
-		return $posts->posts;
+
+		// bail on no results.
+		if( 0 === $posts->found_posts ) {
+			return array();
+		}
+
+		// return the resulting entries.
+		return $posts->get_posts();
 	}
 
 	/**
