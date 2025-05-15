@@ -768,7 +768,7 @@ function downloadlist_plugin_list_add_setting_link( array $links ): array {
 	}
 
 	// add the link to the list.
-	$links[] = '<a href="' . esc_url( $url ) . '" target="_blank"><strong>' . esc_html__( 'How to use', 'download-list-block-with-icons' ) . '</strong></a>';
+	$links[] = '<a href="' . esc_url( $url ) . '" target="_blank" style="font-weight:bold">' . esc_html__( 'How to use', 'download-list-block-with-icons' ) . '</a>';
 
 	// return resulting list.
 	return $links;

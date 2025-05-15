@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.8.0] - 15.05.2025
 
 ### Added
 
@@ -13,6 +13,10 @@
 
 - Optimization on code for better speed and to prevent potential errors
 - Updated dependencies
+
+### Fixed
+
+- Fixed formatting in plugin list
 
 ## [3.7.0] - 16.02.2025
 

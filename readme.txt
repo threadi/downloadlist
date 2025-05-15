@@ -89,10 +89,12 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Added version numbers for each template file
-- Added hint for user in backend if customized template files should be updated to new version
-- Added hooks for any returning lists on REST endpoints of this plugin
-- Admin notices of this plugin can now be hidden for X days
-- Optimized styling on editing a custom icon
+- Added link to support forum in plugin list
+- Added new hooks
+- Added help box in icon edit screen
+- Added check with PHPStan to reduce potential PHP-errors
+- Optimization on code for better speed and to prevent potential errors
+- Updated dependencies
+- Fixed formatting in plugin list
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
