@@ -7,6 +7,7 @@
 - Added link to support forum in plugin list
 - Added new hooks
 - Added help box in icon edit screen
+- Added check with PHPStan to reduce potential PHP-errors
 
 ### Changed
 

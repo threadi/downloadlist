@@ -81,10 +81,11 @@ class Iconset_Base {
 	 * Return the instance of this Singleton object.
 	 */
 	public static function get_instance(): Iconset_Base {
-		if ( ! static::$instance instanceof static ) {
-			static::$instance = new static();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
-		return static::$instance;
+
+		return self::$instance;
 	}
 
 	/**
@@ -184,7 +185,7 @@ class Iconset_Base {
 	/**
 	 * Return list of supported file-types.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_file_types(): array {
 		return array();
@@ -193,7 +194,7 @@ class Iconset_Base {
 	/**
 	 * Get icons this set is assigned to.
 	 *
-	 * @return array
+	 * @return array<int,int>
 	 */
 	public function get_icons(): array {
 		return array();
@@ -216,7 +217,7 @@ class Iconset_Base {
 	/**
 	 * Return nothing as this iconset does not use any iconset-specific styles.
 	 *
-	 * @return array
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function get_style_files(): array {
 		return array();

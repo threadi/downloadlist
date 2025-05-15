@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 use downloadlist\Iconset;
 use downloadlist\Iconset_Base;
+use WP_Post;
 use WP_Query;
 
 /**
@@ -38,6 +39,24 @@ class Custom extends Iconset_Base implements Iconset {
 	 * @var bool
 	 */
 	protected bool $gfx = true;
+
+	/**
+	 * Instance of this object.
+	 *
+	 * @var ?Custom
+	 */
+	private static ?Custom $instance = null;
+
+	/**
+	 * Return the instance of this Singleton object.
+	 */
+	public static function get_instance(): Custom {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
 
 	/**
 	 * Initialize the object.
@@ -82,7 +101,7 @@ class Custom extends Iconset_Base implements Iconset {
 	/**
 	 * Return the by iconset supported filetypes.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_file_types(): array {
 		// define array for resulting list.
@@ -109,9 +128,14 @@ class Custom extends Iconset_Base implements Iconset {
 			'fields'      => 'ids',
 		);
 		$results = new WP_Query( $query );
-		foreach ( $results->posts as $post_id ) {
+		foreach ( $results->get_posts() as $post_id ) {
+			if ( $post_id instanceof WP_Post ) {
+				continue;
+			}
+			$post_id = absint( $post_id );
+
 			// get the file type setting.
-			$file_type = get_post_meta( $post_id, 'file_type', true );
+			$file_type = (string) get_post_meta( $post_id, 'file_type', true );
 
 			// bail if file type is already on list.
 			if ( in_array( $file_type, $file_types, true ) ) {
@@ -129,7 +153,7 @@ class Custom extends Iconset_Base implements Iconset {
 	/**
 	 * Get icons this set is assigned to.
 	 *
-	 * @return array The post-IDs of the icons as array.
+	 * @return array<int,int> The post-IDs of the icons as array.
 	 */
 	public function get_icons(): array {
 		$query   = array(
@@ -148,11 +172,18 @@ class Custom extends Iconset_Base implements Iconset {
 		$results = new WP_Query( $query );
 
 		// bail on no results.
-		if( 0 === $results->found_posts ) {
+		if ( 0 === $results->found_posts ) {
 			return array();
 		}
 
-		// return the resulting list.
-		return $results->get_posts();
+		// get the resulting list.
+		$list = array();
+		foreach ( $results->get_posts() as $post_id ) {
+			if ( $post_id instanceof WP_Post ) {
+				continue;
+			}
+			$list[] = absint( $post_id );
+		}
+		return $list;
 	}
 }

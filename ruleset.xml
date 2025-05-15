@@ -4,6 +4,20 @@
 	<description>Download List with Icons Coding Standards</description>
 
 	<!--
+	   Only scan files with .php extension.
+   -->
+	<arg name="extensions" value="php" />
+
+	<!--
+		Directories to exclude.
+	-->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/block/*</exclude-pattern>
+	<exclude-pattern>*/svn/*</exclude-pattern>
+	<exclude-pattern>*/src/*</exclude-pattern>
+
+	<!--
 	Included via WordPress-Extra.
 	<rule ref="WordPress-Core"/>
 	-->

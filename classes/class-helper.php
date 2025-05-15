@@ -10,7 +10,10 @@ namespace downloadlist;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use WP_Image_Editor;
+use WP_Post;
 use WP_Query;
+use WP_Term;
 use WP_Term_Query;
 
 /**
@@ -21,7 +24,7 @@ class Helper {
 	/**
 	 * Return possible mime-types.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	public static function get_mime_types(): array {
 		// get the WordPress-list of mime-types.
@@ -114,7 +117,20 @@ class Helper {
 			'hide_empty' => false,
 		);
 		$results = new WP_Term_Query( $query );
-		foreach ( $results->get_terms() as $term ) {
+
+		// get the results.
+		$terms = $results->get_terms();
+
+		// convert them if terms are not an array.
+		if ( ! is_array( $terms ) ) {
+			$terms = array( $terms );
+		}
+
+		// loop through them.
+		foreach ( $terms as $term ) {
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
 			delete_term_meta( $term->term_id, 'default' );
 		}
 
@@ -136,7 +152,7 @@ class Helper {
 		/**
 		 * Prevent generation of new CSS-files.
 		 *
-		 * @param array $false Set to true to prevent the generation.
+		 * @param bool $false Set to true to prevent the generation.
 		 * @since 3.4.0 Available since 3.4.0
 		 */
 		if ( apply_filters( 'downloadlist_prevent_css_generation', $false ) ) {
@@ -215,11 +231,26 @@ class Helper {
 
 		// loop through the resulting list of icons.
 		foreach ( $icons as $post_id ) {
+			if ( $post_id instanceof WP_Post ) {
+				continue;
+			}
+			$post_id = absint( $post_id );
+
 			// get the assigned icon-set.
 			$terms = wp_get_object_terms( $post_id, 'dl_icon_set' );
 
+			// bail if terms is not an array.
+			if ( ! is_array( $terms ) ) {
+				continue;
+			}
+
 			// continue with next if no iconset is assigned.
 			if ( empty( $terms ) ) {
+				continue;
+			}
+
+			// bail if no first result does exist.
+			if ( ! isset( $terms[0] ) ) {
 				continue;
 			}
 
@@ -227,7 +258,7 @@ class Helper {
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $terms[0]->slug );
 
 			// bail if no iconset-object could be loaded.
-			if ( false === $iconset_obj ) {
+			if ( ! $iconset_obj ) {
 				continue;
 			}
 
@@ -248,7 +279,7 @@ class Helper {
 
 				// get iconset-specific styles.
 				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
-				if ( ! empty( $subtype ) && false === $iconset_obj->is_generic() ) {
+				if ( ! empty( $subtype ) && false === $iconset_obj->is_generic() ) { // @phpstan-ignore identical.alwaysTrue
 					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
 				}
 			}
@@ -261,7 +292,7 @@ class Helper {
 		$style_path = self::get_style_path();
 		if ( ! empty( $styles ) ) {
 			// Make sure that the above variable is properly setup.
-			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php'; // @phpstan-ignore requireOnce.fileNotFound
 			WP_Filesystem();
 
 			// create directory if it does not exist atm.
@@ -298,7 +329,7 @@ class Helper {
 	 * Get type and subtype from given mimetype.
 	 *
 	 * @param string $mimetype The mimetype to split.
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public static function get_type_and_subtype_from_mimetype( string $mimetype ): array {
 		// split the string.
@@ -347,7 +378,7 @@ class Helper {
 		/**
 		 * Prevent generation of icons used by iconsets of this plugin.
 		 *
-		 * @param array $false Set to true to prevent the generation.
+		 * @param bool $false Set to true to prevent the generation.
 		 * @since 3.4.0 Available since 3.4.0
 		 */
 		if ( apply_filters( 'downloadlist_prevent_icon_generation', $false ) ) {
@@ -362,7 +393,22 @@ class Helper {
 			$query['term_taxonomy_id'] = $term_id;
 		}
 		$results = new WP_Term_Query( $query );
-		foreach ( $results->get_terms() as $term ) {
+
+		// get the results.
+		$terms = $results->get_terms();
+
+		// convert them if terms are not an array.
+		if ( ! is_array( $terms ) ) {
+			$terms = array( $terms );
+		}
+
+		// loop through them.
+		foreach ( $terms as $term ) {
+			// bail if term is not a term.
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
+
 			// get iconset-object.
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
 
@@ -390,18 +436,23 @@ class Helper {
 			/**
 			 * Set suffix for generated filename.
 			 *
-			 * @param array $suffix The suffix to use.
+			 * @param string $suffix The suffix to use.
 			 * @since 3.4.0 Available since 3.4.0
 			 */
 			$suffix = apply_filters( 'downloadlist_prevent_icon_generation', $suffix );
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
+				$post_id = absint( $post_id );
+
 				// get the attachment_id.
 				$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
 				if ( $attachment_id > 0 ) {
 					// get the attachment metadata.
 					$metadata = wp_get_attachment_metadata( $attachment_id );
+					if ( ! is_array( $metadata ) ) {
+						$metadata = array();
+					}
 					if ( empty( $metadata['sizes'] ) ) {
 						$metadata['sizes'] = array();
 					}
@@ -431,8 +482,18 @@ class Helper {
 					// get the path for the original file.
 					$original_path = wp_get_original_image_path( $attachment_id );
 
+					// bail if path could not be loaded.
+					if ( ! is_string( $original_path ) ) {
+						continue;
+					}
+
 					// get image editor object.
 					$image_editor = wp_get_image_editor( $original_path );
+
+					// bail if editor could not be loaded.
+					if ( ! $image_editor instanceof WP_Image_Editor ) {
+						continue;
+					}
 
 					// generate a proper destination filename.
 					$destination_filename = $image_editor->generate_filename( $suffix );
@@ -465,17 +526,13 @@ class Helper {
 	public static function add_generic_iconsets(): void {
 		// add predefined iconsets to taxonomy if they do not exist.
 		foreach ( Iconsets::get_instance()->get_icon_sets() as $iconset_obj ) {
-			// bail if iconset has not our base-class.
-			if ( ! ( $iconset_obj instanceof Iconset_Base ) ) {
-				continue;
-			}
-
 			// bail if one necessary setting is missing.
 			if ( false === $iconset_obj->has_label() || false === $iconset_obj->has_type() ) {
 				continue;
 			}
 
 			// check if this term already exists.
+			$term = false;
 			if ( ! term_exists( $iconset_obj->get_label(), 'dl_icon_set' ) ) {
 				// no, it does not exist. then add it now.
 				$term = wp_insert_term(
@@ -487,12 +544,14 @@ class Helper {
 				);
 			} else {
 				$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
-				$term     = array(
-					'term_id' => $term_obj->term_id,
-				);
+				if ( $term_obj instanceof WP_Term ) {
+					$term = array(
+						'term_id' => $term_obj->term_id,
+					);
+				}
 			}
 
-			if ( ! is_wp_error( $term ) ) {
+			if ( is_array( $term ) ) {
 				// save the type for this term.
 				update_term_meta( $term['term_id'], 'type', $iconset_obj->get_type() );
 
@@ -553,7 +612,7 @@ class Helper {
 	public static function get_file_version( string $filepath ): string {
 		// check for WP_DEBUG.
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			return filemtime( $filepath );
+			return (string) filemtime( $filepath );
 		}
 
 		$plugin_version = DL_VERSION;
@@ -582,7 +641,7 @@ class Helper {
 	 * Get all files of directory recursively.
 	 *
 	 * @param string $path The path.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public static function get_files_from_directory( string $path = '.' ): array {
 		// get WP_Filesystem as object.
@@ -596,11 +655,11 @@ class Helper {
 	/**
 	 * Recursively load files from given array.
 	 *
-	 * @param array  $files Array of file we iterate through.
-	 * @param string $path Absolute path where the files are located.
-	 * @param array  $file_list List of files.
+	 * @param array<string,mixed> $files Array of file we iterate through.
+	 * @param string              $path Absolute path where the files are located.
+	 * @param array<string,mixed> $file_list List of files.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	private static function get_files( array $files, string $path, array $file_list = array() ): array {
 		foreach ( $files as $filename => $settings ) {

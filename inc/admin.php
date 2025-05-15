@@ -8,7 +8,8 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use downloadlist\helper;
+use downloadlist\Help_System;
+use downloadlist\Helper;
 use downloadlist\Iconset_Base;
 use downloadlist\Iconsets;
 use downloadlist\Templates;
@@ -120,13 +121,13 @@ function downloadlist_check_taxonomy( int $post_id ): void {
 
 	// get iconset.
 	$iconset_terms = wp_get_object_terms( $post_id, 'dl_icon_set' );
-	if ( ! empty( $iconset_terms ) ) {
+	if ( is_array( $iconset_terms ) && ! empty( $iconset_terms ) ) {
 		// regenerate icons and style of the chosen iconset.
 		Helper::regenerate_icons( $iconset_terms[0]->term_id );
 		Helper::generate_css( $iconset_terms[0]->term_id );
 	}
 }
-add_action( 'save_post_dl_icons', 'downloadlist_check_taxonomy', 10, 2 );
+add_action( 'save_post_dl_icons', 'downloadlist_check_taxonomy' );
 
 /**
  * Show meta-box for cpts where the assigned term has the type "custom".
@@ -176,7 +177,7 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
 				?>
 				<a href="#" class="downloadlist-image-choose"><img src="<?php echo esc_url( $image[0] ); ?>" alt="" /></a>
 				<a href="#" class="downloadlist-image-remove button button-primary"><?php echo esc_html__( 'Remove image', 'download-list-block-with-icons' ); ?></a>
-				<input type="hidden" name="icon" value="<?php echo esc_attr( $image_id ); ?>">
+				<input type="hidden" name="icon" value="<?php echo absint( $image_id ); ?>">
 				<?php
 			} else {
 				?>
@@ -211,15 +212,15 @@ function downloadlist_admin_meta_boxes_settings( WP_Post $post ): void {
  */
 function downloadlist_admin_meta_boxes_help(): void {
 	/* translators: %1$s will be replaced by the URL for our support forum. */
-	echo sprintf( __( 'You are welcome to contact <a href="%1$s" target="_blank">our support forum (opens new window)</a> if you have any questions.', 'download-list-block-with-icons' ), Helper::get_plugin_support_url() );
+	echo wp_kses_post( sprintf( __( 'You are welcome to contact <a href="%1$s" target="_blank">our support forum (opens new window)</a> if you have any questions.', 'download-list-block-with-icons' ), esc_url( Helper::get_plugin_support_url() ) ) );
 }
 
 /**
  * Do not return generic for assignment to post-types.
  *
- * @param array       $results The resulting list.
- * @param WP_Taxonomy $taxonomy_object The taxonomy-object.
- * @return array
+ * @param array<string,mixed> $results The resulting list.
+ * @param WP_Taxonomy         $taxonomy_object The taxonomy-object.
+ * @return array<string,mixed>
  */
 function downloadlist_filter_icon_taxonomy_ajax( array $results, WP_Taxonomy $taxonomy_object ): array {
 	// bail if it is not our own taxonomy.
@@ -229,11 +230,21 @@ function downloadlist_filter_icon_taxonomy_ajax( array $results, WP_Taxonomy $ta
 
 	// check if the result is a generic iconset.
 	foreach ( $results as $key => $result ) {
+		// get the term.
 		$term = get_term_by( 'name', $result, 'dl_icon_set' );
-		if ( $term instanceof WP_Term && in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_generic_sets_as_slug_array(), true ) ) {
-			// remove it from results.
-			unset( $results[ $key ] );
+
+		// bail if term is not a term object.
+		if ( ! $term instanceof WP_Term ) {
+			continue;
 		}
+
+		// bail if term is not part of the iconsets.
+		if ( ! in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_generic_sets_as_slug_array(), true ) ) {
+			continue;
+		}
+
+		// remove it from results.
+		unset( $results[ $key ] );
 	}
 
 	// return search results.
@@ -349,13 +360,13 @@ function downloadlist_admin_icon_set_fields_save( int $term_id, int $tt_id = 0, 
 	$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
 
 	// save the width.
-	if ( absint( get_term_meta( $term_id, 'width', true ) ) !== $width && isset( $_POST['width'] ) ) {
+	if ( isset( $_POST['width'] ) && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
 		update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
 		$generate_styles = true;
 	}
 
 	// save the height.
-	if ( absint( get_term_meta( $term_id, 'height', true ) ) !== $height && isset( $_POST['height'] ) ) {
+	if ( isset( $_POST['height'] ) && absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
 		update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
 		$generate_styles = true;
 	}
@@ -372,16 +383,15 @@ add_action( 'edit_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
 /**
  * Add column for default-marker in iconset-table.
  *
- * @param array $columns List of columns.
- * @return array
+ * @param array<string,string> $columns List of columns.
+ * @return array<string,string>
  */
 function downloadlist_admin_iconset_columns( array $columns ): array {
 	// add column for iconset.
 	$columns['downloadlist_iconset_default'] = __( 'Default iconset', 'download-list-block-with-icons' );
 
 	// remove count-row.
-	unset( $columns['posts'] );
-	unset( $columns['description'] );
+	unset( $columns['posts'], $columns['description'] );
 
 	// return resulting array.
 	return $columns;
@@ -391,8 +401,8 @@ add_filter( 'manage_edit-dl_icon_set_columns', 'downloadlist_admin_iconset_colum
 /**
  * Re-order table for icons with custom columns.
  *
- * @param array $columns List of columns.
- * @return array
+ * @param array<string,string> $columns List of columns.
+ * @return array<string,string>
  */
 function downloadlist_admin_icons_columns( array $columns ): array {
 	$new_columns                           = array();
@@ -466,8 +476,16 @@ function downloadlist_admin_icons_column( string $column_name, int $post_id ): v
 		return;
 	}
 
+	// get the search result.
+	$result = array_search( $file_type, $file_types, true );
+
+	// bail if result is false.
+	if ( ! $result ) {
+		return;
+	}
+
 	// show the name of the type.
-	echo esc_html( array_search( $file_type, $file_types, true ) );
+	echo esc_html( (string) $result );
 }
 add_action( 'manage_dl_icons_posts_custom_column', 'downloadlist_admin_icons_column', 10, 2 );
 
@@ -489,7 +507,7 @@ function downloadlist_admin_iconset_set_default(): void {
 	}
 
 	// redirect user.
-	wp_safe_redirect( wp_get_referer() );
+	wp_safe_redirect( (string) wp_get_referer() );
 	exit;
 }
 add_action( 'admin_action_downloadlist_iconset_default', 'downloadlist_admin_iconset_set_default' );
@@ -620,17 +638,23 @@ function downloadlist_cleanup(): void {
 		),
 	);
 	$posts = new WP_Query( $query );
-	foreach ( $posts->posts as $post_id ) {
-		update_post_meta( $post_id, 'generic-downloadlist', 1 );
+	foreach ( $posts->get_posts() as $post_id ) {
+		// bail if post_id is WP_Post.
+		if ( $post_id instanceof WP_Post ) {
+			continue;
+		}
+
+		// update the entry.
+		update_post_meta( absint( $post_id ), 'generic-downloadlist', 1 );
 	}
 }
 
 /**
  * Add new field for attachments.
  *
- * @param array   $form_fields The list of fields.
- * @param WP_Post $post The attachment-object.
- * @return array
+ * @param array<string,array<string,string>> $form_fields The list of fields.
+ * @param WP_Post                            $post The attachment-object.
+ * @return array<string,array<string,string>>
  */
 function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array $form_fields, WP_Post $post ): array {
 	// get actual custom title.
@@ -638,7 +662,7 @@ function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array 
 
 	// add field for title.
 	$form_fields['dl_title'] = array(
-		'label' => __( 'title for downloadlist (optional)', 'download-list-block-with-icons' ),
+		'label' => __( 'Title for downloadlist (optional)', 'download-list-block-with-icons' ),
 		'input' => 'text',
 		'value' => $dl_title,
 	);
@@ -648,7 +672,7 @@ function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array 
 
 	// add field for title.
 	$form_fields['dl_description'] = array(
-		'label' => __( 'description for downloadlist (optional)', 'download-list-block-with-icons' ),
+		'label' => __( 'Description for downloadlist (optional)', 'download-list-block-with-icons' ),
 		'input' => 'textarea',
 		'value' => $dl_description,
 	);
@@ -656,14 +680,14 @@ function downloadlist_add_custom_text_field_to_attachment_fields_to_edit( array 
 	// return the field list.
 	return $form_fields;
 }
-add_filter( 'attachment_fields_to_edit', 'downloadlist_add_custom_text_field_to_attachment_fields_to_edit', null, 2 );
+add_filter( 'attachment_fields_to_edit', 'downloadlist_add_custom_text_field_to_attachment_fields_to_edit', 10, 2 );
 
 /**
  * Save values from our custom fields for attachments.
  *
- * @param array $post The attachment-array.
- * @param array $fields The form fields.
- * @return array
+ * @param array<string,int>   $post The attachment-array.
+ * @param array<string,mixed> $fields The form fields.
+ * @return array<string,int>
  */
 function downloadlist_save_custom_text_attachment_field( array $post, array $fields ): array {
 	// save the value for the title.
@@ -683,7 +707,7 @@ function downloadlist_save_custom_text_attachment_field( array $post, array $fie
 	// return post-object.
 	return $post;
 }
-add_filter( 'attachment_fields_to_save', 'downloadlist_save_custom_text_attachment_field', null, 2 );
+add_filter( 'attachment_fields_to_save', 'downloadlist_save_custom_text_attachment_field', 10, 2 );
 
 /**
  * Regenerate styles if icon is sent to trash.
@@ -708,8 +732,8 @@ add_action( 'trashed_post', 'downloadlist_trash_post' );
 /**
  * Exclude our own cpt from Easy Language.
  *
- * @param array $post_types List of post types.
- * @return array
+ * @param array<string,mixed> $post_types List of post types.
+ * @return array<string,mixed>
  */
 function downloadlist_remove_easy_language_support( array $post_types ): array {
 	if ( ! empty( $post_types['dl_icons'] ) ) {
@@ -722,8 +746,8 @@ add_filter( 'easy_language_possible_post_types', 'downloadlist_remove_easy_langu
 /**
  * Add link to icon management in plugin list.
  *
- * @param array $links List of links.
- * @return array
+ * @param array<int,string> $links List of links.
+ * @return array<int,string>
  */
 function downloadlist_plugin_list_add_setting_link( array $links ): array {
 	// create link to custom icon list.
@@ -755,10 +779,10 @@ add_filter( 'plugin_action_links_' . plugin_basename( DL_PLUGIN ), 'downloadlist
 /**
  * Add links in row meta in plugin list.
  *
- * @param array  $links List of links.
- * @param string $file The requested plugin file name.
+ * @param array<string,string> $links List of links.
+ * @param string               $file The requested plugin file name.
  *
- * @return array
+ * @return array<string,string>
  */
 function downloadlist_add_row_meta_links( array $links, string $file ): array {
 	// bail if this is not our plugin.
@@ -784,7 +808,6 @@ function downloadlist_add_row_meta_links( array $links, string $file ): array {
 }
 add_filter( 'plugin_row_meta', 'downloadlist_add_row_meta_links', 10, 2 );
 
-
 /**
  * Check if website is using a valid SSL and show warning if not.
  *
@@ -801,7 +824,7 @@ function downloadlist_check_php(): void {
 	}
 
 	// bail if PHP >= 8.1 is used.
-	if ( version_compare( PHP_VERSION, '8.1', '>' ) ) {
+	if ( PHP_VERSION_ID > 80100 ) { // @phpstan-ignore smaller.alwaysFalse
 		$transients_obj->delete_transient( $transients_obj->get_transient_by_name( 'downloadlist_php_hint' ) );
 		return;
 	}
@@ -822,6 +845,6 @@ add_action( 'admin_init', 'downloadlist_check_php' );
  * @return void
  */
 function downloadlist_load_help_system(): void {
-	\downloadlist\Help_System::get_instance()->init();
+	Help_System::get_instance()->init();
 }
 add_action( 'admin_init', 'downloadlist_load_help_system' );
