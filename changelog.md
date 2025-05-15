@@ -1,17 +1,22 @@
 # Changelog
 
-## [Unreleased]
+## [3.8.0] - 15.05.2025
 
 ### Added
 
 - Added link to support forum in plugin list
 - Added new hooks
 - Added help box in icon edit screen
+- Added check with PHPStan to reduce potential PHP-errors
 
 ### Changed
 
 - Optimization on code for better speed and to prevent potential errors
 - Updated dependencies
+
+### Fixed
+
+- Fixed formatting in plugin list
 
 ## [3.7.0] - 16.02.2025
 

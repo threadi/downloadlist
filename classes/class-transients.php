@@ -89,7 +89,7 @@ class Transients {
 	/**
 	 * Get all known transients as objects.
 	 *
-	 * @return array
+	 * @return array<string,Transient>
 	 */
 	public function get_transients(): array {
 		$transients = array();
@@ -215,9 +215,17 @@ class Transients {
 			$dismissible_length = strtotime( absint( $dismissible_length ) . ' days' );
 		}
 
+		// bail if option_name is not a string.
+		if ( ! is_string( $option_name ) ) {
+			return;
+		}
+
+		// get md5.
+		$md5 = md5( $option_name );
+
 		// save value.
-		delete_option( 'dl-dismissed-' . md5( $option_name ) );
-		add_option( 'dl-dismissed-' . md5( $option_name ), $dismissible_length, '', true );
+		delete_option( 'dl-dismissed-' . $md5 );
+		add_option( 'dl-dismissed-' . $md5, $dismissible_length, '', true );
 
 		// remove transient.
 		$this->get_transient_by_name( $option_name )->delete();

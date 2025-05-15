@@ -39,11 +39,11 @@ class Help_System {
 	 * Return the instance of this Singleton object.
 	 */
 	public static function get_instance(): Help_System {
-		if ( ! static::$instance instanceof static ) {
-			static::$instance = new static();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return static::$instance;
+		return self::$instance;
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Help_System {
 	/**
 	 * Return the list of help tabs.
 	 *
-	 * @return array
+	 * @return array<int,array<string,mixed>>
 	 */
 	private function get_help_tabs(): array {
 		$list = array();
@@ -124,7 +124,7 @@ class Help_System {
 		 * Filter the list of help tabs with its contents.
 		 *
 		 * @since 3.8.0 Available since 3.8.0.
-		 * @param array $list List of help tabs.
+		 * @param array<int,array<string,mixed>> $list List of help tabs.
 		 */
 		return apply_filters( 'downloadlist_light_help_tabs', $list );
 	}
@@ -132,19 +132,27 @@ class Help_System {
 	/**
 	 * Add icon management help.
 	 *
-	 * @param array $help_list List if help texts.
-	 * @return array
+	 * @param array<int,array<string,mixed>> $help_list List if help texts.
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function add_manage_icon_help( array $help_list ): array {
 		// create links.
-		$iconset_url = add_query_arg( array( 'taxonomy' => 'dl_icon_set', 'post_type' => 'dl_icons' ), admin_url( 'edit-tags.php' ) );
+		$iconset_url  = add_query_arg(
+			array(
+				'taxonomy'  => 'dl_icon_set',
+				'post_type' => 'dl_icons',
+			),
+			admin_url( 'edit-tags.php' )
+		);
 		$new_icon_url = add_query_arg( array( 'post_type' => 'dl_icons' ), 'post-new.php' );
 
 		// create content for this help page.
-		$content = '<h2>' . __( 'Managing Download List Icons', 'download-list-block-with-icons' ) . '</h2><p>' . __( 'Icons are used to make your download list look prettier. You have the option of using icon sets with ready-made icons as well as individual icons.', 'download-list-block-with-icons' ) . '</p>';
+		$content  = '<h2>' . __( 'Managing Download List Icons', 'download-list-block-with-icons' ) . '</h2><p>' . __( 'Icons are used to make your download list look prettier. You have the option of using icon sets with ready-made icons as well as individual icons.', 'download-list-block-with-icons' ) . '</p>';
 		$content .= '<h3>' . __( 'Add individual icons', 'download-list-block-with-icons' ) . '</h3>';
 		$content .= '<ol>';
+		/* translators: %1$s will be replaced by a URL. */
 		$content .= '<li>' . sprintf( __( 'Go to <a href="%1$s">Iconsets</a> and add a new iconset.', 'download-list-block-with-icons' ), $iconset_url ) . '</li>';
+		/* translators: %1$s will be replaced by a URL. */
 		$content .= '<li>' . sprintf( __( 'Now go to the page where you can <a href="%1$s">add a new icon</a>.', 'download-list-block-with-icons' ), $new_icon_url ) . '</li>';
 		$content .= '<li>' . __( 'First give the new icon a title. This title is never used public, its only for you.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Then select the graphic you want to use as an icon.', 'download-list-block-with-icons' ) . '</li>';
@@ -169,8 +177,8 @@ class Help_System {
 	/**
 	 * Add icon usage help.
 	 *
-	 * @param array $help_list List if help texts.
-	 * @return array
+	 * @param array<int,array<string,mixed>> $help_list List if help texts.
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function add_use_icon_help( array $help_list ): array {
 		// create content for this help page.
@@ -190,15 +198,21 @@ class Help_System {
 	/**
 	 * Add iconset usage help.
 	 *
-	 * @param array $help_list List if help texts.
-	 * @return array
+	 * @param array<int,array<string,mixed>> $help_list List if help texts.
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function add_manage_iconsets_help( array $help_list ): array {
 		// create links.
-		$iconset_url = add_query_arg( array( 'taxonomy' => 'dl_icon_set', 'post_type' => 'dl_icons' ), admin_url( 'edit-tags.php' ) );
+		$iconset_url = add_query_arg(
+			array(
+				'taxonomy'  => 'dl_icon_set',
+				'post_type' => 'dl_icons',
+			),
+			admin_url( 'edit-tags.php' )
+		);
 
 		// create content for this help page.
-		$content = '<h2>' . __( 'Managing Download List Iconsets', 'download-list-block-with-icons' ) . '</h2><p>' . __( 'Icon sets are a collection of icons that can be used for many file types. They simplify the management of icons for your files.', 'download-list-block-with-icons' ) . '</p>';
+		$content  = '<h2>' . __( 'Managing Download List Iconsets', 'download-list-block-with-icons' ) . '</h2><p>' . __( 'Icon sets are a collection of icons that can be used for many file types. They simplify the management of icons for your files.', 'download-list-block-with-icons' ) . '</p>';
 		$content .= '<h3>' . __( 'Types of iconsets', 'download-list-block-with-icons' ) . '</h3>';
 		$content .= '<p>' . __( 'There are 2 types of iconsets:', 'download-list-block-with-icons' ) . '</p>';
 		$content .= '<ul>';
@@ -207,12 +221,13 @@ class Help_System {
 		$content .= '</ul>';
 		$content .= '<h3>' . __( 'Adding an iconset', 'download-list-block-with-icons' ) . '</h3>';
 		$content .= '<ol>';
+		/* translators: %1$s will be replaced by a URL. */
 		$content .= '<li>' . sprintf( __( 'Go to <a href="%1$s">Iconsets</a>.', 'download-list-block-with-icons' ), $iconset_url ) . '</li>';
 		$content .= '<li>' . __( 'Set a name. This will not used in public, its only for you.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Set width and height for the icons to show.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Save the settings.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '</ol>';
-		$content .= '<strong>' . __( 'Hint', 'download-list-block-with-icons' ) . '</strong> ' . __( 'You have to add custom icons to use this iconset on your download lists.', 'download-list-block-with-icons' ) . '</p>' ;
+		$content .= '<strong>' . __( 'Hint', 'download-list-block-with-icons' ) . '</strong> ' . __( 'You have to add custom icons to use this iconset on your download lists.', 'download-list-block-with-icons' ) . '</p>';
 
 		// add help for the icons.
 		$help_list[] = array(
@@ -228,16 +243,16 @@ class Help_System {
 	/**
 	 * Add block usage help.
 	 *
-	 * @param array $help_list List if help texts.
-	 * @return array
+	 * @param array<int,array<string,mixed>> $help_list List if help texts.
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function add_use_block_help( array $help_list ): array {
 		// create content for this help page.
-		$content = '<h2>' . __( 'Use Download List with Icons Block', 'download-list-block-with-icons' ) . '</h2><p>' . __( '', 'download-list-block-with-icons' ) . '</p>';
+		$content  = '<h2>' . __( 'Use Download List with Icons Block', 'download-list-block-with-icons' ) . '</h2>';
 		$content .= '<ol>';
 		$content .= '<li>' . __( 'Go to “Create new page” under “Pages” in the WordPress backend', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Add the “Download List with Icons” block there.', 'download-list-block-with-icons' ) . '</li>';
-		$content .= '<li>' . __( 'You will see a button where you can open your media library and choose which files you want to use for this list.', '' ) . '</li>';
+		$content .= '<li>' . __( 'You will see a button where you can open your media library and choose which files you want to use for this list.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'You can sort the files by its date or title on the options above the list.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'On the sidebar on the right you can set how the list should be presented in frontend.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '</ol>';

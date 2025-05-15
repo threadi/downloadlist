@@ -41,6 +41,24 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	protected bool $generic = true;
 
 	/**
+	 * Instance of this object.
+	 *
+	 * @var ?Fontawesome
+	 */
+	private static ?Fontawesome $instance = null;
+
+	/**
+	 * Return the instance of this Singleton object.
+	 */
+	public static function get_instance(): Fontawesome {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Initialize the object.
 	 *
 	 * @return void
@@ -95,7 +113,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	/**
 	 * Return the by iconset supported filetypes.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_file_types(): array {
 		return array_keys( $this->get_icon_codes() );
@@ -104,7 +122,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	/**
 	 * Get all possible dashicons as array.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	private function get_icon_codes(): array {
 		$font_awesome_icons = array_flip( Helper::get_mime_types() );
@@ -221,7 +239,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		 * });
 		 * ```
 		 *
-		 * @param array $font_awesome_icons List of the icons.
+		 * @param array<string,string> $font_awesome_icons List of the icons.
 		 * @since 3.0.0 Available since 3.0.0
 		 */
 		return apply_filters( 'downloadlist_fontawesome_icons', $font_awesome_icons );
@@ -230,7 +248,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	/**
 	 * Return the style-files this iconset is using.
 	 *
-	 * @return array
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function get_style_files(): array {
 		$files = array(
@@ -244,7 +262,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		/**
 		 * Filter the files used for fontawesome.
 		 *
-		 * @param array $files List of the files.
+		 * @param array<int,array<string,mixed>> $files List of the files.
 		 * @since 3.4.0 Available since 3.4.0
 		 */
 		return apply_filters( 'downloadlist_fontawesome_files', $files );

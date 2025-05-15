@@ -5,13 +5,17 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
+use downloadlist\Iconset_Base;
 use downloadlist\iconsets\Fontawesome;
 
 /**
  * Register the fontawesome iconset.
  *
- * @param array $iconset_list The list of iconsets.
- * @return array
+ * @param array<int,Iconset_Base> $iconset_list The list of iconsets.
+ * @return array<int,Iconset_Base>
  */
 function downloadlist_register_fontawesome_iconset( array $iconset_list ): array {
 	$iconset_list[] = Fontawesome::get_instance();

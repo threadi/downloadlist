@@ -5,13 +5,17 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
+use downloadlist\Iconset_Base;
 use downloadlist\iconsets\Custom;
 
 /**
  * Register the custom iconset.
  *
- * @param array $iconset_list The list of iconsets.
- * @return array
+ * @param array<int,Iconset_Base> $iconset_list The list of iconsets.
+ * @return array<int,Iconset_Base>
  */
 function downloadlist_register_custom_iconset( array $iconset_list ): array {
 	// get all possible custom iconsets from db.
@@ -31,16 +35,30 @@ function downloadlist_register_custom_iconset( array $iconset_list ): array {
 		),
 	);
 	$icon_sets = new WP_Term_Query( $query );
-	if ( ! empty( $icon_sets->terms ) ) {
-		foreach ( $icon_sets->get_terms() as $term ) {
+
+	// get the results.
+	$terms = $icon_sets->get_terms();
+
+	if ( is_array( $terms ) ) {
+		foreach ( $terms as $term ) {
+			// bail if item is not a term.
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
+
+			// create object.
 			$iconset_obj = new Custom();
 			$iconset_obj->set_slug( $term->slug );
+
+			// add it to the list.
 			$iconset_list[] = $iconset_obj;
 		}
 	} else {
-		// use initial custom iconset.
+		// use only the initial custom iconset.
 		$iconset_list[] = Custom::get_instance();
 	}
+
+	// return the resulting list of custom iconsets.
 	return $iconset_list;
 }
 add_filter( 'downloadlist_register_iconset', 'downloadlist_register_custom_iconset', 10, 1 );

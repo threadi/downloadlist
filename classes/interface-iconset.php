@@ -42,21 +42,21 @@ interface Iconset {
 	/**
 	 * Return the by iconset supported filetypes.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_file_types(): array;
 
 	/**
 	 * Get icons this set is assigned to.
 	 *
-	 * @return array
+	 * @return array<int,int>
 	 */
 	public function get_icons(): array;
 
 	/**
 	 * Return the style-files this iconset is using.
 	 *
-	 * @return array
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function get_style_files(): array;
 }

@@ -41,6 +41,24 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	protected bool $generic = true;
 
 	/**
+	 * Instance of this object.
+	 *
+	 * @var ?Bootstrap
+	 */
+	private static ?Bootstrap $instance = null;
+
+	/**
+	 * Return the instance of this Singleton object.
+	 */
+	public static function get_instance(): Bootstrap {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
 	 * Initialize the object.
 	 *
 	 * @return void
@@ -52,7 +70,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	/**
 	 * Get all possible bootstrap as array.
 	 *
-	 * @return array
+	 * @return array<string,string>
 	 */
 	private function get_icon_codes(): array {
 		$bootstrapicons = array_flip( Helper::get_mime_types() );
@@ -169,7 +187,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		 * });
 		 * ```
 		 *
-		 * @param array $bootstrapicons List of the icons.
+		 * @param array<string,string> $bootstrapicons List of the icons.
 		 * @since 3.0.0 Available since 3.0.0
 		 */
 		return apply_filters( 'downloadlist_bootstrap_icons', $bootstrapicons );
@@ -221,7 +239,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	/**
 	 * Return the by iconset supported filetypes.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_file_types(): array {
 		return array_keys( $this->get_icon_codes() );
@@ -230,7 +248,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	/**
 	 * Return the style-files this iconset is using.
 	 *
-	 * @return array
+	 * @return array<int,array<string,mixed>>
 	 */
 	public function get_style_files(): array {
 		$files = array(
@@ -244,7 +262,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		/**
 		 * Filter the files used for bootstrap.
 		 *
-		 * @param array $files List of the files.
+		 * @param array<int,array<string,mixed>> $files List of the files.
 		 * @since 3.4.0 Available since 3.4.0
 		 */
 		return apply_filters( 'downloadlist_bootstrap_files', $files );

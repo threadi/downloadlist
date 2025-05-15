@@ -14,13 +14,11 @@
  * @package download-list-block-with-icons
  */
 
-// Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
 
 // do nothing if PHP-version is not 8.0 or newer.
-if ( PHP_VERSION_ID < 80000 ) {
+if ( PHP_VERSION_ID < 80000 ) { // @phpstan-ignore smaller.alwaysFalse
 	return;
 }
 
@@ -43,9 +41,15 @@ require_once __DIR__ . '/inc/autoload.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin.php';
 }
+
+// get the files.
+$dl_iconset_files = glob( plugin_dir_path( DL_PLUGIN ) . 'inc/iconsets/*.php' );
+
 // include all icon-set-files.
-foreach ( glob( plugin_dir_path( DL_PLUGIN ) . 'inc/iconsets/*.php' ) as $filename ) {
-	include_once $filename;
+if ( is_array( $dl_iconset_files ) ) {
+	foreach ( $dl_iconset_files as $filename ) {
+		include_once $filename;
+	}
 }
 
 // on activation or deactivation of this plugin.
@@ -196,8 +200,8 @@ add_action( 'wp_enqueue_scripts', 'downloadlist_register_styles' );
 /**
  * Enqueue style if our block is used anywhere in the output.
  *
- * @param string $block_content The block content.
- * @param array  $block The used block.
+ * @param string              $block_content The block content.
+ * @param array<string,mixed> $block The used block.
  *
  * @return string
  */
@@ -223,20 +227,25 @@ function downloadlist_enqueue_styles( string $block_content, array $block ): str
 	}
 
 	// get the object of the used iconset.
-	$iconsets = array( Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] ) );
+	$iconset = Iconsets::get_instance()->get_iconset_by_slug( $block['attrs']['iconset'] );
+
+	// bail if no iconset could be loaded.
+	if ( ! $iconset ) {
+		return $block_content;
+	}
 
 	// enqueue the iconset.
-	downloadlist_enqueue_styles_run( $iconsets );
+	downloadlist_enqueue_styles_run( array( $iconset ) );
 
 	// return the block content.
 	return $block_content;
 }
-add_action( 'render_block', 'downloadlist_enqueue_styles', 10, 2 );
+add_filter( 'render_block', 'downloadlist_enqueue_styles', 10, 2 );
 
 /**
  * Run the enqueuing (used in frontend and block editor).
  *
- * @param array $iconsets List of iconsets to enqueue.
+ * @param array<int,Iconset_Base> $iconsets List of iconsets to enqueue.
  * @return void
  */
 function downloadlist_enqueue_styles_run( array $iconsets = array() ): void {
@@ -250,11 +259,6 @@ function downloadlist_enqueue_styles_run( array $iconsets = array() ): void {
 
 	// enqueue each style of the configured iconsets.
 	foreach ( $iconsets as $iconset_obj ) {
-		// bail if it is not an iconset-object.
-		if ( ! $iconset_obj instanceof Iconset_Base ) {
-			continue;
-		}
-
 		// add the files of this iconset in frontend.
 		foreach ( $iconset_obj->get_style_files() as $file ) {
 			wp_enqueue_style( 'downloadlist-' . $file['handle'] );
@@ -265,8 +269,8 @@ function downloadlist_enqueue_styles_run( array $iconsets = array() ): void {
 /**
  * Filter query from media library to show single attachment.
  *
- * @param array $query The query-array.
- * @return array
+ * @param array<string,mixed> $query The query-array.
+ * @return array<string,mixed>
  * @noinspection PhpUnused
  */
 function downloadlist_ajax_query_attachments_args( array $query ): array {
@@ -302,7 +306,7 @@ add_action( 'rest_api_init', 'downloadlist_add_rest_api' );
  * Return file data depending on post-IDs in request.
  *
  * @param WP_REST_Request $request The request-object.
- * @return string[]
+ * @return array<int,mixed>
  * @noinspection PhpUnused
  */
 function downloadlist_api_return_file_data( WP_REST_Request $request ): array {
@@ -333,7 +337,7 @@ function downloadlist_api_return_file_data( WP_REST_Request $request ): array {
 	 * Filter the resulting file data before we return them.
 	 *
 	 * @since 3.7.0 Available since 3.7.0.
-	 * @param array $file_data The response as array.
+	 * @param array<int,mixed> $file_data The response as array.
 	 * @param WP_REST_Request $request The request.
 	 */
 	return apply_filters( 'downloadlist_api_return_file_data', $file_data, $request );
@@ -477,7 +481,6 @@ add_action( 'init', 'downloadlist_add_taxonomies' );
  * Register WP Cli.
  *
  * @noinspection PhpUnused
- * @noinspection PhpUndefinedClassInspection
  */
 function downloadlist_cli_register_commands(): void {
 	WP_CLI::add_command( 'download-list-block-with-icons', 'downloadlist\cli' );
@@ -509,7 +512,7 @@ add_action( 'rest_api_init', 'downloadlist_rest_api' );
  * Return possible file-types for Block Editor via REST API.
  *
  * @param WP_REST_Request $request The request-object.
- * @return array
+ * @return array<int,array<string,mixed>>
  * @noinspection PhpUnused
  */
 function downloadlist_rest_api_filetypes( WP_REST_Request $request ): array {
@@ -562,7 +565,22 @@ function downloadlist_add_image_size(): void {
 		'hide_empty' => false,
 	);
 	$results = new WP_Term_Query( $query );
-	foreach ( $results->get_terms() as $term ) {
+
+	// get the results.
+	$terms = $results->get_terms();
+
+	// convert result if it is not an array.
+	if ( ! is_array( $terms ) ) {
+		$terms = array( $terms );
+	}
+
+	// loop through the results.
+	foreach ( $terms as $term ) {
+		// bail if item is not a term.
+		if ( ! $term instanceof WP_Term ) {
+			continue;
+		}
+
 		// get iconset as object.
 		$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
 
@@ -591,7 +609,7 @@ add_action( 'after_setup_theme', 'downloadlist_add_image_size' );
  *
  * This is the main function for output in editor and frontend.
  *
- * @param array $attributes List of attributes for this block.
+ * @param array<string,mixed> $attributes List of attributes for this block.
  * @return string
  * @noinspection PhpUnused
  */
@@ -619,12 +637,20 @@ function downloadlist_render_block( array $attributes ): string {
 		// if no iconset could be detected, get the default iconset.
 		if ( false === $iconset_obj ) {
 			$iconset_obj = Iconsets::get_instance()->get_default_iconset();
-			$iconset     = 'iconset-' . $iconset_obj->get_slug();
+			if ( ! $iconset_obj ) {
+				$iconset = 'iconset-generic';
+			} else {
+				$iconset = 'iconset-' . $iconset_obj->get_slug();
+			}
 		}
 	} else {
 		// set default iconset if none is set (for lists from < 3.0).
 		$iconset_obj = Iconsets::get_instance()->get_default_iconset();
-		$iconset     = 'iconset-' . $iconset_obj->get_slug();
+		if ( ! $iconset_obj ) {
+			$iconset = 'iconset-generic';
+		} else {
+			$iconset = 'iconset-' . $iconset_obj->get_slug();
+		}
 	}
 
 	// variable for block-specific styles.
@@ -666,15 +692,19 @@ function downloadlist_render_block( array $attributes ): string {
 		$file_meta = wp_prepare_attachment_for_js( $file_id );
 
 		// get custom attachment title, if set.
-		$attachment->post_title = $file_meta['title'];
+		if ( isset( $file_meta['title'] ) ) {
+			$attachment->post_title = $file_meta['title'];
+		}
 
 		// use filename if no title is set.
-		if ( empty( $attachment->post_title ) ) {
+		if ( empty( $attachment->post_title ) && isset( $file_meta['filename'] ) ) {
 			$attachment->post_title = $file_meta['filename'];
 		}
 
 		// get custom attachment description, if set.
-		$attachment->post_content = $file_meta['description'];
+		if ( isset( $file_meta['description'] ) ) {
+			$attachment->post_content = $file_meta['description'];
+		}
 
 		// get the file size.
 		$filesize = '';
@@ -821,8 +851,8 @@ function downloadlist_render_block( array $attributes ): string {
 /**
  * Update the messages after updating or deleting terms in our taxonomy.
  *
- * @param array $messages List of messages.
- * @return array
+ * @param array<string,array<int,string>> $messages List of messages.
+ * @return array<string,array<int,string>>
  */
 function downloadlist_updated_shows_messages( array $messages ): array {
 	$messages['dl_icon_set'] = array(
@@ -837,8 +867,8 @@ add_filter( 'term_updated_messages', 'downloadlist_updated_shows_messages' );
 /**
  * Update the messages after updating or deleting posts in our cpt.
  *
- * @param array $messages List of messages.
- * @return array
+ * @param array<string,array<int,string>> $messages List of messages.
+ * @return array<string,array<int,string>>
  */
 function downloadlist_change_post_labels( array $messages ): array {
 	$messages['dl_icons'] = array(
@@ -852,9 +882,9 @@ add_filter( 'post_updated_messages', 'downloadlist_change_post_labels' );
 /**
  * Update the messages on bulk-actions in our cpt.
  *
- * @param array $messages List of messages.
- * @param array $bulk_counts Count of events.
- * @return array
+ * @param array<string,array<string,mixed>> $messages List of messages.
+ * @param array<string,mixed>               $bulk_counts Count of events.
+ * @return array<string,array<string,mixed>>
  */
 function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
 	/* translators: %1$d: Number of pages. */
@@ -870,9 +900,9 @@ add_filter( 'bulk_post_updated_messages', 'downloadlist_change_post_labels_bulk'
 /**
  * Use custom title and description for attachment.
  *
- * @param array   $response Array with response for JS.
- * @param WP_Post $attachment The attachment-object.
- * @return array
+ * @param array<string,mixed> $response Array with response for JS.
+ * @param WP_Post             $attachment The attachment-object.
+ * @return array<string,mixed>
  */
 function downloadlist_wp_prepare_attachment_for_js( array $response, WP_Post $attachment ): array {
 	// bail if nonce does not match.

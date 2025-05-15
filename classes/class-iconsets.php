@@ -10,6 +10,7 @@ namespace downloadlist;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use WP_Post;
 use WP_Query;
 
 /**
@@ -19,9 +20,9 @@ class Iconsets {
 	/**
 	 * Instance of this object.
 	 *
-	 * @var ?iconsets
+	 * @var ?Iconsets
 	 */
-	private static ?iconsets $instance = null;
+	private static ?Iconsets $instance = null;
 
 	/**
 	 * Constructor for Init-Handler.
@@ -38,11 +39,12 @@ class Iconsets {
 	/**
 	 * Return the instance of this Singleton object.
 	 */
-	public static function get_instance(): iconsets {
-		if ( ! static::$instance instanceof static ) {
-			static::$instance = new static();
+	public static function get_instance(): Iconsets {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
-		return static::$instance;
+
+		return self::$instance;
 	}
 
 	/**
@@ -55,7 +57,7 @@ class Iconsets {
 	/**
 	 * Get all iconsets which are registered.
 	 *
-	 * @return array
+	 * @return array<int,Iconset_Base>
 	 */
 	public function get_icon_sets(): array {
 		$list = array();
@@ -67,7 +69,7 @@ class Iconsets {
 		 *
 		 * @since 3.0.0 Available since 3.0.0.
 		 *
-		 * @param array $list The list of iconsets.
+		 * @param array<int,Iconset_Base> $list The list of iconsets.
 		 */
 		return apply_filters( 'downloadlist_register_iconset', $list );
 	}
@@ -75,7 +77,7 @@ class Iconsets {
 	/**
 	 * Return the slugs of generic iconsets.
 	 *
-	 * @return array
+	 * @return array<int,string>
 	 */
 	public function get_generic_sets_as_slug_array(): array {
 		// define list.
@@ -83,9 +85,13 @@ class Iconsets {
 
 		// loop through the iconsets.
 		foreach ( $this->get_icon_sets() as $iconset_obj ) {
-			if ( $iconset_obj->is_generic() ) {
-				$list[] = $iconset_obj->get_slug();
+			// bail if this is not a generic iconset.
+			if ( ! $iconset_obj->is_generic() ) {
+				continue;
 			}
+
+			// add the iconset to the list.
+			$list[] = $iconset_obj->get_slug();
 		}
 
 		// return results.
@@ -95,7 +101,7 @@ class Iconsets {
 	/**
 	 * Return generic custom post types.
 	 *
-	 * @return array
+	 * @return array<int,int>
 	 */
 	public function get_generic_sets_cpts(): array {
 		$query = array(
@@ -114,12 +120,19 @@ class Iconsets {
 		$posts = new WP_Query( $query );
 
 		// bail on no results.
-		if( 0 === $posts->found_posts ) {
+		if ( 0 === $posts->found_posts ) {
 			return array();
 		}
 
-		// return the resulting entries.
-		return $posts->get_posts();
+		// get the resulting entries.
+		$list = array();
+		foreach ( $posts->get_posts() as $post_id ) {
+			if ( $post_id instanceof WP_Post ) {
+				continue;
+			}
+			$list[] = $post_id;
+		}
+		return $list;
 	}
 
 	/**

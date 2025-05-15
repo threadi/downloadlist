@@ -45,7 +45,7 @@ class Transient {
 	/**
 	 * Action-callback-array.
 	 *
-	 * @var array
+	 * @var array<int,mixed>
 	 */
 	private array $action = array();
 
@@ -116,7 +116,7 @@ class Transient {
 	/**
 	 * Collect the entry for this transient.
 	 *
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	private function get_entry(): array {
 		return array(
@@ -183,7 +183,7 @@ class Transient {
 		if ( $this->has_action() ) {
 			$action = $this->get_action();
 			if ( method_exists( $action[0], $action[1] ) ) {
-				call_user_func( $action );
+				$action(); // @phpstan-ignore callable.nonCallable
 			}
 		}
 
@@ -238,7 +238,7 @@ class Transient {
 		$db_record = $this->get_admin_transient_dismiss_cache();
 
 		// return bool depending on value.
-		return !('forever' === $db_record || absint($db_record) >= time());
+		return ! ( 'forever' === $db_record || absint( $db_record ) >= time() );
 	}
 
 	/**
@@ -281,7 +281,7 @@ class Transient {
 	/**
 	 * Return the defined action for this transient.
 	 *
-	 * @return array
+	 * @return array<int,mixed>
 	 */
 	private function get_action(): array {
 		return $this->action;
@@ -290,7 +290,7 @@ class Transient {
 	/**
 	 * Add an action to run. This is meant to be a callback as array like: array( 'class-name', 'function' );
 	 *
-	 * @param array $action The action as array.
+	 * @param array<int,mixed> $action The action as array.
 	 * @return void
 	 */
 	public function set_action( array $action ): void {
