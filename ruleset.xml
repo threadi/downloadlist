@@ -28,6 +28,8 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query"/>
 		<!-- Exclude direkt db query warnings -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery"/>
+		<!-- Excluded in favour to match PSR-4-namings of classes. -->
+		<exclude name="WordPress.Files.FileName"/>
     </rule>
 
 </ruleset>

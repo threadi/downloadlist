@@ -8,12 +8,12 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use downloadlist\Help_System;
-use downloadlist\Helper;
-use downloadlist\Iconset_Base;
-use downloadlist\Iconsets;
-use downloadlist\Templates;
-use downloadlist\Transients;
+use DownloadListWithIcons\Iconsets\Iconset_Base;
+use DownloadListWithIcons\Iconsets\Iconsets;
+use DownloadListWithIcons\Plugin\Helper;
+use DownloadListWithIcons\Plugin\Templates;
+use DownloadListWithIcons\Plugin\Transients;
+use DownloadListWithIcons\Plugin\Admin\Help_System;
 
 // initialize the template support in backend.
 Templates::get_instance()->init();
@@ -595,7 +595,7 @@ function downloadlist_update(): void {
 	) {
 		// force refresh of css on every plugin update.
 		$transient_obj = Transients::get_instance()->add();
-		$transient_obj->set_action( array( 'downloadlist\Helper', 'generate_css' ) );
+		$transient_obj->set_action( array('DownloadListWithIcons\Plugin\Helper', 'generate_css' ) );
 		$transient_obj->set_name( 'refresh_css' );
 		$transient_obj->save();
 

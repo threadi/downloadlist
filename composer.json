@@ -1,6 +1,6 @@
 {
     "name": "threadi/downloadlist",
-	"version": "3.8.0",
+	"version": "4.0.0",
 	"authors": [
 		{
 			"name": "Thomas Zwirner",
@@ -29,8 +29,13 @@
 		"prepend-autoloader": false,
 		"platform-check": false
     },
+	"autoload": {
+		"psr-4": {
+			"DownloadListWithIcons\\": "app/"
+		}
+	},
 	"require": {
-		"php": "^8.0"
+		"php": "^8.1"
 	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^3.1.0",

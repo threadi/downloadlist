@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Using composer autoloader for each object
+
 ## [3.8.0] - 15.05.2025
 
 ### Added

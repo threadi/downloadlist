@@ -20,7 +20,7 @@ if ( PHP_VERSION_ID < 80000 ) { // @phpstan-ignore smaller.alwaysFalse
 	return;
 }
 
-use downloadlist\Uninstaller;
+use DownloadListWithIcons\Plugin\Uninstaller;
 
 // save the plugin-path.
 const DL_PLUGIN = __FILE__;

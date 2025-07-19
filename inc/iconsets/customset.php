@@ -8,8 +8,8 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use downloadlist\Iconset_Base;
-use downloadlist\iconsets\Custom;
+use DownloadListWithIcons\Iconsets\Iconset_Base;
+use DownloadListWithIcons\Iconsets\Iconsets\Custom;
 
 /**
  * Register the custom iconset.

@@ -5,11 +5,12 @@
  * @package download-list-block-with-icons
  */
 
-namespace downloadlist;
+namespace DownloadListWithIcons\Plugin\Admin;
 
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Plugin\Helper;
 use WP_Screen;
 
 /**

@@ -6,7 +6,7 @@ parameters:
     - "#Call to an undefined method(.*)finish#"
     - "#WP_REST_Request#"
   paths:
-    - classes
+    - app
     - download-list-block-with-icons.php
     - uninstall.php
     - inc
