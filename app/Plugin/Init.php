@@ -13,9 +13,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Initialize the plugin, connect all together.
  */
-class Init
-{
-
+class Init {
 	/**
 	 * Instance of actual object.
 	 *
@@ -41,8 +39,8 @@ class Init
 	 * @return Init
 	 */
 	public static function get_instance(): Init {
-		if (is_null(self::$instance)) {
-			self::$instance = new static();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
 		return self::$instance;

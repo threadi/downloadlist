@@ -94,6 +94,14 @@
 			"default": ""
 		},
 		"list": {
+			"type": "integer",
+			"default": 0
+		},
+		"order": {
+			"type": "string",
+			"default": ""
+		},
+		"orderby": {
 			"type": "string",
 			"default": ""
 		}

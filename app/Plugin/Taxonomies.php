@@ -39,7 +39,7 @@ class Taxonomies {
 	 * Return the instance of this Singleton object.
 	 */
 	public static function get_instance(): Taxonomies {
-		if (is_null(self::$instance)) {
+		if ( is_null( self::$instance ) ) {
 			self::$instance = new self();
 		}
 
@@ -70,9 +70,9 @@ class Taxonomies {
 	 */
 	public function register(): void {
 		// loop through the taxonomies.
-		foreach( $this->get_taxonomies() as $taxonomy_name => $settings ) {
+		foreach ( $this->get_taxonomies() as $taxonomy_name => $settings ) {
 			// bail if post_types or args are not set.
-			if( ! isset($settings['post_types'], $settings['args'] ) ) {
+			if ( ! isset( $settings['post_types'], $settings['args'] ) ) {
 				continue;
 			}
 
@@ -80,8 +80,8 @@ class Taxonomies {
 			register_taxonomy( $taxonomy_name, $settings['post_types'], $settings['args'] );
 
 			// register metas for this taxonomy, if set.
-			if( ! empty( $settings['metas'] ) ) {
-				foreach( $settings['metas'] as $meta_key => $meta_settings ) {
+			if ( ! empty( $settings['metas'] ) ) {
+				foreach ( $settings['metas'] as $meta_key => $meta_settings ) {
 					// add term meta for default-marker.
 					register_term_meta(
 						$taxonomy_name,
@@ -100,9 +100,9 @@ class Taxonomies {
 	 */
 	private function get_taxonomies(): array {
 		$taxonomies = array(
-			'dl_icon_set' => array(
+			'dl_icon_set'   => array(
 				'post_types' => array( 'dl_icons' ),
-				'args' => array(
+				'args'       => array(
 					'hierarchical'       => false,
 					'labels'             => array(
 						'name'          => _x( 'Iconsets', 'taxonomy general name', 'download-list-block-with-icons' ),
@@ -132,17 +132,17 @@ class Taxonomies {
 						'assign_terms' => 'manage_options',
 					),
 				),
-				'metas' => array(
+				'metas'      => array(
 					'default' => array(
 						'type'         => 'integer',
 						'single'       => true,
 						'show_in_rest' => true,
-					)
-				)
+					),
+				),
 			),
 			'dl_icon_lists' => array(
 				'post_types' => array( 'attachment' ),
-				'args' => array(
+				'args'       => array(
 					'hierarchical'       => false,
 					'labels'             => array(
 						'name'          => _x( 'Download Lists', 'taxonomy general name', 'download-list-block-with-icons' ),
@@ -171,8 +171,8 @@ class Taxonomies {
 						'delete_terms' => 'manage_options',
 						'assign_terms' => 'manage_options',
 					),
-				)
-			)
+				),
+			),
 		);
 
 		/**
@@ -197,11 +197,11 @@ class Taxonomies {
 		}
 
 		// change settings for iconset taxonomy.
-		$taxonomies['dl_icon_set']['args']['rewrite'] = false;
+		$taxonomies['dl_icon_set']['args']['rewrite']      = false;
 		$taxonomies['dl_icon_set']['args']['show_in_rest'] = false;
 
 		// change settings for list taxonomy.
-		$taxonomies['dl_icon_lists']['args']['rewrite'] = false;
+		$taxonomies['dl_icon_lists']['args']['rewrite']      = false;
 		$taxonomies['dl_icon_lists']['args']['show_in_rest'] = false;
 
 		// return list of taxonomies.
@@ -223,7 +223,7 @@ class Taxonomies {
 	 * @return void
 	 */
 	public function show_list_description(): void {
-		echo '<p>' . wp_kses_post( __( 'Download Lists contain files that are to be displayed in a single list of downloadable files. This possibility is added by the plugin <em>Download List with Icons</em>.', 'download-list-block-with-icons' ) ) . '</p>';
+		echo '<p>' . wp_kses_post( __( 'Download Lists contain files that are to be displayed in a single list of files. Assign files in your media library to these list to show them in the list. This possibility is added by the plugin <em>Download List with Icons</em>.', 'download-list-block-with-icons' ) ) . '</p>';
 	}
 
 	/**

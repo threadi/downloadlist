@@ -31,7 +31,10 @@ import {
 	ToolbarButton,
 	ExternalLink,
 	TextControl,
-	ToolbarDropdownMenu
+	Dropdown,
+	MenuGroup,
+	MenuItemsChoice,
+	MenuItem
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
 import {
@@ -55,6 +58,8 @@ import {
 import { SortableItem } from "./sortableItem";
 import { getActualDate } from "./components";
 import { useSelect, dispatch } from '@wordpress/data';
+import {sortByTitle} from "./sort/title";
+import {sortBySize} from "./sort/size";
 
 /**
  * Prepare our custom endpoints.
@@ -93,27 +98,45 @@ export default function Edit( object ) {
 		fileIds.push(file.id);
 	})}
 
+	// if we use a download list, get its files.
+	if( !object.attributes.preview ) {
+		// get the attachments which are assigned to the chosen list.
+		let list_files = useSelect((select) => {
+			return select('core').getEntityRecords( 'postType', 'attachment', {
+				per_page: -1,
+				dl_icon_lists: [object.attributes.list],
+				_fields: 'id'
+			} );
+		}, [object.attributes.list]) || [];
+		if( list_files.length > 0 && 'manual' !== object.attributes.order ) {
+			fileIds = [];
+			{list_files.map((file) => {
+				fileIds.push(file.id);
+			})}
+		}
+	}
+
 	/**
-	 * Revert preview-setting of block is selected.
+	 * Revert preview-setting if block is selected.
 	 */
 	if( object.isSelected && object.attributes.preview ) {
 		object.attributes.preview = false;
 	}
 
 	/**
-	 * Run AJAX-request not in preview-mode.
+	 * Run AJAX-request to get the data of each selected file, but not in preview-mode.
 	 *
 	 * @type {*[]}
 	 */
 	let allowed_file_types = [];
 	let iconsets = [];
 	if( !object.attributes.preview ) {
-		// set actual date if it is not present
+		// set actual date if it is not present.
 		if (!object.attributes.date) {
 			object.attributes.date = getActualDate()
 		}
 
-		// send request to our custom endpoint to get the data of the files
+		// send request to our custom endpoint to get the data of the files.
 		let attachments = useSelect((select) => {
 			return select('core').getEntityRecords('downloadlist/v1', 'files', {
 				post_ids: fileIds,
@@ -122,15 +145,28 @@ export default function Edit( object ) {
 			}, []) || null;
 		});
 		if (attachments) {
-			// loop through the results
+			// loop through the results.
 			files = [];
 			let objectFiles = [];
 			attachments.map((newFile) => {
-				// collect the file-data for @SortableItem
+				// collect the file-data for @SortableItem.
 				files.push(newFile)
-				// and save the actual list in the block-settings
+				// and add the file data for the file list for the block-settings.
 				objectFiles.push({id: newFile.id})
 			});
+
+			/**
+			 * Sort the files list if download list is used.
+			 */
+			if( object.attributes.list > 0 && object.attributes.order && object.attributes.orderby ) {
+				if ( 'title' === object.attributes.order ) {
+					files = sortByTitle( files, object.attributes.orderby );
+				}
+				if ( 'size' === object.attributes.order ) {
+					files = sortBySize( files, object.attributes.orderby );
+				}
+			}
+
 			// save a clean file list only with the id-property per file
 			// -> case 1: update from version 1.x from this plugin
 			// -> case 2: a file is not available anymore
@@ -153,7 +189,7 @@ export default function Edit( object ) {
 			})
 		);
 
-		// if iconset is set which does not return, set the default iconset.
+		// check if chosen iconset does exist.
 		if (0 < object.attributes.iconset.length && iconsets_array.length > 0) {
 			let found = false;
 			for (let i = 0; i < iconsets_array.length; i++) {
@@ -166,7 +202,7 @@ export default function Edit( object ) {
 			}
 		}
 
-		// if no iconset is set, use the default one returned.
+		// if no iconset is set, use the default iconset.
 		if (0 === object.attributes.iconset.length && iconsets_array.length > 0) {
 			for (let i = 0; i < iconsets_array.length; i++) {
 				if (1 === iconsets_array[i].meta.default) {
@@ -175,7 +211,7 @@ export default function Edit( object ) {
 			}
 		}
 
-		// retrieve all possible file types
+		// retrieve all possible file types from our custom endpoint.
 		let allowed_file_types_server_result = useSelect((select) => {
 			return select('core').getEntityRecords('downloadlist/v1', 'filetypes', {
 				per_page: -1,
@@ -210,7 +246,7 @@ export default function Edit( object ) {
 		})
 	);
 
-	// get the iconsets.
+	// get the download lists.
 	const download_lists = useSelect((select) => {
 		return select('core').getEntityRecords( 'taxonomy', 'dl_icon_lists' );
 	});
@@ -224,9 +260,8 @@ export default function Edit( object ) {
 				active_list = list;
 			}
 			lists_to_use.push({
-				'title': list.name,
-				'icon': list.slug,
-				'onClick': () => onChangeList(list.slug)
+				'label': list.name,
+				'value': list.id,
 			})
 		});
 	}
@@ -248,6 +283,7 @@ export default function Edit( object ) {
 			let _files = arrayMove(files, active_index, over_index);
 			object.setAttributes({
 				files: _files,
+				order: 'manual'
 			})
 		}
 	};
@@ -258,7 +294,7 @@ export default function Edit( object ) {
 	 * @param newValue
 	 */
 	function onChangeList( newValue ) {
-		object.setAttributes({ list: newValue });
+		object.setAttributes({ files: [], list: newValue, date: getActualDate() });
 	}
 
 	/**
@@ -392,28 +428,23 @@ export default function Edit( object ) {
 	}
 
 	/**
-	 * Sort files in list by their titles (string compare).
+	 * Sort files in list by their titles (with string compare).
 	 */
 	function sortFilesByTitle() {
-		if( 'descending' === getSortDirectionByTitle(files) ) {
-			files.sort((a, b) => a.title.localeCompare(b.title, undefined, {numeric: true, sensitivity: 'base'}))
-		}
-		else {
-			files.sort((a, b) => b.title.localeCompare(a.title, undefined, {numeric: true, sensitivity: 'base'}))
-		}
-		object.setAttributes({ files: files, date: getActualDate() })
+		let orderby = getSortDirectionByTitle(files);
+		object.setAttributes({ order: 'title', orderby: orderby, files: sortByTitle( files, orderby ), date: getActualDate() })
 	}
 
 	/**
-	 * Check alphabetical sorting of given file array.
+	 * Check alphabetical sorting of given files array.
 	 *
-	 * @param array file_array
+	 * @param files
 	 * @returns {string}
 	 */
-	function getSortDirectionByTitle(file_array) {
+	function getSortDirectionByTitle(files) {
 		const c = [];
-		for (let i = 1; i < file_array.length; i++) {
-			c.push(file_array[i - 1].title.localeCompare(file_array[i].title, undefined, {numeric: true, sensitivity: 'base'}));
+		for (let i = 1; i < files.length; i++) {
+			c.push(files[i - 1].title.localeCompare(files[i].title, undefined, {numeric: true, sensitivity: 'base'}));
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';
@@ -423,23 +454,18 @@ export default function Edit( object ) {
 	}
 
 	/**
-	 * Sort files in list by their sizes (int-compare).
+	 * Sort files in list by their sizes (with int-compare).
 	 */
 	function sortFilesByFileSize() {
-		if( 'descending' === getSortDirectionBySize(files) ) {
-			files.sort((a, b) => a.filesizeInBytes - b.filesizeInBytes)
-		}
-		else {
-			files.sort((a, b) => b.filesizeInBytes - a.filesizeInBytes)
-		}
-		object.setAttributes({ files: files, date: getActualDate() })
+		let orderby = getSortDirectionBySize(files);
+		object.setAttributes({ order: 'size', orderby: orderby, files: sortBySize( files, orderby ), date: getActualDate() })
 	}
 
 	/**
 	 * Check alphabetical sorting of given file array.
 	 *
-	 * @param array file_array The files list.
 	 * @returns {string}
+	 * @param file_array
 	 */
 	function getSortDirectionBySize(file_array) {
 		const c = [];
@@ -476,6 +502,9 @@ export default function Edit( object ) {
 		object.setAttributes({files: files, date: getActualDate()})
 	}
 
+	/**
+	 * Add class name for used iconset.
+	 */
 	const blockProps = useBlockProps( {
 		className: 'iconset-' + object.attributes.iconset,
 	} );
@@ -495,16 +524,40 @@ export default function Edit( object ) {
 								allowedTypes={ allowed_file_types }
 								value={ object.attributes.files }
 								render={ ( { open } ) => (
-									<ToolbarButton className="has-text" onClick={ open } icon={plus} text={ __( 'Add files to list', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
+									<ToolbarButton disabled={ object.attributes.list > 0 } className="has-text" onClick={ open } icon={plus} text={ __( 'Add files', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
 								) }
 							/>
 						</MediaUploadCheck>
 					}
-					<ToolbarDropdownMenu
-						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
-						label={ __( 'Select a download list', 'nested-ordered-lists-for-block-editor' ) }
-						controls={ lists_to_use }
-					/>
+					{lists_to_use &&
+						<Dropdown
+							renderToggle={ ( { isOpen, onToggle } ) => (
+								<ToolbarButton className="has-text" onClick={ onToggle } icon={plus} text={ object.attributes.list > 0 ? __( 'Using a download list', 'download-list-block-with-icons' ) : __( 'Choose a download list', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
+							) }
+							renderContent={ () => <div><MenuGroup label={__('Choose download list', 'download-list-block-with-icons')}>
+									<MenuItemsChoice
+										choices={ lists_to_use }
+										onSelect={ ( value ) => onChangeList( value ) }
+										value={ object.attributes.list }>
+									</MenuItemsChoice>
+								</MenuGroup>
+								<MenuGroup label={__('Options', 'download-list-block-with-icons')}>
+									<MenuItem
+										disabled={ 0 === object.attributes.list }
+										onClick={ () => onChangeList( 0 ) }
+									>
+										{__('Deselect download list', 'download-list-block-with-icons')}
+									</MenuItem>
+									<MenuItem
+										onClick={ () => location.href=window.downloadlist_config.list_url }
+									>
+										{__('Manage download lists', 'download-list-block-with-icons')}
+									</MenuItem>
+								</MenuGroup>
+							</div>
+							}
+						/>
+					}
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
 						label={__('Sort files by title', 'download-list-block-with-icons')}
@@ -529,7 +582,7 @@ export default function Edit( object ) {
 						/>
 						{false === object.attributes.hideIcon &&
 							<SelectControl
-								label={__('Choose iconset', 'download-list-block-with-icons')}
+								label={__('Choose an iconset', 'download-list-block-with-icons')}
 								options={ iconsets }
 								value={ object.attributes.iconset }
 								onChange={(value) => onChangeIconSet( value, object )}

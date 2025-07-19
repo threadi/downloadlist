@@ -4,5 +4,6 @@
     </custom-types>
 	<taxonomies>
 		<taxonomy translate="0">dl_icon_set</taxonomy>
+		<taxonomy translate="0">dl_icon_lists</taxonomy>
 	</taxonomies>
 </wpml-config>

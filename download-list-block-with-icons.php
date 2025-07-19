@@ -143,6 +143,18 @@ function downloadlist_init(): void {
 					'type'    => 'string',
 					'default' => '',
 				),
+				'list'                   => array(
+					'type'    => 'integer',
+					'default' => 0,
+				),
+				'order'                  => array(
+					'type'    => 'string',
+					'default' => '',
+				),
+				'orderby'                => array(
+					'type'    => 'string',
+					'default' => '',
+				),
 			),
 		)
 	);
@@ -594,6 +606,63 @@ function downloadlist_render_block( array $attributes ): string {
 			$iconset = 'iconset-generic';
 		} else {
 			$iconset = 'iconset-' . $iconset_obj->get_slug();
+		}
+	}
+
+	/**
+	 * Get all files assigned to a given download list.
+	 * Add missing files in file list depending on order setting.
+	 */
+	if ( ! empty( $attributes['list'] ) ) {
+		$query            = array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => -1,
+			'tax_query'      => array(
+				array(
+					'taxonomy' => 'dl_icon_lists',
+					'field'    => 'term_id',
+					'terms'    => $attributes['list'],
+				),
+			),
+			'fields'         => 'ids',
+		);
+		$additional_files = new WP_Query( $query );
+
+		// if result is empty, do not show anything.
+		if ( 0 === $additional_files->found_posts ) {
+			return '';
+		}
+
+		// get the list of files as simple ID-array.
+		$files = wp_list_pluck( $attributes['files'], 'id' );
+
+		// check each file.
+		foreach ( $additional_files->get_posts() as $file_id ) {
+			// get the int value.
+			$file_id = absint( $file_id ); // @phpstan-ignore argument.type
+
+			// bail if file exist in list.
+			if ( in_array( $file_id, $files, true ) ) {
+				continue;
+			}
+
+			// add file if it is missing in the list.
+			$attributes['files'][] = array( 'id' => $file_id );
+		}
+
+		// check each file in list if it is assigned to the chosen download list.
+		foreach ( $attributes['files'] as $index => $file ) {
+			// get data about the assigned term.
+			$term = wp_get_object_terms( $file['id'], 'dl_icon_lists' );
+
+			// bail if term is set.
+			if ( ! empty( $term ) ) {
+				continue;
+			}
+
+			// remove this entry from the list.
+			unset( $attributes['files'][ absint( $index ) ] );
 		}
 	}
 
