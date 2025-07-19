@@ -8,8 +8,8 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use downloadlist\Iconset_Base;
-use downloadlist\iconsets\Dashicons;
+use DownloadListWithIcons\Iconsets\Iconset_Base;
+use DownloadListWithIcons\Iconsets\Iconsets\Dashicons;
 
 /**
  * Register the dashicons iconset.

@@ -5,7 +5,7 @@
  * @package download-list-block-with-icons
  */
 
-namespace downloadlist;
+namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;

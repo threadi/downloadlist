@@ -8,8 +8,8 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use downloadlist\Iconset_Base;
-use downloadlist\iconsets\Fontawesome;
+use DownloadListWithIcons\Iconsets\Iconset_Base;
+use DownloadListWithIcons\Iconsets\Iconsets\Fontawesome;
 
 /**
  * Register the fontawesome iconset.

@@ -5,11 +5,12 @@
  * @package download-list-block-with-icons
  */
 
-namespace downloadlist;
+namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Iconsets\Iconsets;
 use WP_Image_Editor;
 use WP_Post;
 use WP_Query;
