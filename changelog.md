@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added possibility to categorize media files in lists which could be used for listing of files in frontend
+
 ### Changed
 
 - Using composer autoloader for each object

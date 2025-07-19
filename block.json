@@ -92,6 +92,10 @@
 		"linkBrowserTargetName": {
 			"type": "string",
 			"default": ""
+		},
+		"list": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"example": {

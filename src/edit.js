@@ -30,7 +30,8 @@ import {
 	SelectControl,
 	ToolbarButton,
 	ExternalLink,
-	TextControl
+	TextControl,
+	ToolbarDropdownMenu
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
 import {
@@ -209,6 +210,27 @@ export default function Edit( object ) {
 		})
 	);
 
+	// get the iconsets.
+	const download_lists = useSelect((select) => {
+		return select('core').getEntityRecords( 'taxonomy', 'dl_icon_lists' );
+	});
+
+	// generate download list for options.
+	let lists_to_use = [];
+	let active_list = false;
+	if( download_lists !== null ) {
+		download_lists.map((list) => {
+			if( list.slug === object.attributes.list ) {
+				active_list = list;
+			}
+			lists_to_use.push({
+				'title': list.name,
+				'icon': list.slug,
+				'onClick': () => onChangeList(list.slug)
+			})
+		});
+	}
+
 	/**
 	 * Save the new position on drag end
 	 *
@@ -229,6 +251,15 @@ export default function Edit( object ) {
 			})
 		}
 	};
+
+	/**
+	 * On change of list option
+	 *
+	 * @param newValue
+	 */
+	function onChangeList( newValue ) {
+		object.setAttributes({ list: newValue });
+	}
 
 	/**
 	 * On change of file size option
@@ -469,6 +500,11 @@ export default function Edit( object ) {
 							/>
 						</MediaUploadCheck>
 					}
+					<ToolbarDropdownMenu
+						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
+						label={ __( 'Select a download list', 'nested-ordered-lists-for-block-editor' ) }
+						controls={ lists_to_use }
+					/>
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
 						label={__('Sort files by title', 'download-list-block-with-icons')}
@@ -485,7 +521,7 @@ export default function Edit( object ) {
 			}
 			{
 				<InspectorControls>
-					<PanelBody title={ __( 'Icon', 'download-list-block-with-icons' ) } initialOpen={ true }>
+					<PanelBody title={ __( 'Icons', 'download-list-block-with-icons' ) } initialOpen={ true }>
 						<CheckboxControl
 							label={__('Hide icons', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideIcon }

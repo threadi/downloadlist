@@ -381,24 +381,6 @@ add_action( 'created_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
 add_action( 'edit_term', 'downloadlist_admin_icon_set_fields_save', 10, 3 );
 
 /**
- * Add column for default-marker in iconset-table.
- *
- * @param array<string,string> $columns List of columns.
- * @return array<string,string>
- */
-function downloadlist_admin_iconset_columns( array $columns ): array {
-	// add column for iconset.
-	$columns['downloadlist_iconset_default'] = __( 'Default iconset', 'download-list-block-with-icons' );
-
-	// remove count-row.
-	unset( $columns['posts'], $columns['description'] );
-
-	// return resulting array.
-	return $columns;
-}
-add_filter( 'manage_edit-dl_icon_set_columns', 'downloadlist_admin_iconset_columns', 10, 1 );
-
-/**
  * Re-order table for icons with custom columns.
  *
  * @param array<string,string> $columns List of columns.

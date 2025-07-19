@@ -25,6 +25,7 @@ if ( PHP_VERSION_ID < 80000 ) { // @phpstan-ignore smaller.alwaysFalse
 use DownloadListWithIcons\Iconsets\Iconset_Base;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use DownloadListWithIcons\Plugin\Helper;
+use DownloadListWithIcons\Plugin\Init;
 use DownloadListWithIcons\Plugin\Installer;
 
 // save the plugin-path.
@@ -43,6 +44,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/inc/admin.php';
 }
+
+// initialize plugin.
+Init::get_instance()->init();
 
 // get the files.
 $dl_iconset_files = glob( plugin_dir_path( DL_PLUGIN ) . 'inc/iconsets/*.php' );
@@ -416,68 +420,6 @@ function downloadlist_add_position_posttype(): void {
 	register_post_type( 'dl_icons', $args );
 }
 add_action( 'init', 'downloadlist_add_position_posttype', 10 );
-
-/**
- * Add taxonomies used with the downloadlist posttype.
- * Each will be visible in REST-API, also public.
- *
- * @return void
- * @noinspection PhpUnused
- */
-function downloadlist_add_taxonomies(): void {
-	// set default taxonomy-settings.
-	$icon_set_array = array(
-		'hierarchical'       => false,
-		'labels'             => array(
-			'name'          => _x( 'Iconsets', 'taxonomy general name', 'download-list-block-with-icons' ),
-			'singular_name' => _x( 'Iconset', 'taxonomy singular name', 'download-list-block-with-icons' ),
-			'search_items'  => __( 'Search iconset', 'download-list-block-with-icons' ),
-			'edit_item'     => __( 'Edit iconset', 'download-list-block-with-icons' ),
-			'update_item'   => __( 'Update iconset', 'download-list-block-with-icons' ),
-			'menu_name'     => __( 'Iconsets', 'download-list-block-with-icons' ),
-			'add_new'       => __( 'Add new Iconset', 'download-list-block-with-icons' ),
-			'add_new_item'  => __( 'Add new Iconset', 'download-list-block-with-icons' ),
-			'back_to_items' => __( 'Go to iconsets', 'download-list-block-with-icons' ),
-		),
-		'public'             => false,
-		'show_ui'            => true,
-		'show_in_menu'       => true,
-		'show_in_nav_menus'  => true,
-		'show_admin_column'  => true,
-		'show_tagcloud'      => true,
-		'show_in_quick_edit' => true,
-		'show_in_rest'       => true,
-		'query_var'          => true,
-		'rewrite'            => true,
-		'capabilities'       => array(
-			'manage_terms' => 'manage_options',
-			'edit_terms'   => 'manage_options',
-			'delete_terms' => 'manage_options',
-			'assign_terms' => 'manage_options',
-		),
-	);
-
-	// remove this taxonomy from views for not logged-in users.
-	if ( ! is_user_logged_in() ) {
-		$icon_set_array['rewrite']      = false;
-		$icon_set_array['show_in_rest'] = false;
-	}
-
-	// register taxonomy.
-	register_taxonomy( 'dl_icon_set', array( 'dl_icons' ), $icon_set_array );
-
-	// add term meta for default-marker.
-	register_term_meta(
-		'dl_icon_set',
-		'default',
-		array(
-			'type'         => 'integer',
-			'single'       => true,
-			'show_in_rest' => true,
-		)
-	);
-}
-add_action( 'init', 'downloadlist_add_taxonomies' );
 
 /**
  * Register WP Cli.
