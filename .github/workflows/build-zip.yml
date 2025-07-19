@@ -69,7 +69,9 @@ jobs:
           rm ruleset.xml
           cd ..
           mv ${{ github.event.repository.name }} download-list-block-with-icons
-          zip -r -q ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/* -x "*/.git/*" "*/.github/*" "*/blocks/*/src/*" "*/docs/*" "*/phpcs.xml" "*/composer.json" "*/composer.lock" "*/package.json" "*/package-lock.json" "*/ruleset.xml" "*/.gitignore" "*/vendor/*" "*/node_modules/*" "/.editorconfig" "*/.gitkeep"
+          zip -rq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/* -x "*/.git/*" "*/.github/*" "*/blocks/*/src/*" "*/docs/*" "*/phpcs.xml" "*/composer.json" "*/composer.lock" "*/package.json" "*/package-lock.json" "*/ruleset.xml" "*/.gitignore" "*/vendor/*" "*/node_modules/*" "/.editorconfig" "*/.gitkeep"
+          zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/autoload.php
+          zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/composer/*
           mv download-list-block-with-icons ${{ github.event.repository.name }}
           cp ${{ github.event.repository.name }}_${{ github.ref_name }}.zip ${{ github.event.repository.name }}/
 

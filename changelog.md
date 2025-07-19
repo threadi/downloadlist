@@ -2,9 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added possibility to categorize media files in lists which could be used for listing of files in frontend
+- Added new hooks
+
 ### Changed
 
 - Using composer autoloader for each object
+- Updated dependencies
 
 ## [3.8.0] - 15.05.2025
 
