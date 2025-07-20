@@ -108,6 +108,10 @@
 		"showFileDates": {
 			"type": "boolean",
 			"default": false
+		},
+		"showFileFormatLabel": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"example": {

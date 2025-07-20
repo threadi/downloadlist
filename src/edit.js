@@ -332,6 +332,16 @@ export default function Edit( object ) {
 	}
 
 	/**
+	 * On change of show file format label.
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeShowFileFormatLabel( newValue, object ) {
+		object.setAttributes({ showFileFormatLabel: newValue });
+	}
+
+	/**
 	 * On change of icon option.
 	 *
 	 * @param newValue
@@ -716,6 +726,11 @@ export default function Edit( object ) {
 							label={__('Show file dates', 'download-list-block-with-icons')}
 							checked={ object.attributes.showFileDates }
 							onChange={ value => onChangeShowFileDates( value, object ) }
+						/>
+						<CheckboxControl
+							label={__('Show file format labels', 'download-list-block-with-icons')}
+							checked={ object.attributes.showFileFormatLabel }
+							onChange={ value => onChangeShowFileFormatLabel( value, object ) }
 						/>
 						<SelectControl
 							label={__('Robots', 'download-list-block-with-icons')}

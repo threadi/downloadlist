@@ -109,7 +109,7 @@ export function SortableItem(props) {
 	}
 
 	/**
-	 * Get or hide file dates
+	 * Get or hide file dates.
 	 *
 	 * @type {string}
 	 */
@@ -117,6 +117,16 @@ export function SortableItem(props) {
 	let settings = wp.data.select( 'core' ).getSite();
 	if( settings && props.object.attributes.showFileDates ) {
 		file_date = gmdateI18n( settings.date_format + ' ' + settings.time_format, props.file.date );
+	}
+
+	/**
+	 * Get or hide file format label.
+	 *
+	 * @type {string}
+	 */
+	let file_format_label = '';
+	if( props.object.attributes.showFileFormatLabel && props.file.downloadlist_mime_label ) {
+		file_format_label = props.file.downloadlist_mime_label;
 	}
 
 	/**
@@ -151,7 +161,7 @@ export function SortableItem(props) {
 			{0 === props.object.attributes.list && <Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>}
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
-			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}{<div dangerouslySetInnerHTML={{ __html: file_date }}/>}
+			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}{<div dangerouslySetInnerHTML={{ __html: file_format_label }}/>}{<div dangerouslySetInnerHTML={{ __html: file_date }}/>}
 		</div>
 	);
 }

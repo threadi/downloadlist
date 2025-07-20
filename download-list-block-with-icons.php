@@ -159,6 +159,10 @@ function downloadlist_init(): void {
 					'type'    => 'boolean',
 					'default' => false,
 				),
+				'showFileFormatLabel'        => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
 			),
 		)
 	);
@@ -701,6 +705,9 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 	}
 
+	// get the possible mime labels.
+	$mime_labels = downloadlist_mime_labels();
+
 	// variable for block-specific styles.
 	$styles = '';
 
@@ -770,6 +777,12 @@ function downloadlist_render_block( array $attributes ): string {
 		$file_date = '';
 		if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
 			$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $attachment->post_date ) );
+		}
+
+		// get the file format label, if enabled.
+		$file_format_label = '';
+		if ( ! empty( $attributes['showFileFormatLabel'] ) ) {
+			$file_format_label = '<br>' . $mime_labels[$attachment->post_mime_type];
 		}
 
 		// get the download URL of the file.
@@ -942,9 +955,9 @@ add_filter( 'post_updated_messages', 'downloadlist_change_post_labels' );
  */
 function downloadlist_change_post_labels_bulk( array $messages, array $bulk_counts ): array {
 	/* translators: %1$d: Number of pages. */
-	$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the trash.', '%1$d icons moved to the trash.', absint( $bulk_counts['trashed'] ) );
+	$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the trash.', '%1$d icons moved to the trash.', absint( $bulk_counts['trashed'] ), 'download-list-block-with-icons' );
 	/* translators: %1$d: Number of pages. */
-	$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the trash.', '%1$d icon restored from the trash.', absint( $bulk_counts['untrashed'] ) );
+	$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the trash.', '%1$d icon restored from the trash.', absint( $bulk_counts['untrashed'] ), 'download-list-block-with-icons' );
 
 	// return resulting list.
 	return $messages;
@@ -996,3 +1009,58 @@ function downloadlist_generate_classname( string $class_name ): string {
 	return sanitize_html_class( $class_name );
 }
 add_filter( 'downloadlist_generate_classname', 'downloadlist_generate_classname' );
+
+/**
+ * Add mime labels to the REST API response.
+ *
+ * @param array<int,mixed> $files List of files.
+ * @return array<int,mixed>
+ */
+function downloadlist_add_mime_label( array $files ): array {
+	// get the possible labels.
+	$mime_labels = downloadlist_mime_labels();
+
+	foreach ( $files as $index => $file ) {
+		// bail if no mime is set.
+		if( empty( $file['mime'] ) ) {
+			continue;
+		}
+
+		// bail if no label is set for this mime.
+		if( empty( $mime_labels[ $file['mime'] ] ) ) {
+			$files[$index]['downloadlist_mime_label'] = $file['mime'];
+			continue;
+		}
+
+		// set the label.
+		$files[$index]['downloadlist_mime_label'] = $mime_labels[ $file['mime'] ];
+	}
+
+	// return resulting lis of files.
+	return $files;
+}
+add_filter( 'downloadlist_api_return_file_data', 'downloadlist_add_mime_label' );
+
+/**
+ * Return list of possible mime labels.
+ *
+ * @return array<string,string>
+ */
+function downloadlist_mime_labels(): array {
+	$list = array(
+		'application/pdf' => __( 'PDF-file', 'download-list-block-with-icons' ),
+		'application/zip' => __( 'ZIP-file', 'download-list-block-with-icons' ),
+		'image/gif' => __( 'GIF-image', 'download-list-block-with-icons' ),
+		'image/jpeg' => __( 'JPEG-image', 'download-list-block-with-icons' ),
+		'image/jpg' => __( 'JPEG-image', 'download-list-block-with-icons' ),
+		'image/png' => __( 'PNG-image', 'download-list-block-with-icons' )
+	);
+
+	/**
+	 * Filter the list of possible mime labels.
+	 *
+	 * @since 4.0.0 Available since 4.0.0.
+	 * @param array<string,string> $list List of possible mime labels.
+	 */
+	return apply_filters( 'downloadlist_mime_labels', $list );
+}

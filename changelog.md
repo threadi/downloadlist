@@ -7,12 +7,17 @@
 - Added possibility to categorize media files in lists which could be used for listing of files in frontend
 - Added option to show file dates for each file
 - Added option to sort the list by file dates
+- Added option to show a label for the file format for each file
 - Added new hooks
 
 ### Changed
 
 - Using composer autoloader for each object
 - Updated dependencies
+
+### Fixed
+
+- Fixed missing translations for bulk message editing of icons
 
 ## [3.8.0] - 15.05.2025
 
