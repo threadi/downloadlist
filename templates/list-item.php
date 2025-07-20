@@ -14,6 +14,7 @@
  * @param string $download_button The download button.
  * @param string $description The description.
  * @param string $file_date The file date.
+ * @param string $file_format_label The mime label.
  * @param string $link_target The value for the target attribute.
  *
  * @version: 4.0.0
@@ -25,4 +26,4 @@
 <?php
 echo ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : ''; if ( ! empty( $link_target ) ) {
 	?>
-	target="<?php echo esc_attr( $link_target ); ?>"<?php } ?>><?php echo esc_html( $attachment->post_title ); ?></a><?php echo wp_kses_post( $filesize ) . wp_kses_post( $download_button ) . wp_kses_post( $description ) . wp_kses_post( $file_date ); ?></li>
+	target="<?php echo esc_attr( $link_target ); ?>"<?php } ?>><?php echo esc_html( $attachment->post_title ); ?></a><?php echo wp_kses_post( $filesize ) . wp_kses_post( $download_button ) . wp_kses_post( $description ) . wp_kses_post( $file_format_label ) . wp_kses_post( $file_date ); ?></li>
