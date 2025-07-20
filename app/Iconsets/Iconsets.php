@@ -10,6 +10,7 @@ namespace DownloadListWithIcons\Iconsets;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Plugin\Helper;
 use WP_Post;
 use WP_Query;
 
@@ -52,7 +53,55 @@ class Iconsets {
 	 *
 	 * @return void
 	 */
-	public function init(): void {}
+	public function init(): void {
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'register_styles' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_styles_run' ), 10, 0 );
+	}
+
+	/**
+	 * Register our own iconset-css-files for enqueuing.
+	 *
+	 * @return void
+	 */
+	public function register_styles(): void {
+		if ( false === file_exists( Helper::get_style_path() ) ) {
+			Helper::generate_css();
+		}
+
+		// get global styles.
+		wp_register_style(
+			'downloadlist-iconsets',
+			Helper::get_style_url(),
+			array(),
+			Helper::get_file_version( Helper::get_style_path() ),
+		);
+
+		// get iconset-styles.
+		foreach ( self::get_instance()->get_icon_sets() as $iconset_obj ) {
+			foreach ( $iconset_obj->get_style_files() as $file ) {
+				// bail if handle is empty.
+				if ( empty( $file['handle'] ) ) {
+					continue;
+				}
+
+				// register style if path and URL are given.
+				if ( ! empty( $file['path'] ) && ! empty( $file['url'] ) ) {
+					wp_register_style(
+						'downloadlist-' . $file['handle'],
+						$file['url'],
+						array(),
+						Helper::get_file_version( $file['path'] )
+					);
+				}
+
+				// register style if only dependent style name is given.
+				if ( empty( $file['path'] ) && ! empty( $file['depends'] ) ) {
+					wp_register_style( 'downloadlist-' . $file['handle'], false, $file['depends'], DL_VERSION );
+				}
+			}
+		}
+	}
 
 	/**
 	 * Get all iconsets which are registered.
@@ -170,5 +219,29 @@ class Iconsets {
 			return $iconset_obj;
 		}
 		return false;
+	}
+
+	/**
+	 * Run the enqueuing (used in frontend and block editor).
+	 *
+	 * @param array<int,Iconset_Base> $iconsets List of iconsets to enqueue.
+	 * @return void
+	 */
+	public function enqueue_styles_run( array $iconsets = array() ): void {
+		// enqueue the main styles.
+		wp_enqueue_style( 'downloadlist-iconsets' );
+
+		// if no iconsets are given, use all.
+		if ( empty( $iconsets ) ) {
+			$iconsets = $this->get_icon_sets();
+		}
+
+		// enqueue each style of the configured iconsets.
+		foreach ( $iconsets as $iconset_obj ) {
+			// add the files of this iconset in frontend.
+			foreach ( $iconset_obj->get_style_files() as $file ) {
+				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
+			}
+		}
 	}
 }
