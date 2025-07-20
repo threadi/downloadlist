@@ -104,6 +104,10 @@
 		"orderby": {
 			"type": "string",
 			"default": ""
+		},
+		"showFileDates": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"example": {

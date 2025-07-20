@@ -7,6 +7,7 @@ import { __ } from '@wordpress/i18n';
 import { Icon, dragHandle, edit, trash } from '@wordpress/icons';
 import { CSS } from '@dnd-kit/utilities';
 import { getActualDate } from "./components";
+import { gmdateI18n } from '@wordpress/date';
 
 /**
  * Represents single sortable item in list.
@@ -80,7 +81,7 @@ export function SortableItem(props) {
 	};
 
 	/**
-	 * Get or hide file size
+	 * Get or hide file size.
 	 *
 	 * @type {string}
 	 */
@@ -90,7 +91,7 @@ export function SortableItem(props) {
 	}
 
 	/**
-	 * Get or hide description
+	 * Get or hide description.
 	 *
 	 * @type {string}
 	 */
@@ -100,7 +101,7 @@ export function SortableItem(props) {
 	}
 
 	/**
-	 * Set class to hide icons
+	 * Set class to hide icons.
 	 */
 	let hideIcon = ''
 	if( props.object.attributes.hideIcon ) {
@@ -108,7 +109,18 @@ export function SortableItem(props) {
 	}
 
 	/**
-	 * Set link target depending on setting
+	 * Get or hide file dates
+	 *
+	 * @type {string}
+	 */
+	let file_date = '';
+	let settings = wp.data.select( 'core' ).getSite();
+	if( settings && props.object.attributes.showFileDates ) {
+		file_date = gmdateI18n( settings.date_format + ' ' + settings.time_format, props.file.date );
+	}
+
+	/**
+	 * Set link target depending on setting.
 	 */
 	let linkTarget = props.file.url
 	if( props.object.attributes.linkTarget && props.object.attributes.linkTarget === 'attachmentpage' ) {
@@ -139,7 +151,7 @@ export function SortableItem(props) {
 			{0 === props.object.attributes.list && <Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>}
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ edit } /></Button>
 			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
-			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}
+			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}{<div dangerouslySetInnerHTML={{ __html: file_date }}/>}
 		</div>
 	);
 }

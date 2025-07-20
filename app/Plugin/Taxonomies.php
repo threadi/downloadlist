@@ -250,8 +250,8 @@ class Taxonomies {
 	 * @return array<string,string>
 	 */
 	public function set_lists_columns( array $columns ): array {
-		// remove count-row.
-		unset( $columns['posts'], $columns['description'], $columns['slug'] );
+		// remove some rows.
+		unset( $columns['description'], $columns['slug'] );
 
 		// return resulting array.
 		return $columns;

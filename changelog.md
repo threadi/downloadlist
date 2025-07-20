@@ -5,6 +5,8 @@
 ### Added
 
 - Added possibility to categorize media files in lists which could be used for listing of files in frontend
+- Added option to show file dates for each file
+- Added option to sort the list by file dates
 - Added new hooks
 
 ### Changed
