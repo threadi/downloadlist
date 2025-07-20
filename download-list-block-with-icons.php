@@ -155,6 +155,10 @@ function downloadlist_init(): void {
 					'type'    => 'string',
 					'default' => '',
 				),
+				'showFileDates'        => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
 			),
 		)
 	);
@@ -726,9 +730,15 @@ function downloadlist_render_block( array $attributes ): string {
 		}
 
 		// get the description.
-		$description = '<br />' . $attachment->post_content;
+		$description = '<br>' . $attachment->post_content;
 		if ( ! empty( $attributes['hideDescription'] ) || empty( $attachment->post_content ) ) {
 			$description = '';
+		}
+
+		// get the file date, if enabled.
+		$file_date = '';
+		if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
+			$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $attachment->post_date ) );
 		}
 
 		// get the download URL of the file.

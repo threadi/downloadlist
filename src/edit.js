@@ -60,6 +60,7 @@ import { getActualDate } from "./components";
 import { useSelect, dispatch } from '@wordpress/data';
 import {sortByTitle} from "./sort/title";
 import {sortBySize} from "./sort/size";
+import {sortByDate} from "./sort/date";
 
 /**
  * Prepare our custom endpoints.
@@ -164,6 +165,9 @@ export default function Edit( object ) {
 				}
 				if ( 'size' === object.attributes.order ) {
 					files = sortBySize( files, object.attributes.orderby );
+				}
+				if ( 'date' === object.attributes.order ) {
+					files = sortByDate( files, object.attributes.orderby );
 				}
 			}
 
@@ -308,13 +312,23 @@ export default function Edit( object ) {
 	}
 
 	/**
-	 * On change of description option
+	 * On change of description option.
 	 *
 	 * @param newValue
 	 * @param object
 	 */
 	function onChangeHideDescription( newValue, object ) {
 		object.setAttributes({ hideDescription: newValue });
+	}
+
+	/**
+	 * On change of show file dates option.
+	 *
+	 * @param newValue
+	 * @param object
+	 */
+	function onChangeShowFileDates( newValue, object ) {
+		object.setAttributes({ showFileDates: newValue });
 	}
 
 	/**
@@ -462,7 +476,7 @@ export default function Edit( object ) {
 	}
 
 	/**
-	 * Check alphabetical sorting of given file array.
+	 * Check sort of files by its sizes.
 	 *
 	 * @returns {string}
 	 * @param file_array
@@ -471,6 +485,32 @@ export default function Edit( object ) {
 		const c = [];
 		for (let i = 1; i < file_array.length; i++) {
 			c.push(file_array[i - 1].filesizeInBytes - file_array[i].filesizeInBytes);
+		}
+
+		if (c.every((n) => n <= 0)) return 'ascending';
+		if (c.every((n) => n >= 0)) return 'descending';
+
+		return 'unsorted';
+	}
+
+	/**
+	 * Sort files in list by their dates (with int-compare).
+	 */
+	function sortFilesByDate() {
+		let orderby = getSortDirectionByDate(files);
+		object.setAttributes({ order: 'date', orderby: orderby, files: sortByDate( files, orderby ), date: getActualDate() })
+	}
+
+	/**
+	 * Check sort of files by its dates.
+	 *
+	 * @returns {string}
+	 * @param file_array
+	 */
+	function getSortDirectionByDate(file_array) {
+		const c = [];
+		for (let i = 1; i < file_array.length; i++) {
+			c.push(file_array[i - 1].date - file_array[i].date);
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';
@@ -570,6 +610,12 @@ export default function Edit( object ) {
 						disabled={ ( object.attributes.files && object.attributes.files.length <= 1 ) || !object.attributes.files }
 						onClick={ () => sortFilesByFileSize() }
 					/>
+					<ToolbarButton
+						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M20 17h3l-4 4l-4-4h3V3h2zM8 5c-3.86 0-7 3.13-7 7s3.13 7 7 7c3.86 0 7-3.13 7-7s-3.13-7-7-7m0 2.15c2.67 0 4.85 2.17 4.85 4.85c0 2.68-2.17 4.85-4.85 4.85c-2.68 0-4.85-2.17-4.85-4.85c0-2.68 2.17-4.85 4.85-4.85M7 9v3.69l3.19 1.84l.75-1.3l-2.44-1.41V9"/></svg>}
+						label={__('Sort files by date', 'download-list-block-with-icons')}
+						disabled={ ( object.attributes.files && object.attributes.files.length <= 1 ) || !object.attributes.files }
+						onClick={ () => sortFilesByDate() }
+					/>
 				</BlockControls>
 			}
 			{
@@ -665,6 +711,11 @@ export default function Edit( object ) {
 							label={__('Hide descriptions', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideDescription }
 							onChange={ value => onChangeHideDescription( value, object ) }
+						/>
+						<CheckboxControl
+							label={__('Show file dates', 'download-list-block-with-icons')}
+							checked={ object.attributes.showFileDates }
+							onChange={ value => onChangeShowFileDates( value, object ) }
 						/>
 						<SelectControl
 							label={__('Robots', 'download-list-block-with-icons')}
