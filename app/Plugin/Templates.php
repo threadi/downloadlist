@@ -51,8 +51,28 @@ class Templates {
 	 * @return void
 	 */
 	public function init(): void {
-		// check for changed templates.
 		add_action( 'admin_init', array( $this, 'check_child_theme_templates' ) );
+	}
+
+	/**
+	 * Return template from our own plugin or the used theme.
+	 *
+	 * @param string $template The template-path.
+	 * @return string
+	 */
+	public function get( string $template ): string {
+		if ( is_embed() ) {
+			return $template;
+		}
+
+		// get the template from theme-directory, if available.
+		$theme_template = locate_template( trailingslashit( basename( dirname( DL_PLUGIN ) ) ) . $template );
+		if ( $theme_template ) {
+			return $theme_template;
+		}
+
+		// return the path to the plugin-own template.
+		return plugin_dir_path( DL_PLUGIN ) . 'templates/' . $template;
 	}
 
 	/**

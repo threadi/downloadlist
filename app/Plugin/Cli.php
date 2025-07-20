@@ -1,6 +1,6 @@
 <?php
 /**
- * File to handle CLI-tasks.
+ * File to handle CLI-tasks of this plugin.
  *
  * @package download-list-block-with-icons
  */
@@ -12,7 +12,7 @@ namespace DownloadListWithIcons\Plugin;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Manage download-lists via CLI.
+ * Manage download-lists-with-icons via CLI.
  */
 class Cli {
 	/**
@@ -24,6 +24,9 @@ class Cli {
 	public function reset_plugin(): void {
 		Uninstaller::get_instance()->run();
 		Installer::get_instance()->activation();
+
+		// return ok-message.
+		\WP_CLI::success( __( 'Plugin have been reset.', 'download-list-block-with-icons' ) );
 	}
 
 	/**
@@ -34,6 +37,9 @@ class Cli {
 	 */
 	public function generate_styles(): void {
 		Helper::generate_css();
+
+		// return ok-message.
+		\WP_CLI::success( __( 'Styles have been generated.', 'download-list-block-with-icons' ) );
 	}
 
 	/**
@@ -44,5 +50,8 @@ class Cli {
 	 */
 	public function regenerate_icons(): void {
 		Helper::regenerate_icons();
+
+		// return ok-message.
+		\WP_CLI::success( __( 'Icons have been generated.', 'download-list-block-with-icons' ) );
 	}
 }
