@@ -696,7 +696,7 @@ export default function Edit( object ) {
 						</SortableContext>
 					</DndContext>
 				}
-				{files.length === 0 &&
+				{files.length === 0 && 0 === object.attributes.list &&
 					<MediaUploadCheck>
 						<MediaUpload
 							onSelect={ ( newFiles ) => addFiles( newFiles ) }
@@ -708,6 +708,9 @@ export default function Edit( object ) {
 							) }
 						/>
 					</MediaUploadCheck>
+				}
+				{files.length === 0 && object.attributes.list > 0 &&
+					<Button variant="primary" className="has-text" onClick={ () => location.href=window.downloadlist_config.list_url } icon={plus} text={ __( 'Assign files to your download list', 'download-list-block-with-icons' ) } size="small"></Button>
 				}
 			</div>
 		</div>
