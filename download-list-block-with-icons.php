@@ -641,7 +641,7 @@ function downloadlist_render_block( array $attributes ): string {
 		// get the list of files as simple ID-array.
 		$files = wp_list_pluck( $attributes['files'], 'id' );
 
-		// check each file.
+		// check each file found in db which is assigned to the chosen download list.
 		foreach ( $additional_files->get_posts() as $file_id ) {
 			// get the int value.
 			$file_id = absint( $file_id ); // @phpstan-ignore argument.type
@@ -657,16 +657,47 @@ function downloadlist_render_block( array $attributes ): string {
 
 		// check each file in list if it is assigned to the chosen download list.
 		foreach ( $attributes['files'] as $index => $file ) {
+			// format the index.
+			$index = absint( $index );
+
 			// get data about the assigned term.
 			$term = wp_get_object_terms( $file['id'], 'dl_icon_lists' );
 
 			// bail if term is set.
 			if ( ! empty( $term ) ) {
+				// get the meta-data like JS (like human-readable filesize).
+				$file_meta = wp_prepare_attachment_for_js( $file['id'] );
+
+				// add the file data for sorting.
+				$attributes['files'][ $index ]['title'] = $file_meta['title'];
+				$attributes['files'][ $index ]['date'] = $file_meta['date'];
+				$attributes['files'][ $index ]['size'] = $file_meta['filesizeInBytes'];
+
 				continue;
 			}
 
 			// remove this entry from the list.
 			unset( $attributes['files'][ absint( $index ) ] );
+		}
+
+		// sort the resulting list.
+		if( 'title' === $attributes['order'] ) {
+			usort($attributes['files'], function ($a, $b) {
+				return strcmp($a["title"], $b["title"]);
+			});
+		}
+		if( 'size' === $attributes['order'] ) {
+			usort($attributes['files'], function ($a, $b) {
+				return $a['size'] <=> $b['size'];
+			});
+		}
+		if( 'date' === $attributes['order'] ) {
+			usort($attributes['files'], function ($a, $b) {
+				return $a['date'] <=> $b['date'];
+			});
+		}
+		if ( 'ascending' === $attributes['orderby'] ) {
+			$attributes['files'] = array_reverse($attributes['files'], true);
 		}
 	}
 
