@@ -57,7 +57,7 @@ class Installer {
 		}
 
 		// initialize our own post-type and taxonomies during installation.
-		downloadlist_add_position_posttype();
+		Init::get_instance()->register_posttype();
 		Taxonomies::get_instance()->init();
 
 		// add generic iconset.
