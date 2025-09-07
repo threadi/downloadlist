@@ -94,6 +94,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added option to sort the list by file dates
 - Added option to show a label for the file format for each file
 - Added new hooks
+- Added hint which page and view in backend is added or extended by this plugin
 - Using composer autoloader for each PHP-object
 - Updated dependencies
 - Fixed missing translations for bulk message editing of icons
