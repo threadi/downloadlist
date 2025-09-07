@@ -10,8 +10,11 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Files\Files;
+use DownloadListWithIcons\Icons\Icons;
 use DownloadListWithIcons\Iconsets\Iconset_Base;
 use DownloadListWithIcons\Iconsets\Iconsets;
+use DownloadListWithIcons\Plugin\Admin\Admin;
 use WP_Post;
 use WP_Query;
 use WP_Term;
@@ -62,21 +65,30 @@ class Init {
 		// initialize the taxonomies.
 		Taxonomies::get_instance()->init();
 
+		// initialize support for attachment files.
+		Files::get_instance()->init();
+
+		// initialize the icons.
+		Icons::get_instance()->init();
+
 		// initialize the iconsets.
 		Iconsets::get_instance()->init();
 
 		// initialize the REST support.
 		Rest::get_instance()->init();
 
+		// initialize the admin support.
+		Admin::get_instance()->init();
+
+		// initialize the third party support.
+		ThirdPartySupport::get_instance()->init();
+
 		// use hooks.
 		add_action( 'init', array( $this, 'register_block' ) );
-		add_action( 'init', array( $this, 'register_posttype' ) );
 		add_filter( 'render_block', array( $this, 'enqueue_styles' ), 10, 2 );
 		add_action( 'cli_init', array( $this, 'add_cli' ) );
 		add_action( 'after_setup_theme', array( $this, 'add_image_size' ) );
 		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ), 10, 2 );
-		add_filter( 'bulk_post_updated_messages', array( $this, 'change_post_labels_bulk' ), 10, 2 );
-		add_filter( 'post_updated_messages', array( $this, 'change_post_labels' ) );
 		add_filter( 'term_updated_messages', array( $this, 'updated_shows_messages' ) );
 		add_filter( 'ajax_query_attachments_args', array( $this, 'change_ajax_query_attachments_args' ) );
 
@@ -409,6 +421,11 @@ class Init {
 					// get the meta-data like JS (like human-readable filesize).
 					$file_meta = wp_prepare_attachment_for_js( $file['id'] );
 
+					// bail if this is not an array.
+					if ( ! is_array( $file_meta ) ) {
+						continue;
+					}
+
 					// add the file data for sorting.
 					$attributes['files'][ $index ]['title'] = $file_meta['title'];
 					$attributes['files'][ $index ]['date']  = $file_meta['date'];
@@ -522,7 +539,7 @@ class Init {
 			// get the file date, if enabled.
 			$file_date = '';
 			if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
-				$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $attachment->post_date ) );
+				$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) strtotime( $attachment->post_date ) );
 			}
 
 			// get the file format label, if enabled.
@@ -685,55 +702,6 @@ class Init {
 	}
 
 	/**
-	 * Add icon as custom posttype.
-	 *
-	 * @return void
-	 */
-	public function register_posttype(): void {
-		// set labels for our own cpt.
-		$labels = array(
-			'name'              => __( 'Download List Icons', 'download-list-block-with-icons' ),
-			'singular_name'     => __( 'Download List Icon', 'download-list-block-with-icons' ),
-			'menu_name'         => __( 'Download List Icons', 'download-list-block-with-icons' ),
-			'parent_item_colon' => __( 'Parent Download List  Icon', 'download-list-block-with-icons' ),
-			'all_items'         => __( 'All Icons', 'download-list-block-with-icons' ),
-			'add_new'           => __( 'Add new Icon', 'download-list-block-with-icons' ),
-			'add_new_item'      => __( 'Add new Icon', 'download-list-block-with-icons' ),
-			'edit_item'         => __( 'Edit Icon', 'download-list-block-with-icons' ),
-			'view_item'         => __( 'View Download List Icon', 'download-list-block-with-icons' ),
-			'view_items'        => __( 'View Download List Icons', 'download-list-block-with-icons' ),
-			'search_items'      => __( 'Search Download List Icon', 'download-list-block-with-icons' ),
-			'not_found'         => __( 'Not Found', 'download-list-block-with-icons' ),
-		);
-
-		// set arguments for our own cpt.
-		$args = array(
-			'label'               => $labels['name'],
-			'description'         => '',
-			'labels'              => $labels,
-			'supports'            => array( 'title' ),
-			'public'              => false,
-			'hierarchical'        => false,
-			'show_ui'             => true,
-			'show_in_menu'        => true,
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
-			'has_archive'         => false,
-			'can_export'          => false,
-			'exclude_from_search' => true,
-			'taxonomies'          => array( 'dl_icon_set' ),
-			'publicly_queryable'  => false,
-			'show_in_rest'        => false,
-			'capability_type'     => 'post',
-			'rewrite'             => array(
-				'slug' => 'downloadlist_icons',
-			),
-			'menu_icon'           => trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'gfx/dl_icon.png',
-		);
-		register_post_type( 'dl_icons', $args );
-	}
-
-	/**
 	 * Update the messages after updating or deleting terms in our taxonomy.
 	 *
 	 * @param array<string,array<int,string>> $messages List of messages.
@@ -745,37 +713,6 @@ class Init {
 			3 => __( 'Iconset updated.', 'download-list-block-with-icons' ),
 			6 => __( 'Iconset deleted.', 'download-list-block-with-icons' ),
 		);
-		return $messages;
-	}
-
-	/**
-	 * Update the messages after updating or deleting posts in our cpt.
-	 *
-	 * @param array<string,array<int,string>> $messages List of messages.
-	 * @return array<string,array<int,string>>
-	 */
-	public function change_post_labels( array $messages ): array {
-		$messages['dl_icons'] = array(
-			1 => __( 'Icon updated.', 'download-list-block-with-icons' ),
-			6 => __( 'Icon added.', 'download-list-block-with-icons' ),
-		);
-		return $messages;
-	}
-
-	/**
-	 * Update the messages on bulk-actions in our cpt.
-	 *
-	 * @param array<string,array<string,mixed>> $messages List of messages.
-	 * @param array<string,mixed>               $bulk_counts Count of events.
-	 * @return array<string,array<string,mixed>>
-	 */
-	public function change_post_labels_bulk( array $messages, array $bulk_counts ): array {
-		/* translators: %1$d: Number of pages. */
-		$messages['dl_icons']['trashed'] = _n( '%1$d icon moved to the trash.', '%1$d icons moved to the trash.', absint( $bulk_counts['trashed'] ), 'download-list-block-with-icons' );
-		/* translators: %1$d: Number of pages. */
-		$messages['dl_icons']['untrashed'] = _n( '%1$d icon restored from the trash.', '%1$d icon restored from the trash.', absint( $bulk_counts['untrashed'] ), 'download-list-block-with-icons' );
-
-		// return resulting list.
 		return $messages;
 	}
 

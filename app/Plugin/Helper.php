@@ -21,7 +21,6 @@ use WP_Term_Query;
  * Helper-method.
  */
 class Helper {
-
 	/**
 	 * Return possible mime-types.
 	 *
@@ -700,5 +699,18 @@ class Helper {
 	 */
 	public static function get_plugin_support_url(): string {
 		return 'https://wordpress.org/support/plugin/download-list-block-with-icons/';
+	}
+
+	/**
+	 * Return the plugin name.
+	 *
+	 * @return string
+	 */
+	public static function get_plugin_name(): string {
+		$plugin_data = get_plugin_data( DL_PLUGIN, false, false );
+		if ( ! empty( $plugin_data['Name'] ) ) {
+			return $plugin_data['Name'];
+		}
+		return '';
 	}
 }

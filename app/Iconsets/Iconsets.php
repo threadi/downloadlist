@@ -57,6 +57,8 @@ class Iconsets {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_styles' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_styles_run' ), 10, 0 );
+		add_action( 'admin_action_downloadlist_iconset_default', array( $this, 'set_default_by_request' ) );
+		add_action( 'pre_get_posts', array( $this, 'hide_generated_iconsets' ) );
 	}
 
 	/**
@@ -243,5 +245,64 @@ class Iconsets {
 				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
 			}
 		}
+	}
+
+	/**
+	 * Set iconset as default via link-request.
+	 *
+	 * @return void
+	 * @noinspection PhpNoReturnAttributeCanBeAddedInspection
+	 */
+	public function set_default_by_request(): void {
+		check_ajax_referer( 'downloadlist-set_iconset-default', 'nonce' );
+
+		// get the term-ID from request.
+		$term_id = ! empty( $_GET['term_id'] ) ? absint( $_GET['term_id'] ) : 0;
+
+		if ( $term_id > 0 ) {
+			// set this term-ID as default.
+			Helper::set_iconset_default( $term_id );
+		}
+
+		// redirect user.
+		wp_safe_redirect( (string) wp_get_referer() );
+		exit;
+	}
+
+	/**
+	 * Hide post-entry which are assigned to generated iconsets.
+	 *
+	 * @param WP_Query $query The Query.
+	 * @return void
+	 */
+	public function hide_generated_iconsets( WP_Query $query ): void {
+		// bail if condition is not met.
+		if ( ! ( 'dl_icons' === $query->query['post_type'] && is_admin() && $query->is_main_query() ) ) {
+			return;
+		}
+
+		// add filter for generic iconsets.
+		$query->set(
+			'meta_query',
+			array(
+				array(
+					'key'     => 'generic-downloadlist',
+					'compare' => 'NOT EXISTS',
+				),
+			)
+		);
+
+		// add filter for slugs which are marked as generic iconsets.
+		$query->set(
+			'tax_query',
+			array(
+				array(
+					'taxonomy' => 'dl_icon_set',
+					'terms'    => $this->get_generic_sets_as_slug_array(),
+					'field'    => 'slug',
+					'operator' => 'NOT IN',
+				),
+			)
+		);
 	}
 }

@@ -8,8 +8,12 @@
 namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
-
 defined( 'ABSPATH' ) || exit;
+
+use DownloadListWithIcons\Iconsets\Iconset_Base;
+use DownloadListWithIcons\Iconsets\Iconsets;
+use WP_Taxonomy;
+use WP_Term;
 
 /**
  * Object to handle all taxonomies of this plugin.
@@ -58,6 +62,13 @@ class Taxonomies {
 		add_action( 'dl_icon_lists_pre_add_form', array( $this, 'show_list_description' ) );
 		add_filter( 'manage_edit-dl_icon_set_columns', array( $this, 'set_iconset_columns' ) );
 		add_filter( 'manage_edit-dl_icon_lists_columns', array( $this, 'set_lists_columns' ) );
+		add_filter( 'ajax_term_search_results', array( $this, 'filter_icon_taxonomy_ajax' ), 10, 2 );
+		add_action( 'dl_icon_set_add_form_fields', array( $this, 'add_icon_set_fields' ) );
+		add_action( 'dl_icon_set_edit_form_fields', array( $this, 'add_icon_set_fields' ), 10 );
+		add_action( 'created_term', array( $this, 'save_icon_set_fields' ), 10, 3 );
+		add_action( 'edit_term', array( $this, 'save_icon_set_fields' ), 10, 3 );
+		add_filter( 'manage_edit-dl_icons_columns', array( $this, 'set_icons_columns' ) );
+		add_filter( 'manage_dl_icon_set_custom_column', array( $this, 'set_iconset_column' ), 10, 3 );
 
 		// use our own hooks.
 		add_filter( 'downloadlist_taxonomies', array( $this, 'filter_taxonomies' ) );
@@ -255,5 +266,217 @@ class Taxonomies {
 
 		// return resulting array.
 		return $columns;
+	}
+
+	/**
+	 * Do not return generic for assignment to post-types.
+	 *
+	 * @param array<string,mixed> $results The resulting list.
+	 * @param WP_Taxonomy         $taxonomy_object The taxonomy-object.
+	 * @return array<string,mixed>
+	 */
+	public function filter_icon_taxonomy_ajax( array $results, WP_Taxonomy $taxonomy_object ): array {
+		// bail if it is not our own taxonomy.
+		if ( 'dl_icon_set' !== $taxonomy_object->name ) {
+			return $results;
+		}
+
+		// check if the result is a generic iconset.
+		foreach ( $results as $key => $result ) {
+			// get the term.
+			$term = get_term_by( 'name', $result, 'dl_icon_set' );
+
+			// bail if term is not a term object.
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
+
+			// bail if term is not part of the iconsets.
+			if ( ! in_array( get_term_meta( $term->term_id, 'type', true ), Iconsets::get_instance()->get_generic_sets_as_slug_array(), true ) ) {
+				continue;
+			}
+
+			// remove it from results.
+			unset( $results[ $key ] );
+		}
+
+		// return search results.
+		return $results;
+	}
+
+	/**
+	 * Add setting-fields for our own taxonomy for iconsets.
+	 *
+	 * @param WP_Term|string $term The term as object.
+	 * @return void
+	 */
+	public function add_icon_set_fields( WP_Term|string $term ): void {
+		if ( $term instanceof WP_Term ) {
+			// get default setting.
+			$default = get_term_meta( $term->term_id, 'default', true );
+
+			// get width and height for icons of this set.
+			$width  = get_term_meta( $term->term_id, 'width', true );
+			$height = get_term_meta( $term->term_id, 'height', true );
+
+			// get iconset as object.
+			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
+			if ( $iconset_obj instanceof Iconset_Base ) {
+				// output.
+				?>
+				<tr class="form-field">
+					<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label></th>
+					<td>
+						<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1"<?php echo 1 === absint( $default ) ? ' checked="checked"' : ''; ?>>
+					</td>
+				</tr>
+				<?php
+				if ( $iconset_obj->is_generic() ) {
+					?>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set font size for icons of this set', 'download-list-block-with-icons' ); ?></label></th>
+						<td>
+							<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>">
+						</td>
+					</tr>
+					<?php
+				} else {
+					?>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'download-list-block-with-icons' ); ?></label></th>
+						<td>
+							<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>"> x <input type="number" id="downloadlist-iconset-height" name="height" value="<?php echo absint( $height ); ?>">
+						</td>
+					</tr>
+					<?php
+				}
+			} else {
+				?>
+				<tr class="form-field">
+					<td colspan="2">
+						<p><?php echo esc_html__( 'Iconset could not be loaded.', 'download-list-block-with-icons' ); ?></p>
+					</td>
+				</tr>
+				<?php
+			}
+		} else {
+			// output.
+			?>
+			<div class="form-field">
+				<label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label>
+				<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1">
+			</div>
+			<div class="form-field">
+				<label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'download-list-block-with-icons' ); ?></label>
+				<input type="number" id="downloadlist-iconset-width" name="width" value="24"> x <input type="number" id="downloadlist-iconset-height" name="height" value="24">
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Save settings from custom taxonomy-fields.
+	 *
+	 * @param int    $term_id The ID of the term.
+	 * @param int    $tt_id The taxonomy-ID of the term.
+	 * @param string $taxonomy The name of the taxonomy.
+	 * @return void
+	 * @noinspection PhpUnusedParameterInspection
+	 */
+	public function save_icon_set_fields( int $term_id, int $tt_id = 0, string $taxonomy = '' ): void {
+		// bail if this is not our taxonomy.
+		if ( 'dl_icon_set' !== $taxonomy ) {
+			return;
+		}
+
+		// bail if nonce does not match.
+		if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) ) {
+			return;
+		}
+
+		// marker if the term has been changed that should result in new style generation.
+		$generate_styles = false;
+
+		// delete marker for default icon-set.
+		delete_term_meta( $term_id, 'default' );
+
+		// mark the icon-set as default if checkbox is set.
+		if ( ! empty( $_POST['default'] ) ) {
+			Helper::set_iconset_default( $term_id );
+		}
+
+		// get sizes for icons if they have been changed.
+		$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
+		$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
+
+		// save the width.
+		if ( isset( $_POST['width'] ) && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
+			update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
+			$generate_styles = true;
+		}
+
+		// save the height.
+		if ( isset( $_POST['height'] ) && absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
+			update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
+			$generate_styles = true;
+		}
+
+		// run style-generation for this iconset if changes have been saved.
+		if ( $generate_styles ) {
+			Helper::regenerate_icons( $term_id );
+			Helper::generate_css( $term_id );
+		}
+	}
+
+	/**
+	 * Set content for new column in iconset-table.
+	 *
+	 * @param string $content The content for the column.
+	 * @param string $column_name The name of the column.
+	 * @param int    $term_id The ID of the term.
+	 * @return string
+	 */
+	public function set_iconset_column( string $content, string $column_name, int $term_id ): string {
+		// bail if this is not our column.
+		if ( 'downloadlist_iconset_default' !== $column_name ) {
+			return $content;
+		}
+
+		// define link to set iconset as default.
+		$link = add_query_arg(
+			array(
+				'action'  => 'downloadlist_iconset_default',
+				'nonce'   => wp_create_nonce( 'downloadlist-set_iconset-default' ),
+				'term_id' => $term_id,
+			),
+			get_admin_url() . 'admin.php'
+		);
+
+		// define output.
+		$content = '<a href="' . esc_url( $link ) . '" class="dashicons dashicons-no" title="' . esc_attr__( 'Set this as default iconset', 'download-list-block-with-icons' ) . '">&nbsp;</a>';
+		if ( get_term_meta( $term_id, 'default', true ) ) {
+			$content = '<span class="dashicons dashicons-yes" title="' . esc_attr__( 'This is the default iconset', 'download-list-block-with-icons' ) . '"></span>';
+		}
+
+		// return the resulting content.
+		return $content;
+	}
+
+	/**
+	 * Re-order table for icons with custom columns.
+	 *
+	 * @param array<string,string> $columns List of columns.
+	 * @return array<string,string>
+	 */
+	public function set_icons_columns( array $columns ): array {
+		$new_columns                           = array();
+		$new_columns['cb']                     = $columns['cb'];
+		$new_columns['title']                  = $columns['title'];
+		$new_columns['downloadlist_file_type'] = __( 'File type', 'download-list-block-with-icons' );
+		$new_columns['taxonomy-dl_icon_set']   = $columns['taxonomy-dl_icon_set'];
+		$new_columns['date']                   = $columns['date'];
+
+		// return resulting array.
+		return $new_columns;
 	}
 }

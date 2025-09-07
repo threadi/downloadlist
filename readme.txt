@@ -89,12 +89,14 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Added link to support forum in plugin list
+- Added possibility to categorize media files in lists which could be used for listing of files in frontend
+- Added option to show file dates for each file
+- Added option to sort the list by file dates
+- Added option to show a label for the file format for each file
 - Added new hooks
-- Added help box in icon edit screen
-- Added check with PHPStan to reduce potential PHP-errors
-- Optimization on code for better speed and to prevent potential errors
+- Added hint which page and view in backend is added or extended by this plugin
+- Using composer autoloader for each PHP-object
 - Updated dependencies
-- Fixed formatting in plugin list
+- Fixed missing translations for bulk message editing of icons
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

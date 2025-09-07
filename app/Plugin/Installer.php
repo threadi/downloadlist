@@ -8,8 +8,9 @@
 namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
-
 defined( 'ABSPATH' ) || exit;
+
+use DownloadListWithIcons\Icons\Icons;
 
 /**
  * Object to handle installer-tasks.
@@ -57,7 +58,7 @@ class Installer {
 		}
 
 		// initialize our own post-type and taxonomies during installation.
-		Init::get_instance()->register_posttype();
+		Icons::get_instance()->register();
 		Taxonomies::get_instance()->init();
 
 		// add generic iconset.
