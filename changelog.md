@@ -12,7 +12,7 @@
 
 ### Changed
 
-- Using composer autoloader for each object
+- Using composer autoloader for each PHP-object
 - Updated dependencies
 
 ### Fixed

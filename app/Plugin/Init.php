@@ -409,6 +409,11 @@ class Init {
 					// get the meta-data like JS (like human-readable filesize).
 					$file_meta = wp_prepare_attachment_for_js( $file['id'] );
 
+					// bail if this is not an array.
+					if ( ! is_array( $file_meta ) ) {
+						continue;
+					}
+
 					// add the file data for sorting.
 					$attributes['files'][ $index ]['title'] = $file_meta['title'];
 					$attributes['files'][ $index ]['date']  = $file_meta['date'];
@@ -522,7 +527,7 @@ class Init {
 			// get the file date, if enabled.
 			$file_date = '';
 			if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
-				$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $attachment->post_date ) );
+				$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) strtotime( $attachment->post_date ) );
 			}
 
 			// get the file format label, if enabled.
