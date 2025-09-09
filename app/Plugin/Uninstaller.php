@@ -10,6 +10,7 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
 use WP_Post;
 use WP_Query;
 

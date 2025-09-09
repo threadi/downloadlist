@@ -13,7 +13,8 @@
 
 ### Changed
 
-- Using composer autoloader for each PHP-object
+- Using composer autoloader for each PHP-object for better performance
+- Using transient composer package for internal actions and admin notices
 - Updated dependencies
 
 ### Fixed

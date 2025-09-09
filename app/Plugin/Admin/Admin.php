@@ -10,9 +10,9 @@ namespace DownloadListWithIcons\Plugin\Admin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
 use DownloadListWithIcons\Plugin\Helper;
 use DownloadListWithIcons\Plugin\Templates;
-use DownloadListWithIcons\Plugin\Transients;
 
 /**
  * Initialize the WP admin support.
@@ -59,9 +59,6 @@ class Admin {
 		// initialize the template support in backend.
 		Templates::get_instance()->init();
 
-		// initialize the transient support in backend.
-		Transients::get_instance()->init();
-
 		// initialize help system.
 		Help_System::get_instance()->init();
 
@@ -71,6 +68,7 @@ class Admin {
 		add_filter( 'plugin_row_meta', array( $this, 'add_row_meta_links' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'check_php' ) );
 		add_filter( 'admin_footer_text', array( $this, 'show_plugin_hint_in_footer' ) );
+		add_action( 'init', array( $this, 'configure_transients' ) );
 	}
 
 	/**
@@ -193,7 +191,7 @@ class Admin {
 	}
 
 	/**
-	 * Check if website is using a valid SSL and show warning if not.
+	 * Check if website is using an old PHP version.
 	 *
 	 * @return void
 	 */
@@ -214,7 +212,7 @@ class Admin {
 		}
 
 		// show hint for necessary configuration to restrict access to application files.
-		$transient_obj = Transients::get_instance()->add();
+		$transient_obj = $transients_obj->add();
 		$transient_obj->set_type( 'error' );
 		$transient_obj->set_name( 'downloadlist_php_hint' );
 		$transient_obj->set_dismissible_days( 90 );
@@ -253,5 +251,21 @@ class Admin {
 		// show hint for our plugin.
 		/* translators: %1$s will be replaced by the plugin name. */
 		return $content . ' ' . sprintf( __( 'This page is provided by the plugin %1$s.', 'download-list-block-with-icons' ), '<em>' . Helper::get_plugin_name() . '</em>' );
+	}
+
+	/**
+	 * Set base configuration for each transient.
+	 *
+	 * @return void
+	 */
+	public function configure_transients(): void {
+		$transients_obj = Transients::get_instance();
+		$transients_obj->set_slug( 'pi' );
+		$transients_obj->set_url( Helper::get_plugin_url() . '/app/Dependencies/easyTransientsForWordPress/' );
+		$transients_obj->set_path( Helper::get_plugin_path() . '/app/Dependencies/easyTransientsForWordPress/' );
+		$transients_obj->set_capability( 'manage_options' );
+		$transients_obj->set_template( 'grouped.php' );
+		$transients_obj->set_display_method( 'grouped' );
+		$transients_obj->init();
 	}
 }

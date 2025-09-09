@@ -1,6 +1,7 @@
 # Dependency directories
 node_modules/
 vendor/
+/app/Dependencies
 
 # Output of 'npm pack'
 *.tgz

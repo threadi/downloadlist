@@ -10,6 +10,8 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
+
 /**
  * Handler for templates.
  */
