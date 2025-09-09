@@ -91,4 +91,4 @@ Hint: this check runs against the VIP-GO-platform which is not our target for th
 
 ### Generate documentation
 
-`vendor/bin/wp-documentor parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_`
+`vendor/bin/wp-documentor parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php`

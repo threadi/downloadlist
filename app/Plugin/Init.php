@@ -62,6 +62,9 @@ class Init {
 	 * @return void
 	 */
 	public function init(): void {
+		// initialize the settings.
+		Settings::get_instance()->init();
+
 		// initialize the taxonomies.
 		Taxonomies::get_instance()->init();
 
@@ -119,31 +122,31 @@ class Init {
 					),
 					'hideFileSize'           => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_hide_file_sizes' ) ),
 					),
 					'hideDescription'        => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_hide_description' ) ),
 					),
 					'hideIcon'               => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_hide_icons' ) ),
 					),
 					'hideLink'               => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_link_text' ) ),
 					),
 					'linkTarget'             => array(
 						'type'    => 'string',
-						'default' => 'direct',
+						'default' => get_option( 'downloadlist_link_target' ),
 					),
 					'robots'                 => array(
 						'type'    => 'string',
-						'default' => 'follow',
+						'default' => get_option( 'downloadlist_robots' ),
 					),
 					'iconset'                => array(
 						'type'    => 'string',
-						'default' => '',
+						'default' => get_option( 'downloadlist_iconset' ),
 					),
 					'file_types_set'         => array(
 						'type'    => 'boolean',
@@ -155,27 +158,27 @@ class Init {
 					),
 					'doNotForceDownload'     => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_link_no_forced_download' ) ),
 					),
 					'showDownloadButton'     => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_show_download_button' ) ),
 					),
 					'downloadLinkTarget'     => array(
 						'type'    => 'string',
-						'default' => '',
+						'default' => get_option( 'downloadlist_link_browser_target' ),
 					),
 					'downloadLinkTargetName' => array(
 						'type'    => 'string',
-						'default' => '',
+						'default' => get_option( 'downloadlist_download_button_browser_target_own' ),
 					),
 					'linkBrowserTarget'      => array(
 						'type'    => 'string',
-						'default' => '',
+						'default' => get_option( 'downloadlist_link_browser_target' ),
 					),
 					'linkBrowserTargetName'  => array(
 						'type'    => 'string',
-						'default' => '',
+						'default' => get_option( 'downloadlist_link_browser_target_own' ),
 					),
 					'list'                   => array(
 						'type'    => 'integer',
@@ -191,11 +194,11 @@ class Init {
 					),
 					'showFileDates'          => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_show_file_dates' ) ),
 					),
 					'showFileFormatLabel'    => array(
 						'type'    => 'boolean',
-						'default' => false,
+						'default' => 1 === absint( get_option( 'downloadlist_show_file_format_labels' ) ),
 					),
 				),
 			)

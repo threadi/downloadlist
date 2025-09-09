@@ -166,10 +166,19 @@ class Uninstaller {
 		// delete options.
 		$options = array(
 			'downloadlistVersion',
+			'downloadlist_inheriting_count',
+			'downloadlist_inheriting_max',
+			'downloadlist_inheriting_status',
+			'downloadlist_inheriting_running',
 			DL_TRANSIENT_LIST,
 		);
 		foreach ( $options as $option ) {
 			delete_option( $option );
 		}
+
+		// enable the settings.
+		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+		// and remove them.
+		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->delete_settings();
 	}
 }

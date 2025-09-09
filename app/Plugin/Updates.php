@@ -89,7 +89,11 @@ class Updates {
 			// run this on update from version before 3.4.0.
 			if ( version_compare( $db_plugin_version, '3.4.0', '<' ) ) {
 				$this->version340();
-				delete_option( 'downloadlistVersion' );
+			}
+
+			// run this on update from version before 4.0.0.
+			if ( version_compare( $db_plugin_version, '4.0.0', '<' ) ) {
+				$this->version400();
 			}
 
 			// save new plugin-version in DB.
@@ -130,5 +134,18 @@ class Updates {
 			// update the entry.
 			update_post_meta( absint( $post_id ), 'generic-downloadlist', 1 );
 		}
+
+		// remove deprecated setting.
+		delete_option( 'downloadlistVersion' );
+	}
+
+	/**
+	 * Run on update to 4.0.0 or newer.
+	 *
+	 * @return void
+	 */
+	private function version400(): void {
+		// install settings.
+		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
 	}
 }

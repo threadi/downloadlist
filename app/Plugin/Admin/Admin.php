@@ -11,7 +11,9 @@ namespace DownloadListWithIcons\Plugin\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
+use DownloadListWithIcons\Iconsets\Iconsets;
 use DownloadListWithIcons\Plugin\Helper;
+use DownloadListWithIcons\Plugin\Settings;
 use DownloadListWithIcons\Plugin\Templates;
 
 /**
@@ -69,6 +71,7 @@ class Admin {
 		add_action( 'admin_init', array( $this, 'check_php' ) );
 		add_filter( 'admin_footer_text', array( $this, 'show_plugin_hint_in_footer' ) );
 		add_action( 'init', array( $this, 'configure_transients' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_dialog_scripts' ) );
 	}
 
 	/**
@@ -105,12 +108,16 @@ class Admin {
 			'downloadlist-admin',
 			'downloadlistAdminJsVars',
 			array(
-				'ajax_url'          => admin_url( 'admin-ajax.php' ),
-				'dismiss_nonce'     => wp_create_nonce( 'downloadlist-dismiss-nonce' ),
-				'title'             => __( 'Insert image', 'download-list-block-with-icons' ),
-				'lbl_button'        => __( 'Use this image', 'download-list-block-with-icons' ),
-				'lbl_upload_button' => __( 'Upload image', 'download-list-block-with-icons' ),
-				'title_rate_us'     => __( 'Rate this plugin', 'download-list-block-with-icons' ),
+				'ajax_url'               => admin_url( 'admin-ajax.php' ),
+				'dismiss_nonce'          => wp_create_nonce( 'downloadlist-dismiss-nonce' ),
+				'inherit_settings_nonce' => wp_create_nonce( 'downloadlist-inherit-settings' ),
+				'get_inherit_info_nonce' => wp_create_nonce( 'downloadlist-inherit-info' ),
+				'title'                  => __( 'Insert image', 'download-list-block-with-icons' ),
+				'lbl_button'             => __( 'Use this image', 'download-list-block-with-icons' ),
+				'lbl_upload_button'      => __( 'Upload image', 'download-list-block-with-icons' ),
+				'title_rate_us'          => __( 'Rate this plugin', 'download-list-block-with-icons' ),
+				'title_inherit_progress' => __( 'Please wait', 'download-list-block-with-icons' ),
+				'info_timeout'           => 200,
 			)
 		);
 
@@ -119,7 +126,7 @@ class Admin {
 			'downloadlist-list-editor-script',
 			'window.downloadlist_config = ' . wp_json_encode(
 				array(
-					'iconsets_url' => trailingslashit( get_admin_url() ) . 'edit-tags.php?taxonomy=dl_icon_set&post_type=dl_icons',
+					'iconsets_url' => Iconsets::get_instance()->get_edit_link(),
 					'list_url'     => trailingslashit( get_admin_url() ) . 'edit-tags.php?taxonomy=dl_icon_lists&post_type=attachment',
 					'support_url'  => Helper::get_support_url(),
 				)
@@ -135,6 +142,8 @@ class Admin {
 	 * @return array<int,string>
 	 */
 	public function add_setting_link( array $links ): array {
+		$links[] = '<a href="' . esc_url( Settings::get_instance()->get_url() ) . '">' . __( 'Settings', 'download-list-block-with-icons' ) . '</a>';
+
 		// create link to custom icon list.
 		$url = add_query_arg(
 			array(
@@ -243,8 +252,11 @@ class Admin {
 		// get requested post type.
 		$post_type = filter_input( INPUT_GET, 'post_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
+		// get requested page.
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
 		// bail if this is not the listing or our page.
-		if ( 'dl_icon_lists' !== $taxonomy && 'dl_icons' !== $post_type ) {
+		if ( 'dl_icon_lists' !== $taxonomy && 'dl_icons' !== $post_type && 'downloadlist_settings' !== $page ) {
 			return $content;
 		}
 
@@ -267,5 +279,46 @@ class Admin {
 		$transients_obj->set_template( 'grouped.php' );
 		$transients_obj->set_display_method( 'grouped' );
 		$transients_obj->init();
+	}
+
+	/**
+	 * Add Easy Dialog for WP scripts in wp-admin.
+	 */
+	public function add_dialog_scripts(): void {
+		// define paths: adjust if necessary.
+		$path = trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . 'vendor/threadi/easy-dialog-for-wordpress/';
+		$url  = trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'vendor/threadi/easy-dialog-for-wordpress/';
+
+		// bail if path does not exist.
+		if ( ! file_exists( $path ) ) {
+			return;
+		}
+
+		// embed the dialog-components JS-script.
+		$script_asset_path = $path . 'build/index.asset.php';
+
+		// bail if file does not exist.
+		if ( ! file_exists( $script_asset_path ) ) {
+			return;
+		}
+
+		$script_asset = require $script_asset_path;
+		wp_enqueue_script(
+			'easy-dialog-for-wordpress',
+			$url . 'build/index.js',
+			$script_asset['dependencies'],
+			$script_asset['version'],
+			true
+		);
+
+		// embed the dialog-components CSS-script.
+		$admin_css      = $url . 'build/style-index.css';
+		$admin_css_path = $path . 'build/style-index.css';
+		wp_enqueue_style(
+			'easy-dialog-for-wordpress',
+			$admin_css,
+			array( 'wp-components' ),
+			(string) filemtime( $admin_css_path )
+		);
 	}
 }
