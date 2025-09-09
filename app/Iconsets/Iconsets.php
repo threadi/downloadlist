@@ -305,4 +305,19 @@ class Iconsets {
 			)
 		);
 	}
+
+	/**
+	 * Return the edit link for all iconsets.
+	 *
+	 * @return string
+	 */
+	public function get_edit_link(): string {
+		return add_query_arg(
+			array(
+				'taxonomy'  => 'dl_icon_set',
+				'post_type' => 'dl_icons',
+			),
+			get_admin_url() . 'edit-tags.php'
+		);
+	}
 }

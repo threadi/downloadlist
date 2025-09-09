@@ -68,8 +68,8 @@ class Help_System {
 	 * @return void
 	 */
 	public function add_help( WP_Screen $screen ): void {
-		// bail if we are not in our cpt.
-		if ( 'dl_icons' !== $screen->post_type ) {
+		// bail if we are not in our cpt and not in our settings.
+		if ( 'dl_icons' !== $screen->post_type && 'settings_page_downloadlist_settings' !== $screen->base ) {
 			return;
 		}
 

@@ -11,6 +11,7 @@ namespace DownloadListWithIcons\Plugin;
 defined( 'ABSPATH' ) || exit;
 
 use DownloadListWithIcons\Iconsets\Iconsets;
+use WP_Error;
 use WP_Image_Editor;
 use WP_Post;
 use WP_Query;
@@ -712,5 +713,35 @@ class Helper {
 			return $plugin_data['Name'];
 		}
 		return '';
+	}
+
+	/**
+	 * Create JSON from given array.
+	 *
+	 * @param array<string|int,mixed>|WP_Error $source The source array.
+	 * @param int                              $flag Flags to use for this JSON.
+	 *
+	 * @return string
+	 */
+	public static function get_json( array|WP_Error $source, int $flag = 0 ): string {
+		// create JSON.
+		$json = wp_json_encode( $source, $flag );
+
+		// bail if creating the JSON failed.
+		if ( ! $json ) {
+			return '';
+		}
+
+		// return resulting JSON-string.
+		return $json;
+	}
+
+	/**
+	 * Check if WP CLI has been called.
+	 *
+	 * @return bool
+	 */
+	public static function is_cli(): bool {
+		return defined( 'WP_CLI' ) && WP_CLI;
 	}
 }

@@ -8,7 +8,6 @@
 namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -53,5 +52,17 @@ class Cli {
 
 		// return ok-message.
 		\WP_CLI::success( __( 'Icons have been generated.', 'download-list-block-with-icons' ) );
+	}
+
+	/**
+	 * Inherit settings to all download list blocks.
+	 *
+	 * @return void
+	 */
+	public function inherit_settings(): void {
+		Settings::get_instance()->inherit_settings_to_blocks();
+
+		// return ok-message.
+		\WP_CLI::success( __( 'Settings have been saved on all download list blocks.', 'download-list-block-with-icons' ) );
 	}
 }

@@ -57,6 +57,9 @@ class Installer {
 			add_option( 'downloadlistVersion', DL_VERSION, '', true );
 		}
 
+		// install settings.
+		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+
 		// initialize our own post-type and taxonomies during installation.
 		Icons::get_instance()->register();
 		Taxonomies::get_instance()->init();

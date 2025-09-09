@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-	$('body.post-type-dl_icons h1').each(function() {
+	$('body.post-type-dl_icons h1, body.settings_page_downloadlist_settings h1').each(function() {
 		let button = document.createElement('a');
 		button.className = 'review-hint-button page-title-action';
 		button.href = 'https://wordpress.org/plugins/download-list-block-with-icons/#reviews';
@@ -60,3 +60,85 @@ jQuery(document).ready(function($) {
 		}
 	);
 });
+
+/**
+ * Inherit the settings to all blocks via AJAX.
+ */
+function downloadlist_inherit_settings() {
+	// send request.
+	jQuery.ajax({
+		url: downloadlistAdminJsVars.ajax_url,
+		type: 'POST',
+		data: {
+			'action': 'downloadlist_inherit_settings',
+			'nonce': downloadlistAdminJsVars.inherit_settings_nonce
+		},
+		beforeSend: function() {
+			// show progress.
+			let dialog_config = {
+				detail: {
+					className: 'eml',
+					title: downloadlistAdminJsVars.title_inherit_progress,
+					progressbar: {
+						active: true,
+						progress: 0,
+						id: 'progress',
+						label_id: 'progress_status'
+					},
+				}
+			}
+			downloadlist_create_dialog( dialog_config );
+
+			// get info about progress.
+			setTimeout(function() { downloadlist_inherit_settings_get_info() }, downloadlistAdminJsVars.info_timeout);
+		}
+	});
+}
+
+/**
+ * Get info about inheriting progress.
+ */
+function downloadlist_inherit_settings_get_info() {
+	jQuery.ajax( {
+		type: "POST",
+		url: downloadlistAdminJsVars.ajax_url,
+		data: {
+			'action': 'downloadlist_inherit_settings_get_info',
+			'nonce': downloadlistAdminJsVars.get_inherit_info_nonce
+		},
+		success: function (data) {
+			let count = parseInt( data[0] );
+			let max = parseInt( data[1] );
+			let running = parseInt( data[2] );
+			let status = data[3];
+			let dialog_config = data[4];
+
+			// show progress.
+			jQuery( '#progress' ).attr( 'value', (count / max) * 100 );
+			jQuery( '#progress_status' ).html( status );
+
+			/**
+			 * If import is still running, get next info in xy ms.
+			 * If import is not running and error occurred, show the error.
+			 * If import is not running and no error occurred, show ok-message.
+			 */
+			if ( running > 0 ) {
+				setTimeout( function () {
+					downloadlist_inherit_settings_get_info()
+				}, downloadlistAdminJsVars.info_timeout );
+			}
+			else {
+				downloadlist_create_dialog( dialog_config );
+			}
+		}
+	} )
+}
+
+/**
+ * Helper to create a new dialog with given config.
+ *
+ * @param config
+ */
+function downloadlist_create_dialog( config ) {
+	document.body.dispatchEvent(new CustomEvent("easy-dialog-for-wordpress", config));
+}

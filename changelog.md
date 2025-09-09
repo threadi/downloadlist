@@ -10,10 +10,12 @@
 - Added option to show a label for the file format for each file
 - Added new hooks
 - Added hint which page and view in backend is added or extended by this plugin
+- Added global settings for our block which can also be inherited to all blocks
 
 ### Changed
 
-- Using composer autoloader for each PHP-object
+- Using composer autoloader for each PHP-object for better performance
+- Using transient composer package for internal actions and admin notices
 - Updated dependencies
 
 ### Fixed

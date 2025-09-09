@@ -36,3 +36,17 @@ body .review-hint-button:after {
 body.post-type-dl_icons .mine { display: none }
 
 body.post-type-dl_icons h1 { display: inline-block }
+
+body.settings_page_downloadlist_settings .nav-tab-help {
+	background-color: #fca15b;
+	float: right;
+	padding-bottom: 9px;
+}
+
+body.settings_page_downloadlist_settings .nav-tab-help:before {
+	font-size: 30px;
+	position: relative;
+	top: -14px;
+	left: -5px;
+	z-index: 1;
+}

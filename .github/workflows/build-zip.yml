@@ -22,6 +22,10 @@ jobs:
           composer update
           npm i
           npm run build
+          cd vendor/threadi/easy-dialog-for-wordpress/
+          npm i
+          npm run build
+          cd ../../../
           mkdir -p css/fontawesome/
           mkdir -p css/webfonts/
           cp node_modules/@fortawesome/fontawesome-free/css/all.css css/fontawesome/fontawesome6.css
@@ -72,6 +76,7 @@ jobs:
           zip -rq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/* -x "*/.git/*" "*/.github/*" "*/blocks/*/src/*" "*/docs/*" "*/phpcs.xml" "*/composer.json" "*/composer.lock" "*/package.json" "*/package-lock.json" "*/ruleset.xml" "*/.gitignore" "*/vendor/*" "*/node_modules/*" "/.editorconfig" "*/.gitkeep"
           zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/autoload.php
           zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/composer/*
+          zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/threadi/*/build/*
           mv download-list-block-with-icons ${{ github.event.repository.name }}
           cp ${{ github.event.repository.name }}_${{ github.ref_name }}.zip ${{ github.event.repository.name }}/
 

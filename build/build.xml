@@ -39,7 +39,11 @@
 	<!-- build the Blocks via npm and add font libs -->
 	<target name="npm-build" depends="npm-install">
 		<delete file="${log.dir}/npm-build.txt"/>
+		<delete file="${log.dir}/npm-build2.txt"/>
 		<exec dir="${src.dir}" failonerror="true" executable="${npm.path}" output="${log.dir}/npm-build.txt">
+			<arg line="run build"/>
+		</exec>
+		<exec dir="${src.dir}/vendor/threadi/easy-dialog-for-wordpress/" failonerror="true" executable="${npm.path}" output="${log.dir}/npm-build2.txt">
 			<arg line="run build"/>
 		</exec>
 		<copy file="${src.dir}/node_modules/@fortawesome/fontawesome-free/css/all.css" tofile="${src.dir}/css/fontawesome/fontawesome6.css" />
@@ -86,7 +90,7 @@
 	<!-- generate documentation -->
 	<target name="generate-documentation" depends="composer-install">
 		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/wp-documentor">
-			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn  --exclude=vendor  --exclude=src --output=docs/hooks.md --prefix=downloadlist_"/>
+			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn --exclude=vendor --exclude=src --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php"/>
 		</exec>
 	</target>
 
@@ -97,11 +101,27 @@
 		</exec>
 	</target>
 
+	<!-- generate autoloader for release -->
+	<target name="autoloader-generation">
+		<delete file="${log.dir}/autoloader-generation.txt"/>
+		<exec dir="${src.dir}" failonerror="true" executable="${composer.path}" output="${log.dir}/autoloader-generation.txt">
+			<arg line="dump-autoload -oa --no-dev"/>
+		</exec>
+	</target>
+
+	<!-- generate autoloader for dev -->
+	<target name="autoloader-generation-dev">
+		<delete file="${log.dir}/autoloader-generation-dev.txt"/>
+		<exec dir="${src.dir}" failonerror="true" executable="${composer.path}" output="${log.dir}/autoloader-generation-dev.txt">
+			<arg line="dump-autoload -oa"/>
+		</exec>
+	</target>
+
 	<!-- init project -->
-	<target name="init" description="initialize the project" depends="npm-build" />
+	<target name="init" description="initialize the project" depends="autoloader-generation-dev,npm-build" />
 
 	<!-- create release-zip -->
-	<target name="build" description="builds a new release" depends="init,npm-build,check-wcs,generate-documentation,check-phpstan,setVersionNumber">
+	<target name="build" description="builds a new release" depends="init,npm-build,check-wcs,generate-documentation,autoloader-generation,check-phpstan,setVersionNumber">
 		<delete file="${build.dir}/${plugin.slug}_${plugin.version}.zip"/>
 		<zip destfile="${build.dir}/${plugin.slug}_${plugin.version}.zip">
 			<zipfileset dir="${src.dir}/admin" prefix="${plugin.slug}/admin" />
@@ -115,6 +135,7 @@
 			<zipfileset dir="${src.dir}/templates" prefix="${plugin.slug}/templates" />
 			<zipfileset dir="${src.dir}/vendor" includes="autoload.php" fullpath="${plugin.slug}/vendor/autoload.php" />
 			<zipfileset dir="${src.dir}/vendor/composer" prefix="${plugin.slug}/vendor/composer" />
+			<zipfileset dir="${src.dir}/vendor/threadi/easy-dialog-for-wordpress/build/" prefix="${plugin.slug}/vendor/threadi/easy-dialog-for-wordpress/build/" />
 			<zipfileset dir="${src.dir}" includes="block.json,wpml-config.xml" prefix="${plugin.slug}" />
 			<zipfileset dir="${src.dir}" includes="${plugin.slug}-release.php" fullpath="${plugin.slug}/${plugin.slug}.php" />
 			<zipfileset dir="${src.dir}" includes="readme-release.txt" fullpath="${plugin.slug}/readme.txt" />
