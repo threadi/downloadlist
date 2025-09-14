@@ -19,17 +19,18 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Choose files from media library
 - Output chosen files as list with file-type-specific icon, download-link, title, size and description from media library
 - Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons)
-- Drag & Drop sorting for the list
+- Drag & Drop sorting
 - Remove files from list
+- Optionally assign files to download lists and assign the download lists to the block
 
 = Supports =
 
-- Display of file size, description and icon can be switched on and off
+- Display of file size, file format label, description and icon can be switched on and off
 - Choose what link should be published: direct link or attachment page
 - Choose an iconset for each Block; manage custom icons in unlimited lists
 - Usage of [multiple hooks](https://github.com/threadi/downloadlist/tree/master/docs/hooks.md) to change or add icons to shipped iconsets
-- Sort list by title or filesize with one click
-- The Block can be used in widgets
+- Sort list by title, filesize or date with one click
+- The Block can also be used in Block widgets
 - Set colors, typography and borders for each Block
 - Use [External files in media library](https://wordpress.org/plugins/external-files-in-media-library/) if you want to link to external files
 
@@ -46,10 +47,6 @@ The development repository is on [GitHub](https://github.com/threadi/downloadlis
 1. Upload "download-list-block-with-icons" to the "/wp-content/plugins/" directory.
 2. Activate the plugin through the "Plugins" menu in WordPress.
 3. Add the Download List Block to the post or page where you want to show the downloadlist. Choose the file(s) you wish to present.
-
-== Upgrade Notice ==
-
-There is nothing else to consider when updating this plugin.
 
 == Frequently Asked Questions ==
 
@@ -95,7 +92,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added option to show a label for the file format for each file
 - Added new hooks
 - Added hint which page and view in backend is added or extended by this plugin
-- Using composer autoloader for each PHP-object
+- Added global settings for our block which can also be inherited to all blocks
+- Using composer autoloader for each PHP-object for better performance
+- Using transient composer package for internal actions and admin notices
 - Updated dependencies
 - Fixed missing translations for bulk message editing of icons
 

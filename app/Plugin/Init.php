@@ -238,6 +238,11 @@ class Init {
 			return $block_content;
 		}
 
+		// use default iconset if none is set.
+		if ( empty( $block['attrs']['iconset'] ) ) {
+			$block['attrs']['iconset'] = get_option( 'downloadlist_iconset' );
+		}
+
 		// bail if no iconset is configured.
 		if ( empty( $block['attrs']['iconset'] ) ) {
 			return $block_content;
