@@ -10,10 +10,12 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Export;
 use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Button;
 use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Checkbox;
 use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Select;
 use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Text;
+use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Import;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use WP_Query;
 
@@ -102,6 +104,40 @@ class Settings {
 		$settings_obj->set_title( __( 'Settings for Download List Block with Icons', 'download-list-block-with-icons' ) );
 		$settings_obj->set_menu_slug( $this->get_menu_slug() );
 		$settings_obj->set_menu_parent_slug( $this->get_php_page() );
+		$settings_obj->set_translations(array(
+			'title_settings_import_file_missing' => __( 'Required file missing', 'download-list-block-with-icons' ),
+			'text_settings_import_file_missing'  => __( 'Please choose a JSON-file with settings to import.', 'download-list-block-with-icons' ),
+			'lbl_ok'                             => __( 'OK', 'download-list-block-with-icons' ),
+			'lbl_cancel' => __( 'Cancel', 'download-list-block-with-icons' ),
+			'import_title' => __( 'Import', 'download-list-block-with-icons' ),
+			'dialog_import_title' => __( 'Import plugin settings', 'download-list-block-with-icons' ),
+			'dialog_import_text' => __( 'Click on the button below to chose your JSON-file with the settings.', 'download-list-block-with-icons' ),
+			'dialog_import_button' => __( 'Import now', 'download-list-block-with-icons' ),
+			'dialog_import_error_title' => __( 'Error during import', 'download-list-block-with-icons' ),
+			'dialog_import_error_text' => __( 'The file could not be imported!', 'download-list-block-with-icons' ),
+			'dialog_import_error_no_file' => __( 'No file was uploaded.', 'download-list-block-with-icons' ),
+			'dialog_import_error_no_size' => __( 'The uploaded file is no size.', 'download-list-block-with-icons' ),
+			'dialog_import_error_no_json' => __( 'The uploaded file is not a valid JSON-file.', 'download-list-block-with-icons' ),
+			'dialog_import_error_no_json_ext' => __( 'The uploaded file does not have the file extension <i>.json</i>.', 'download-list-block-with-icons' ),
+			'dialog_import_error_not_saved' => __( 'The uploaded file could not be saved. Contact your hoster about this problem.', 'download-list-block-with-icons' ),
+			'dialog_import_error_not_our_json' => __( 'The uploaded file is not a valid JSON-file with settings for this plugin.', 'download-list-block-with-icons' ),
+			'dialog_import_success_title' => __( 'Settings have been imported', 'download-list-block-with-icons' ),
+			'dialog_import_success_text' => __( 'Import has been run successfully.', 'download-list-block-with-icons' ),
+			'dialog_import_success_text_2' => __( 'The new settings are now active. Click on the button below to reload the page and see the settings.', 'download-list-block-with-icons' ),
+			'export_title' => __( 'Export', 'download-list-block-with-icons' ),
+			'dialog_export_title' => __( 'Export plugin settings', 'download-list-block-with-icons' ),
+			'dialog_export_text' => __( 'Click on the button below to export the actual settings.', 'download-list-block-with-icons' ),
+			'dialog_export_text_2' => __( 'You can import this JSON-file in other projects using this WordPress plugin or theme.', 'download-list-block-with-icons' ),
+			'dialog_export_button' => __( 'Export now', 'download-list-block-with-icons' ),
+			'table_options' => __( 'Options', 'download-list-block-with-icons' ),
+			'table_entry' => __( 'Entry', 'download-list-block-with-icons' ),
+			'table_no_entries' => __( 'No entries found.', 'download-list-block-with-icons' ),
+			'plugin_settings_title' => __( 'Settings', 'download-list-block-with-icons' ),
+			'file_add_file' => __( 'Add file', 'download-list-block-with-icons' ),
+			'file_choose_file' => __( 'Choose file', 'download-list-block-with-icons' ),
+			'file_choose_image' => __( 'Upload or choose image', 'download-list-block-with-icons' ),
+			'drag_n_drop' => __( 'Hold to drag & drop', 'download-list-block-with-icons' )
+		));
 
 		/**
 		 * Add the settings page.
@@ -113,15 +149,18 @@ class Settings {
 		 */
 		// the general tab.
 		$general_tab = $settings_page->add_tab( 'downloadlist_general', 10 );
-		$general_tab->set_name( 'downloadlist_general' );
 		$general_tab->set_title( __( 'General Settings', 'download-list-block-with-icons' ) );
 		$settings_page->set_default_tab( $general_tab );
 
 		// the task tab.
 		$tasks_tab = $settings_page->add_tab( 'downloadlist_tasks', 20 );
-		$tasks_tab->set_name( 'downloadlist_tasks' );
 		$tasks_tab->set_title( __( 'Tasks', 'download-list-block-with-icons' ) );
 		$tasks_tab->set_hide_save( true );
+
+		// the import/export tab.
+		$import_export_tab = $settings_page->add_tab( 'downloadlist_import_export', 30 );
+		$import_export_tab->set_title( __( 'Import / Export', 'download-list-block-with-icons' ) );
+		$import_export_tab->set_hide_save( true );
 
 		// the helper tab.
 		$helper_tab = $settings_page->add_tab( 'downloadlist_helper', 70 );
@@ -404,6 +443,15 @@ class Settings {
 		$field->add_data( 'dialog', Helper::get_json( $dialog ) );
 		$field->add_class( 'easy-dialog-for-wordpress' );
 		$download_button_setting->set_field( $field );
+
+		// add the import/export section in advanced.
+		$advanced_tab_importexport = $import_export_tab->add_section( 'settings_section_advanced_importexport', 20 );
+		$advanced_tab_importexport->set_title( __( 'Export & Import settings', 'download-list-block-with-icons' ) );
+		$advanced_tab_importexport->set_setting( $settings_obj );
+
+		// add import/export settings.
+		Import::get_instance()->add_settings( $settings_obj, $advanced_tab_importexport );
+		Export::get_instance()->add_settings( $settings_obj, $advanced_tab_importexport );
 
 		// initialize this settings object.
 		$settings_obj->init();

@@ -11,6 +11,7 @@
 - Added new hooks
 - Added hint which page and view in backend is added or extended by this plugin
 - Added global settings for our block which can also be inherited to all blocks
+- Added export and import of all settings
 
 ### Changed
 

@@ -63,7 +63,7 @@
 	"require": {
 		"php": "^8.1",
 		"threadi/easy-dialog-for-wordpress": "^1.0.1",
-		"threadi/easy-settings-for-wordpress": "^1.12.5",
+		"threadi/easy-settings-for-wordpress": "^1.13.0",
 		"threadi/easy-transients-for-wordpress": "^1.2.0"
 	}
 }

@@ -22,6 +22,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Drag & Drop sorting
 - Remove files from list
 - Optionally assign files to download lists and assign the download lists to the block
+- Use global settings for all download lists and export/import them to other projects
 
 = Supports =
 
