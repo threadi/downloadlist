@@ -146,6 +146,20 @@ class Icons {
 			delete_post_meta( $post_id, 'file_type' );
 		}
 
+		// save given unicode.
+		if ( ! empty( $_POST['unicode'] ) ) {
+			// get the unicode from request.
+			$unicode = sanitize_text_field( wp_unslash( $_POST['unicode'] ) );
+
+			// add slash before the code.
+			$unicode = '\\\\' . $unicode;
+
+			// save it.
+			update_post_meta( $post_id, 'unicode', $unicode );
+		} elseif ( 'draft' !== get_post_status( $post_id ) ) {
+			delete_post_meta( $post_id, 'unicode' );
+		}
+
 		// get iconset.
 		$iconset_terms = wp_get_object_terms( $post_id, 'dl_icon_set' );
 		if ( is_array( $iconset_terms ) && ! empty( $iconset_terms ) ) {
@@ -222,6 +236,9 @@ class Icons {
 		// get file-type.
 		$file_type = get_post_meta( $post->ID, 'file_type', true );
 
+		// get unicode.
+		$unicode = get_post_meta( $post->ID, 'unicode', true );
+
 		// output.
 		?>
 		<div class="form-field">
@@ -257,6 +274,10 @@ class Icons {
 				}
 				?>
 			</select>
+		</div>
+		<div class="form-field">
+			<label for="unicode"><?php echo esc_html__( 'Unicode for icon', 'download-list-block-with-icons' ); ?>:</label>
+			<input type="text" name="unicode" id="unicode" value="<?php echo esc_attr( $unicode ); ?>">
 		</div>
 		<?php
 	}

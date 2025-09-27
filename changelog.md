@@ -8,9 +8,11 @@
 - Added option to show file dates for each file
 - Added option to sort the list by file dates
 - Added option to show a label for the file format for each file
+- Added possibility to add custom font file for iconsets using unicode icons
 - Added new hooks
 - Added hint which page and view in backend is added or extended by this plugin
 - Added global settings for our block which can also be inherited to all blocks
+- Added task in settings to add the block to chosen pages or posts
 
 ### Changed
 

@@ -277,7 +277,7 @@ class Iconsets {
 	 */
 	public function hide_generated_iconsets( WP_Query $query ): void {
 		// bail if condition is not met.
-		if ( ! ( 'dl_icons' === $query->query['post_type'] && is_admin() && $query->is_main_query() ) ) {
+		if ( ! ( isset( $query->query['post_type'] ) && 'dl_icons' === $query->query['post_type'] && is_admin() && $query->is_main_query() ) ) {
 			return;
 		}
 

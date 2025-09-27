@@ -319,6 +319,11 @@ class Taxonomies {
 			$width  = get_term_meta( $term->term_id, 'width', true );
 			$height = get_term_meta( $term->term_id, 'height', true );
 
+			// get font URL of this set.
+			$font        = get_term_meta( $term->term_id, 'font', true );
+			$font_size   = get_term_meta( $term->term_id, 'font_size', true );
+			$font_weight = get_term_meta( $term->term_id, 'font_weight', true );
+
 			// get iconset as object.
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $term->slug );
 			if ( $iconset_obj instanceof Iconset_Base ) {
@@ -348,6 +353,24 @@ class Taxonomies {
 							<input type="number" id="downloadlist-iconset-width" name="width" value="<?php echo absint( $width ); ?>"> x <input type="number" id="downloadlist-iconset-height" name="height" value="<?php echo absint( $height ); ?>">
 						</td>
 					</tr>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-font-file"><?php echo esc_html__( 'Set URL for font file (optional)', 'download-list-block-with-icons' ); ?></label></th>
+						<td>
+							<input type="url" id="downloadlist-iconset-font-file" name="font" value="<?php echo esc_url( $font ); ?>" placeholder="https://example.com/font.ttf">
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-font-weight"><?php echo esc_html__( 'Set font weight for font file icons (optional)', 'download-list-block-with-icons' ); ?></label></th>
+						<td>
+							<input type="number" id="downloadlist-iconset-font-weight" name="font_weight" value="<?php echo absint( $font_weight ); ?>">
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row"><label for="downloadlist-iconset-font-size"><?php echo esc_html__( 'Set font size for font file icons (optional, in pixel)', 'download-list-block-with-icons' ); ?></label></th>
+						<td>
+							<input type="number" id="downloadlist-iconset-font-size" name="font_size" value="<?php echo absint( $font_size ); ?>">
+						</td>
+					</tr>
 					<?php
 				}
 			} else {
@@ -369,6 +392,10 @@ class Taxonomies {
 			<div class="form-field">
 				<label for="downloadlist-iconset-width"><?php echo esc_html__( 'Set width and height for icons of this set', 'download-list-block-with-icons' ); ?></label>
 				<input type="number" id="downloadlist-iconset-width" name="width" value="24"> x <input type="number" id="downloadlist-iconset-height" name="height" value="24">
+			</div>
+			<div class="form-field">
+				<label for="downloadlist-iconset-font-file"><?php echo esc_html__( 'Set URL for font file (optional)', 'download-list-block-with-icons' ); ?></label>
+				<input type="url" id="downloadlist-iconset-font-file" name="font" value="" placeholder="https://example.com/font.ttf">
 			</div>
 			<?php
 		}
@@ -411,14 +438,38 @@ class Taxonomies {
 
 		// save the width.
 		if ( isset( $_POST['width'] ) && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
-			update_term_meta( $term_id, 'width', absint( $_POST['width'] ) );
+			update_term_meta( $term_id, 'width', $width );
 			$generate_styles = true;
 		}
 
 		// save the height.
 		if ( isset( $_POST['height'] ) && absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
-			update_term_meta( $term_id, 'height', absint( $_POST['height'] ) );
+			update_term_meta( $term_id, 'height', $height );
 			$generate_styles = true;
+		}
+
+		// get the font URL from field, if set.
+		$font = ! empty( $_POST['font'] ) ? sanitize_url( wp_unslash( $_POST['font'] ) ) : '';
+
+		// save the font URL.
+		if ( ! empty( $font ) ) {
+			update_term_meta( $term_id, 'font', $font );
+		}
+
+		// get the font weight.
+		$font_size = ! empty( $_POST['font_size'] ) ? absint( $_POST['font_size'] ) : 0;
+
+		// save the font size.
+		if ( ! empty( $font_size ) ) {
+			update_term_meta( $term_id, 'font_size', $font_size );
+		}
+
+		// get the font weight.
+		$font_weight = ! empty( $_POST['font_weight'] ) ? absint( $_POST['font_weight'] ) : 0;
+
+		// save the font weight.
+		if ( ! empty( $font_weight ) ) {
+			update_term_meta( $term_id, 'font_weight', $font_weight );
 		}
 
 		// run style-generation for this iconset if changes have been saved.
