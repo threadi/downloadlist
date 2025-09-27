@@ -162,7 +162,7 @@ class Admin {
 		}
 
 		// add the link to the list.
-		$links[] = '<a href="' . esc_url( $url ) . '" target="_blank" style="font-weight:bold">' . esc_html__( 'How to use', 'download-list-block-with-icons' ) . '</a>';
+		$links[] = '<a href="' . esc_url( $url ) . '" target="_blank" style="font-weight:bold">' . esc_html_x( 'How to use', 'Plugin List', 'download-list-block-with-icons' ) . '</a>';
 
 		// return resulting list.
 		return $links;
@@ -272,7 +272,7 @@ class Admin {
 	 */
 	public function configure_transients(): void {
 		$transients_obj = Transients::get_instance();
-		$transients_obj->set_slug( 'pi' );
+		$transients_obj->set_slug( 'downloadlist' );
 		$transients_obj->set_url( Helper::get_plugin_url() . '/app/Dependencies/easyTransientsForWordPress/' );
 		$transients_obj->set_path( Helper::get_plugin_path() . '/app/Dependencies/easyTransientsForWordPress/' );
 		$transients_obj->set_capability( 'manage_options' );
