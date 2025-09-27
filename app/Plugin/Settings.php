@@ -667,7 +667,7 @@ class Settings {
 		$post_id = absint( $values );
 
 		// bail if no page ID is given.
-		if( 0 === $post_id ) {
+		if ( 0 === $post_id ) {
 			return;
 		}
 
@@ -676,7 +676,7 @@ class Settings {
 
 		// get the edit URL for this page.
 		$edit_url = get_edit_post_link( $post_id );
-		if( ! is_string( $edit_url ) ) {
+		if ( ! is_string( $edit_url ) ) {
 			return;
 		}
 
@@ -705,7 +705,7 @@ class Settings {
 		$post_id = absint( $values );
 
 		// bail if no page ID is given.
-		if( 0 === $post_id ) {
+		if ( 0 === $post_id ) {
 			return;
 		}
 
@@ -714,7 +714,7 @@ class Settings {
 
 		// get the edit URL for this page.
 		$edit_url = get_edit_post_link( $post_id );
-		if( ! is_string( $edit_url ) ) {
+		if ( ! is_string( $edit_url ) ) {
 			return;
 		}
 
@@ -733,7 +733,7 @@ class Settings {
 	/**
 	 * Add block to any post-entry.
 	 *
-	 * @param int $post_id
+	 * @param int $post_id The post ID to use.
 	 * @return void
 	 */
 	private function add_block( int $post_id ): void {
@@ -745,8 +745,8 @@ class Settings {
 
 		// save the content.
 		$query = array(
-			'ID' => $post_id,
-			'post_content' => $content
+			'ID'           => $post_id,
+			'post_content' => $content,
 		);
 		wp_update_post( $query );
 	}

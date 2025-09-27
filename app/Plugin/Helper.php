@@ -10,6 +10,7 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Iconsets\Iconset_Base;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use WP_Error;
 use WP_Image_Editor;
@@ -259,13 +260,22 @@ class Helper {
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $terms[0]->slug );
 
 			// bail if no iconset-object could be loaded.
-			if ( ! $iconset_obj ) {
+			if ( ! $iconset_obj instanceof Iconset_Base ) {
 				continue;
 			}
 
 			// bail if this generic iconset-slug has already been generated.
 			if ( $iconset_obj->is_generic() && ! empty( $iconset_generated_slugs[ $iconset_obj->get_slug() ] ) ) {
 				continue;
+			}
+
+			// add font face if font is set on iconset and has not already been added.
+			$font = get_term_meta( $terms[0]->term_id, 'font', true );
+			if ( ! empty( $font ) ) {
+				$styles .= '@font-face {
+  font-family: "' . $terms[0]->slug . '";
+  src: url("' . $font . '");
+}';
 			}
 
 			// load just the styles on generic iconsets.
@@ -280,7 +290,7 @@ class Helper {
 
 				// get iconset-specific styles.
 				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
-				if ( ! empty( $subtype ) && false === $iconset_obj->is_generic() ) { // @phpstan-ignore identical.alwaysTrue
+				if ( ! empty( $subtype ) ) {
 					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
 				}
 			}

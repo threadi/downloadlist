@@ -1,4 +1,4 @@
-body.taxonomy-dl_icon_set .term-description-wrap, body.taxonomy-dl_icon_set .term-slug-wrap { display: none }
+body.taxonomy-dl_icon_set .term-description-wrap, body.taxonomy-dl_icon_set .term-slug-wrap, body.taxonomy-dl_icon_set #name-description { display: none }
 body.taxonomy-dl_icon_lists .term-description-wrap, body.taxonomy-dl_icon_lists .term-slug-wrap { display: none }
 body.taxonomy-dl_icon_set input[type="number"] { width: auto }
 

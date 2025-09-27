@@ -156,7 +156,7 @@ class Help_System {
 		/* translators: %1$s will be replaced by a URL. */
 		$content .= '<li>' . sprintf( __( 'Now go to the page where you can <a href="%1$s">add a new icon</a>.', 'download-list-block-with-icons' ), $new_icon_url ) . '</li>';
 		$content .= '<li>' . __( 'First give the new icon a title. This title is never used public, its only for you.', 'download-list-block-with-icons' ) . '</li>';
-		$content .= '<li>' . __( 'Then select the graphic you want to use as an icon.', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Then select the graphic you want to use as an icon OR set a unicode if it is a custom font iconset.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Then select the file type where you want to use this graphic.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Then select the iconset you created in the first step.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Save this settings and use it in the block.', 'download-list-block-with-icons' ) . '</li>';
@@ -211,22 +211,26 @@ class Help_System {
 			),
 			admin_url( 'edit-tags.php' )
 		);
+		$new_icon_url = add_query_arg( array( 'post_type' => 'dl_icons' ), 'post-new.php' );
 
 		// create content for this help page.
 		$content  = '<h2>' . __( 'Managing Download List Iconsets', 'download-list-block-with-icons' ) . '</h2><p>' . __( 'Icon sets are a collection of icons that can be used for many file types. They simplify the management of icons for your files.', 'download-list-block-with-icons' ) . '</p>';
 		$content .= '<h3>' . __( 'Types of iconsets', 'download-list-block-with-icons' ) . '</h3>';
-		$content .= '<p>' . __( 'There are 2 types of iconsets:', 'download-list-block-with-icons' ) . '</p>';
+		$content .= '<p>' . __( 'There are 3 types of iconsets:', 'download-list-block-with-icons' ) . '</p>';
 		$content .= '<ul>';
 		$content .= '<li>' . __( 'Generic - uses an icon font to provide icons', 'download-list-block-with-icons' ) . '</li>';
-		$content .= '<li>' . __( 'Custom - uses individual icons', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Custom with icon files', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Custom with font', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '</ul>';
-		$content .= '<h3>' . __( 'Adding an iconset', 'download-list-block-with-icons' ) . '</h3>';
+		$content .= '<h3>' . __( 'Adding a custom iconset', 'download-list-block-with-icons' ) . '</h3>';
 		$content .= '<ol>';
 		/* translators: %1$s will be replaced by a URL. */
-		$content .= '<li>' . sprintf( __( 'Go to <a href="%1$s">Iconsets</a>.', 'download-list-block-with-icons' ), $iconset_url ) . '</li>';
+		$content .= '<li>' . sprintf( __( 'Go to <a href="%1$s">Iconsets</a> and add an iconset there in the form left.', 'download-list-block-with-icons' ), $iconset_url ) . '</li>';
 		$content .= '<li>' . __( 'Set a name. This will not used in public, its only for you.', 'download-list-block-with-icons' ) . '</li>';
-		$content .= '<li>' . __( 'Set width and height for the icons to show.', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Set width and height for the icon files to show OR set the font file you want to use.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'Save the settings.', 'download-list-block-with-icons' ) . '</li>';
+		/* translators: %1$s will be replaced by a URL. */
+		$content .= '<li>' . sprintf( __( 'Add icons for this iconset <a href="%1$s">here</a>.', 'download-list-block-with-icons' ), $new_icon_url ) . '</li>';
 		$content .= '</ol>';
 		$content .= '<strong>' . __( 'Hint', 'download-list-block-with-icons' ) . '</strong> ' . __( 'You have to add custom icons to use this iconset on your download lists.', 'download-list-block-with-icons' ) . '</p>';
 

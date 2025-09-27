@@ -14,6 +14,7 @@ use DownloadListWithIcons\Iconsets\Iconset;
 use DownloadListWithIcons\Iconsets\Iconset_Base;
 use WP_Post;
 use WP_Query;
+use WP_Term;
 
 /**
  * Definition for custom iconset.
@@ -81,17 +82,42 @@ class Custom extends Iconset_Base implements Iconset {
 		// get the icon of the given post.
 		$attachment_id = absint( get_post_meta( $post_id, 'icon', true ) );
 
-		// bail if no id for icon is given.
-		if ( 0 === $attachment_id ) {
+		// get the unicode.
+		$unicode = get_post_meta( $post_id, 'unicode', true );
+
+		// bail if no id and not unicode for icon is given.
+		if ( 0 === $attachment_id && empty( $unicode ) ) {
 			return $styles;
 		}
 
-		// get image url.
-		$url = wp_get_attachment_image_url( $attachment_id, 'downloadlist-icon-' . $term_slug );
+		// get image url to show icon as image.
+		if ( $attachment_id > 0 ) {
+			$url = wp_get_attachment_image_url( $attachment_id, 'downloadlist-icon-' . $term_slug );
 
-		// add output of this image for given file-type.
-		if ( false !== $url ) {
-			$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: url("' . esc_url( $url ) . '"); }';
+			// add output of this image for given file-type.
+			if ( false !== $url ) {
+				$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: url("' . esc_url( $url ) . '"); }';
+			}
+		}
+
+		// show icon via unicode.
+		if ( ! empty( $unicode ) ) {
+			// get the term.
+			$term = get_term_by( 'slug', $term_slug, 'dl_icon_set' );
+
+			// bail if term could not be loaded.
+			if ( ! $term instanceof WP_Term ) {
+				return $styles;
+			}
+
+			// get the font size.
+			$font_size = absint( get_term_meta( $term->term_id, 'font_size', true ) );
+
+			// get the font weight.
+			$font_weight = absint( get_term_meta( $term->term_id, 'font_weight', true ) );
+
+			// add the styles.
+			$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: "' . esc_attr( $unicode ) . '";font-family: "' . esc_attr( $term_slug ) . '", sans-serif;font-size: ' . $font_size . 'px;font-weight: ' . $font_weight . ' }';
 		}
 
 		// return resulting styles.
