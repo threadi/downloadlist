@@ -204,7 +204,7 @@ class Help_System {
 	 */
 	public function add_manage_iconsets_help( array $help_list ): array {
 		// create links.
-		$iconset_url = add_query_arg(
+		$iconset_url  = add_query_arg(
 			array(
 				'taxonomy'  => 'dl_icon_set',
 				'post_type' => 'dl_icons',

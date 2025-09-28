@@ -21,27 +21,9 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 316](app/Plugin/Helper.php#L316-L323)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 326](app/Plugin/Helper.php#L326-L333)
 
 ## Filters
-
-### `downloadlist_plugin_row_meta`
-
-*Filter the links in row meta of our plugin in plugin list.*
-
-**Arguments**
-
-Argument | Type | Description
--------- | ---- | -----------
-`$row_meta` | `array` | List of links.
-
-**Changelog**
-
-Version | Description
-------- | -----------
-`3.8.0` | Available since 3.8.0.
-
-Source: [./inc/admin.php](inc/admin.php), [line 781](inc/admin.php#L781-L787)
 
 ### `downloadlist_taxonomies`
 
@@ -59,7 +41,154 @@ Version | Description
 ------- | -----------
 `4.0.0` | Available since 4.0.0.
 
-Source: [./app/Plugin/Taxonomies.php](app/Plugin/Taxonomies.php), [line 178](app/Plugin/Taxonomies.php#L178-L184)
+Source: [./app/Plugin/Taxonomies.php](app/Plugin/Taxonomies.php), [line 189](app/Plugin/Taxonomies.php#L189-L195)
+
+### `downloadlist_api_return_file_data`
+
+*Filter the resulting file data before we return them.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$file_data` | `array<int,mixed>` | The response as array.
+`$request` | `\WP_REST_Request` | The request.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.7.0` | Available since 3.7.0.
+
+Source: [./app/Plugin/Rest.php](app/Plugin/Rest.php), [line 124](app/Plugin/Rest.php#L124-L131)
+
+### `downloadlist_rest_api_filetypes`
+
+*Filter the resulting list of iconsets before we return them.*
+
+@3.7.0 Available since 3.7.0.
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$iconsets` | `array` | List of iconsets.
+`$request` | `\WP_REST_Request` | The request.
+
+Source: [./app/Plugin/Rest.php](app/Plugin/Rest.php), [line 169](app/Plugin/Rest.php#L169-L176)
+
+### `downloadlist_link_download_attribute`
+
+*Filter the download attribute for the link.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$download_link_attribute` | `string` | The value.
+`$file` | `array` | The attributes for single file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.6.0` | Available since 3.6.0.
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 572](app/Plugin/Init.php#L572-L579)
+
+### `downloadlist_link_target_attribute`
+
+*Filter the target attribute for the link.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$link_target` | `string` | The value.
+`$file` | `array` | The attributes for single file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.6.0` | Available since 3.6.0.
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 593](app/Plugin/Init.php#L593-L600)
+
+### `downloadlist_rel_attribute`
+
+*Filter the rel-attribute.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$rel_attribute` | `string` | The rel-value.
+`$file` | `array` | The attributes for single file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.5.0` | Available since 3.5.0
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 608](app/Plugin/Init.php#L608-L615)
+
+### `downloadlist_download_button_download_attribute`
+
+*Filter the download attribute for the download button.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$download_button` | `string` | The value.
+`$file` | `array` | The attributes for single file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.6.0` | Available since 3.6.0.
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 628](app/Plugin/Init.php#L628-L635)
+
+### `downloadlist_download_button_target_attribute`
+
+*Filter the target attribute for the download button.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$download_target_attribute` | `string` | The value.
+`$file` | `array` | The attributes for single file.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.6.0` | Available since 3.6.0.
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 649](app/Plugin/Init.php#L649-L656)
+
+### `downloadlist_mime_labels`
+
+*Filter the list of possible mime labels.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$list` | `array<string,string>` | List of possible mime labels.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`4.0.0` | Available since 4.0.0.
+
+Source: [./app/Plugin/Init.php](app/Plugin/Init.php), [line 806](app/Plugin/Init.php#L806-L812)
 
 ### `downloadlist_mime_types`
 
@@ -77,7 +206,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 41](app/Plugin/Helper.php#L41-L47)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 42](app/Plugin/Helper.php#L42-L48)
 
 ### `downloadlist_style_filename`
 
@@ -95,7 +224,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0.
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 58](app/Plugin/Helper.php#L58-L65)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 59](app/Plugin/Helper.php#L59-L66)
 
 ### `downloadlist_css_path`
 
@@ -105,7 +234,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$path` |  | 
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 85](app/Plugin/Helper.php#L85-L85)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 86](app/Plugin/Helper.php#L86-L86)
 
 ### `downloadlist_css_url`
 
@@ -115,7 +244,7 @@ Argument | Type | Description
 -------- | ---- | -----------
 `$url` |  | 
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 105](app/Plugin/Helper.php#L105-L105)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 106](app/Plugin/Helper.php#L106-L106)
 
 ### `downloadlist_prevent_css_generation`
 
@@ -133,7 +262,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 153](app/Plugin/Helper.php#L153-L159)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 154](app/Plugin/Helper.php#L154-L160)
 
 ### `downloadlist_generate_css`
 
@@ -151,7 +280,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 304](app/Plugin/Helper.php#L304-L311)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 314](app/Plugin/Helper.php#L314-L321)
 
 ### `downloadlist_generate_classname`
 
@@ -169,7 +298,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 350](app/Plugin/Helper.php#L350-L357)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 360](app/Plugin/Helper.php#L360-L367)
 
 ### `downloadlist_generate_classname`
 
@@ -187,7 +316,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 359](app/Plugin/Helper.php#L359-L366)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 369](app/Plugin/Helper.php#L369-L376)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -205,7 +334,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 379](app/Plugin/Helper.php#L379-L385)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 389](app/Plugin/Helper.php#L389-L395)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -223,7 +352,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 437](app/Plugin/Helper.php#L437-L443)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 447](app/Plugin/Helper.php#L447-L453)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -242,7 +371,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 472](app/Plugin/Helper.php#L472-L479)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 482](app/Plugin/Helper.php#L482-L489)
 
 ### `downloadlist_file_version`
 
@@ -261,7 +390,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 621](app/Plugin/Helper.php#L621-L629)
+Source: [./app/Plugin/Helper.php](app/Plugin/Helper.php), [line 631](app/Plugin/Helper.php#L631-L639)
 
 ### `downloadlist_help_sidebar_content`
 
@@ -299,6 +428,24 @@ Version | Description
 
 Source: [./app/Plugin/Admin/Help_System.php](app/Plugin/Admin/Help_System.php), [line 124](app/Plugin/Admin/Help_System.php#L124-L130)
 
+### `downloadlist_plugin_row_meta`
+
+*Filter the links in row meta of our plugin in plugin list.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$row_meta` | `array` | List of links.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`3.8.0` | Available since 3.8.0.
+
+Source: [./app/Plugin/Admin/Admin.php](app/Plugin/Admin/Admin.php), [line 190](app/Plugin/Admin/Admin.php#L190-L196)
+
 ### `downloadlist_register_iconset`
 
 *Register a single iconset through adding it to the list.*
@@ -317,7 +464,7 @@ Version | Description
 ------- | -----------
 `3.0.0` | Available since 3.0.0.
 
-Source: [./app/Iconsets/Iconsets.php](app/Iconsets/Iconsets.php), [line 65](app/Iconsets/Iconsets.php#L65-L74)
+Source: [./app/Iconsets/Iconsets.php](app/Iconsets/Iconsets.php), [line 116](app/Iconsets/Iconsets.php#L116-L125)
 
 ### `downloadlist_fontawesome_icons`
 
