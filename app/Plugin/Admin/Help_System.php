@@ -253,10 +253,10 @@ class Help_System {
 	 */
 	public function add_use_block_help( array $help_list ): array {
 		// create content for this help page.
-		$content  = '<h2>' . __( 'Use Download List with Icons Block', 'download-list-block-with-icons' ) . '</h2>';
+		$content  = '<h2>' . __( 'Use Download List Block with Icons', 'download-list-block-with-icons' ) . '</h2>';
 		$content .= '<ol>';
-		$content .= '<li>' . __( 'Go to “Create new page” under “Pages” in the WordPress backend', 'download-list-block-with-icons' ) . '</li>';
-		$content .= '<li>' . __( 'Add the “Download List with Icons” block there.', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Go to “Create new page” under "Pages" in the WordPress backend', 'download-list-block-with-icons' ) . '</li>';
+		$content .= '<li>' . __( 'Add the "Download List Block with Icons" block there.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'You will see a button where you can open your media library and choose which files you want to use for this list.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'You can sort the files by its date or title on the options above the list.', 'download-list-block-with-icons' ) . '</li>';
 		$content .= '<li>' . __( 'On the sidebar on the right you can set how the list should be presented in frontend.', 'download-list-block-with-icons' ) . '</li>';
