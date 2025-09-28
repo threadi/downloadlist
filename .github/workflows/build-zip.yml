@@ -42,6 +42,7 @@ jobs:
 
       - name: Run WordPress Coding Standard fixes
         run: vendor/bin/phpcbf --standard=ruleset.xml .
+        continue-on-error: true
 
       - name: Run WordPress Coding Standard checks
         run: vendor/bin/phpcs --standard=ruleset.xml .
