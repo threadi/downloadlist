@@ -64,8 +64,14 @@ class Settings {
 	public function init(): void {
 		// use hooks.
 		add_action( 'init', array( $this, 'add_settings' ) );
+
+		// use AJAX hooks.
 		add_action( 'wp_ajax_downloadlist_inherit_settings', array( $this, 'inherit_settings_via_ajax' ) );
 		add_action( 'wp_ajax_downloadlist_inherit_settings_get_info', array( $this, 'get_inherit_settings_progress_info' ) );
+
+		// use action hooks.
+		add_action( 'admin_action_downloadlist_reset_css', array( $this, 'reset_styles_by_request' ) );
+		add_action( 'admin_action_downloadlist_reset', array( $this, 'reset_plugin_by_request' ) );
 	}
 
 	/**
@@ -104,6 +110,42 @@ class Settings {
 		$settings_obj->set_title( __( 'Settings for Download List Block with Icons', 'download-list-block-with-icons' ) );
 		$settings_obj->set_menu_slug( $this->get_menu_slug() );
 		$settings_obj->set_menu_parent_slug( $this->get_php_page() );
+		$settings_obj->set_translations(
+			array(
+				'title_settings_import_file_missing' => __( 'Required file missing', 'download-list-block-with-icons' ),
+				'text_settings_import_file_missing'  => __( 'Please choose a JSON-file with settings to import.', 'download-list-block-with-icons' ),
+				'lbl_ok'                             => __( 'OK', 'download-list-block-with-icons' ),
+				'lbl_cancel'                         => __( 'Cancel', 'download-list-block-with-icons' ),
+				'import_title'                       => __( 'Import', 'download-list-block-with-icons' ),
+				'dialog_import_title'                => __( 'Import plugin settings', 'download-list-block-with-icons' ),
+				'dialog_import_text'                 => __( 'Click on the button below to chose your JSON-file with the settings.', 'download-list-block-with-icons' ),
+				'dialog_import_button'               => __( 'Import now', 'download-list-block-with-icons' ),
+				'dialog_import_error_title'          => __( 'Error during import', 'download-list-block-with-icons' ),
+				'dialog_import_error_text'           => __( 'The file could not be imported!', 'download-list-block-with-icons' ),
+				'dialog_import_error_no_file'        => __( 'No file was uploaded.', 'download-list-block-with-icons' ),
+				'dialog_import_error_no_size'        => __( 'The uploaded file is no size.', 'download-list-block-with-icons' ),
+				'dialog_import_error_no_json'        => __( 'The uploaded file is not a valid JSON-file.', 'download-list-block-with-icons' ),
+				'dialog_import_error_no_json_ext'    => __( 'The uploaded file does not have the file extension <i>.json</i>.', 'download-list-block-with-icons' ),
+				'dialog_import_error_not_saved'      => __( 'The uploaded file could not be saved. Contact your hoster about this problem.', 'download-list-block-with-icons' ),
+				'dialog_import_error_not_our_json'   => __( 'The uploaded file is not a valid JSON-file with settings for this plugin.', 'download-list-block-with-icons' ),
+				'dialog_import_success_title'        => __( 'Settings have been imported', 'download-list-block-with-icons' ),
+				'dialog_import_success_text'         => __( 'Import has been run successfully.', 'download-list-block-with-icons' ),
+				'dialog_import_success_text_2'       => __( 'The new settings are now active. Click on the button below to reload the page and see the settings.', 'download-list-block-with-icons' ),
+				'export_title'                       => __( 'Export', 'download-list-block-with-icons' ),
+				'dialog_export_title'                => __( 'Export plugin settings', 'download-list-block-with-icons' ),
+				'dialog_export_text'                 => __( 'Click on the button below to export the actual settings.', 'download-list-block-with-icons' ),
+				'dialog_export_text_2'               => __( 'You can import this JSON-file in other projects using this WordPress plugin or theme.', 'download-list-block-with-icons' ),
+				'dialog_export_button'               => __( 'Export now', 'download-list-block-with-icons' ),
+				'table_options'                      => __( 'Options', 'download-list-block-with-icons' ),
+				'table_entry'                        => __( 'Entry', 'download-list-block-with-icons' ),
+				'table_no_entries'                   => __( 'No entries found.', 'download-list-block-with-icons' ),
+				'plugin_settings_title'              => __( 'Settings', 'download-list-block-with-icons' ),
+				'file_add_file'                      => __( 'Add file', 'download-list-block-with-icons' ),
+				'file_choose_file'                   => __( 'Choose file', 'download-list-block-with-icons' ),
+				'file_choose_image'                  => __( 'Upload or choose image', 'download-list-block-with-icons' ),
+				'drag_n_drop'                        => __( 'Hold to drag & drop', 'download-list-block-with-icons' ),
+			)
+		);
 
 		/**
 		 * Add the settings page.
@@ -185,7 +227,7 @@ class Settings {
 		$setting = $settings_obj->add_setting( 'downloadlist_iconset' );
 		$setting->set_section( $general_tab_icons );
 		$setting->set_type( 'string' );
-		$setting->set_default( '' );
+		$setting->set_default( 'dashicons' );
 		$setting->add_custom_var( 'block-name', 'iconset' );
 		$setting->add_custom_var( 'block-format', 'string' );
 		$field = new Select();
@@ -360,7 +402,7 @@ class Settings {
 		$setting = $settings_obj->add_setting( 'downloadlist_robots' );
 		$setting->set_section( $general_tab_advanced );
 		$setting->set_type( 'string' );
-		$setting->set_default( '' );
+		$setting->set_default( 'nofollow' );
 		$setting->add_custom_var( 'block-name', 'robots' );
 		$setting->add_custom_var( 'block-format', 'string' );
 		$field = new Select();
@@ -406,6 +448,25 @@ class Settings {
 		$field->add_class( 'easy-dialog-for-wordpress' );
 		$setting->set_field( $field );
 
+		// create the URL to reset styles.
+		$reset_styles_url = add_query_arg(
+			array(
+				'action' => 'downloadlist_reset_css',
+				'nonce'  => wp_create_nonce( 'downloadlist-reset-css' ),
+			),
+			get_admin_url() . 'admin.php'
+		);
+
+		// add setting.
+		$setting = $settings_obj->add_setting( 'downloadlist_reset_css' );
+		$setting->set_section( $tasks_tab_tasks );
+		$setting->prevent_export( true );
+		$field = new Button();
+		$field->set_title( __( 'Reset styles', 'download-list-block-with-icons' ) );
+		$field->set_button_url( $reset_styles_url );
+		$field->set_button_title( __( 'Reset styles', 'download-list-block-with-icons' ) );
+		$setting->set_field( $field );
+
 		// add setting.
 		$setting = $settings_obj->add_setting( 'downloadlist_add_block_to_page' );
 		$setting->set_section( $tasks_tab_tasks );
@@ -438,6 +499,51 @@ class Settings {
 		$field->set_label_title( __( 'Search for a post', 'download-list-block-with-icons' ) );
 		$field->set_placeholder( __( 'Enter the name of a post', 'download-list-block-with-icons' ) );
 		$field->set_cancel_button_title( __( 'Cancel', 'download-list-block-with-icons' ) );
+		$setting->set_field( $field );
+
+		// create reset URL.
+		$reset_url = add_query_arg(
+			array(
+				'action' => 'downloadlist_reset',
+				'nonce'  => wp_create_nonce( 'downloadlist-reset' ),
+			),
+			get_admin_url() . 'admin.php'
+		);
+
+		// create dialog.
+		$reset_dialog = array(
+			'title'   => __( 'Reset plugin', 'download-list-block-with-icons' ),
+			'texts'   => array(
+				/* translators: %1$s will be replaced by the plugin name. */
+				'<p><strong>' . sprintf( __( 'Do you really want to reset the plugin %1$s?', 'download-list-block-with-icons' ), Helper::get_plugin_name() ) . '</strong></p>',
+				'<p>' . __( 'This will remove any custom icons and iconsets.', 'download-list-block-with-icons' ) . '</p>',
+				'<p>' . __( 'Any setting of this plugin will be reset.', 'download-list-block-with-icons' ) . '</p>',
+				'<p>' . __( 'It will NOT remove the download lists from your content.', 'download-list-block-with-icons' ) . '</p>',
+			),
+			'buttons' => array(
+				array(
+					'action'  => 'location.href="' . $reset_url . '"',
+					'variant' => 'primary',
+					'text'    => __( 'Yes, reset it', 'download-list-block-with-icons' ),
+				),
+				array(
+					'action'  => 'closeDialog();',
+					'variant' => 'primary',
+					'text'    => __( 'Cancel', 'download-list-block-with-icons' ),
+				),
+			),
+		);
+
+		// add setting.
+		$setting = $settings_obj->add_setting( 'downloadlist_reset' );
+		$setting->set_section( $tasks_tab_tasks );
+		$setting->prevent_export( true );
+		$field = new Button();
+		$field->set_title( __( 'Reset plugin', 'download-list-block-with-icons' ) );
+		$field->set_button_url( '#' );
+		$field->set_button_title( __( 'Reset plugin', 'download-list-block-with-icons' ) );
+		$field->add_data( 'dialog', Helper::get_json( $reset_dialog ) );
+		$field->add_class( 'easy-dialog-for-wordpress' );
 		$setting->set_field( $field );
 
 		// initialize this settings object.
@@ -749,5 +855,53 @@ class Settings {
 			'post_content' => $content,
 		);
 		wp_update_post( $query );
+	}
+
+	/**
+	 * Reset plugin styles by request.
+	 *
+	 * @return void
+	 */
+	public function reset_styles_by_request(): void {
+		// check nonce.
+		check_admin_referer( 'downloadlist-reset-css', 'nonce' );
+
+		// reset it.
+		Helper::regenerate_icons();
+		Helper::generate_css();
+
+		// add success message.
+		$transient_obj = Transients::get_instance()->add();
+		$transient_obj->set_name( 'downloadlist_reset_css' );
+		$transient_obj->set_type( 'success' );
+		$transient_obj->set_message( '<strong>' . __( 'The styles for the plugin has been reset.', 'download-list-block-with-icons' ) . '</strong> ' . __( 'You should now see the actual icons on your lists.', 'download-list-block-with-icons' ) );
+		$transient_obj->save();
+
+		// forward user.
+		wp_safe_redirect( (string) wp_get_referer() );
+	}
+
+	/**
+	 * Reset the plugin by request.
+	 *
+	 * @return void
+	 */
+	public function reset_plugin_by_request(): void {
+		// check nonce.
+		check_admin_referer( 'downloadlist-reset', 'nonce' );
+
+		// run it.
+		Uninstaller::get_instance()->run();
+		Installer::get_instance()->activation();
+
+		// add success message.
+		$transient_obj = Transients::get_instance()->add();
+		$transient_obj->set_name( 'downloadlist_reset' );
+		$transient_obj->set_type( 'success' );
+		$transient_obj->set_message( '<strong>' . __( 'The plugin has been reset.', 'download-list-block-with-icons' ) . '</strong> ' . __( 'You can now use it with initial settings.', 'download-list-block-with-icons' ) );
+		$transient_obj->save();
+
+		// forward user.
+		wp_safe_redirect( (string) wp_get_referer() );
 	}
 }

@@ -13,11 +13,14 @@
 - Added hint which page and view in backend is added or extended by this plugin
 - Added global settings for our block which can also be inherited to all blocks
 - Added task in settings to add the block to chosen pages or posts
+- Added option to reset the plugin in backend settings (in preparation for Cyber Resilience Act)
+- Added option to reset plugin styles with one click
 
 ### Changed
 
 - Using composer autoloader for each PHP-object for better performance
 - Using transient composer package for internal actions and admin notices
+- Updated Font Awesome Icons from version 6 to 7
 - Updated dependencies
 
 ### Fixed

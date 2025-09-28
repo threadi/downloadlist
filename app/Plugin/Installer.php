@@ -61,8 +61,8 @@ class Installer {
 		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
 
 		// initialize our own post-type and taxonomies during installation.
+		Taxonomies::get_instance()->register();
 		Icons::get_instance()->register();
-		Taxonomies::get_instance()->init();
 
 		// add generic iconset.
 		Helper::add_generic_iconsets();

@@ -62,6 +62,9 @@ class Init {
 	 * @return void
 	 */
 	public function init(): void {
+		// initialize updates.
+		Updates::get_instance()->init();
+
 		// initialize the settings.
 		Settings::get_instance()->init();
 

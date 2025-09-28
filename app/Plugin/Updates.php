@@ -11,6 +11,7 @@ namespace DownloadListWithIcons\Plugin;
 defined( 'ABSPATH' ) || exit;
 
 use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
+use DownloadListWithIcons\Plugin\Admin\Admin;
 use WP_Post;
 use WP_Query;
 
@@ -80,10 +81,13 @@ class Updates {
 			)
 			&& version_compare( $installed_plugin_version, $db_plugin_version, '>' )
 		) {
+			// initialize transients.
+			Admin::get_instance()->configure_transients();
+
 			// force refresh of css on every plugin update.
 			$transient_obj = Transients::get_instance()->add();
 			$transient_obj->set_action( array( 'DownloadListWithIcons\Plugin\Helper', 'generate_css' ) );
-			$transient_obj->set_name( 'refresh_css' );
+			$transient_obj->set_name( 'downloadlist_refresh_css' );
 			$transient_obj->save();
 
 			// run this on update from version before 3.4.0.
@@ -146,6 +150,7 @@ class Updates {
 	 */
 	private function version400(): void {
 		// install settings.
+		Settings::get_instance()->add_settings();
 		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
 	}
 }
