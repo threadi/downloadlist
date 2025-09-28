@@ -1,6 +1,6 @@
-# Download List with Icons
+# Download List Block with Icons
 
-This repository is the database for the plugin _Download List with Icons_. This provides a Gutenberg block to manage a download list with file type specific icons.
+This repository is the database for the plugin _Download List Block with Icons_. This provides a Gutenberg block to manage a download list with file type specific icons.
 
 ## Usage
 

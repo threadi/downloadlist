@@ -33,7 +33,7 @@ import save from "./save";
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 registerBlockType( 'downloadlist/list', {
-	title: __( 'Download List with Icons', 'download-list-block-with-icons' ),
+	title: __( 'Download List Block with Icons', 'download-list-block-with-icons' ),
 	description: __('Provides a Gutenberg block for capturing a download list with file type specific icons.', 'download-list-block-with-icons'),
 
 	transforms: {

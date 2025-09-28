@@ -234,7 +234,7 @@ class Taxonomies {
 	 * @return void
 	 */
 	public function show_list_description(): void {
-		echo '<p>' . wp_kses_post( __( 'Download Lists contain files that are to be displayed in a single list of files. Assign files in your media library to these list to show them in the list. This possibility is added by the plugin <em>Download List with Icons</em>.', 'download-list-block-with-icons' ) ) . '</p>';
+		echo '<p>' . wp_kses_post( __( 'Download Lists contain files that are to be displayed in a single list of files. Assign files in your media library to these list to show them in the list. This possibility is added by the plugin <em>Download List Block with Icons</em>.', 'download-list-block-with-icons' ) ) . '</p>';
 	}
 
 	/**

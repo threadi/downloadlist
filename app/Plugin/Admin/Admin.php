@@ -225,7 +225,7 @@ class Admin {
 		$transient_obj->set_type( 'error' );
 		$transient_obj->set_name( 'downloadlist_php_hint' );
 		$transient_obj->set_dismissible_days( 90 );
-		$transient_obj->set_message( '<strong>' . __( 'Your website is using an outdated PHP-version!', 'download-list-block-with-icons' ) . '</strong><br>' . __( 'Future versions of <i>Download List with Icons</i> will no longer be compatible with PHP 8.0 or older. These versions <a href="https://www.php.net/supported-versions.php" target="_blank">are outdated</a> since December 2023. To continue using the plugins new features, please update your PHP version.', 'download-list-block-with-icons' ) . '<br>' . __( 'Talk to your hosters support team about this.', 'download-list-block-with-icons' ) );
+		$transient_obj->set_message( '<strong>' . __( 'Your website is using an outdated PHP-version!', 'download-list-block-with-icons' ) . '</strong><br>' . __( 'Future versions of <i>Download List Block with Icons</i> will no longer be compatible with PHP 8.0 or older. These versions <a href="https://www.php.net/supported-versions.php" target="_blank">are outdated</a> since December 2023. To continue using the plugins new features, please update your PHP version.', 'download-list-block-with-icons' ) . '<br>' . __( 'Talk to your hosters support team about this.', 'download-list-block-with-icons' ) );
 		$transient_obj->save();
 	}
 
