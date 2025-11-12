@@ -149,7 +149,7 @@ class Init {
 					),
 					'iconset'                => array(
 						'type'    => 'string',
-						'default' => get_option( 'downloadlist_iconset' ),
+						'default' => get_option( 'downloadlist_iconset', 'dashicons' ),
 					),
 					'file_types_set'         => array(
 						'type'    => 'boolean',

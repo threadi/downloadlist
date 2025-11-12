@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -89,19 +89,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Added possibility to categorize media files in lists which could be used for listing of files in frontend
-- Added option to show file dates for each file
-- Added option to sort the list by file dates
-- Added option to show a label for the file format for each file
-- Added possibility to add custom font file for iconsets using unicode icons
-- Added new hooks
-- Added hint which page and view in backend is added or extended by this plugin
-- Added global settings for our block which can also be inherited to all blocks
-- Added task in settings to add the block to chosen pages or posts
-- Added option to reset the plugin in backend settings (in preparation for Cyber Resilience Act)
-- Using composer autoloader for each PHP-object for better performance
-- Using transient composer package for internal actions and admin notices
-- Updated dependencies
-- Fixed missing translations for bulk message editing of icons
+- Compatibility With WordPress 6.9
+- New created blocks get a false default iconset
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
