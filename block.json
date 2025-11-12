@@ -59,7 +59,7 @@
 		},
 		"iconset": {
 			"type": "string",
-			"default": ""
+			"default": "dashicons"
 		},
 		"file_types_set": {
 			"type": "boolean",

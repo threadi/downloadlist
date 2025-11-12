@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.1] - 12.11.2025
+
+### Changed
+
+- Compatibility With WordPress 6.9
+
+### Fixed
+
+- New created blocks get a false default iconset
+
 ## [4.0.0] - 28.09.2025
 
 ### Added
