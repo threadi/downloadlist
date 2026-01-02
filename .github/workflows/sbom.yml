@@ -5,7 +5,7 @@ on:
 
 jobs:
     build:
-        name: Update Hook documentation
+        name: Generate SBOM
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
