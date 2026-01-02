@@ -1,0 +1,14 @@
+name: Generate SBOM
+
+on:
+    workflow_dispatch:
+
+jobs:
+    build:
+        name: Update Hook documentation
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - uses: anchore/sbom-action@v0
