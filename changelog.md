@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added SBOM generation for the plugin
+
+### Changed
+
+- Updated dependencies
+
 ## [4.0.1] - 12.11.2025
 
 ### Changed
