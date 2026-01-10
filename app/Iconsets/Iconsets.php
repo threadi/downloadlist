@@ -13,6 +13,8 @@ defined( 'ABSPATH' ) || exit;
 use DownloadListWithIcons\Plugin\Helper;
 use WP_Post;
 use WP_Query;
+use WP_Term;
+use WP_Term_Query;
 
 /**
  * Object for general iconset-handling.
@@ -49,7 +51,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Initialize the iconset.
+	 * Initialize the iconsets.
 	 *
 	 * @return void
 	 */
@@ -106,7 +108,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Get all iconsets which are registered.
+	 * Return all iconsets which are registered.
 	 *
 	 * @return array<int,Iconset_Base>
 	 */
@@ -206,11 +208,11 @@ class Iconsets {
 	}
 
 	/**
-	 * Return the default iconset.
+	 * Return the preset default iconset.
 	 *
 	 * @return Iconset_Base|false
 	 */
-	public function get_default_iconset(): Iconset_Base|false {
+	public function get_preset_default_iconset(): Iconset_Base|false {
 		foreach ( $this->get_icon_sets() as $iconset_obj ) {
 			// bail if this should not be default.
 			if ( ! $iconset_obj->should_be_default() ) {
@@ -261,7 +263,7 @@ class Iconsets {
 
 		if ( $term_id > 0 ) {
 			// set this term-ID as default.
-			Helper::set_iconset_default( $term_id );
+			$this->set_default_iconset( $term_id );
 		}
 
 		// redirect user.
@@ -319,5 +321,71 @@ class Iconsets {
 			),
 			get_admin_url() . 'edit-tags.php'
 		);
+	}
+
+	/**
+	 * Return the default iconset.
+	 *
+	 * @return Iconset_Base|false
+	 */
+	public function get_default_iconset(): Iconset_Base|false {
+		// delete all default-marker for icon-sets.
+		$query   = array(
+			'taxonomy'   => 'dl_icon_set',
+			'hide_empty' => false,
+			'meta_query' => array(
+				array(
+					'key'     => 'default',
+					'value'   => 1,
+					'compare' => '=',
+				),
+			),
+		);
+		$results = new WP_Term_Query( $query );
+
+		// bail on no results.
+		if ( empty( $results->terms ) ) {
+			return false;
+		}
+
+		// return its object.
+		return $this->get_iconset_by_slug( $results->terms[0]->slug );
+	}
+
+	/**
+	 * Set given iconset as default.
+	 *
+	 * @param int $term_id ID of the term to set as default.
+	 * @return void
+	 */
+	public function set_default_iconset( int $term_id ): void {
+		// delete all default-marker for icon-sets.
+		$query   = array(
+			'taxonomy'   => 'dl_icon_set',
+			'hide_empty' => false,
+		);
+		$results = new WP_Term_Query( $query );
+
+		// get the results.
+		$terms = $results->get_terms();
+
+		// convert them if terms are not an array.
+		if ( ! is_array( $terms ) ) {
+			$terms = array( $terms );
+		}
+
+		// loop through them.
+		foreach ( $terms as $term ) {
+			// bail if entry is not a WP_Term object.
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
+
+			// delete the default marker.
+			delete_term_meta( $term->term_id, 'default' );
+		}
+
+		// mark this as default icon-set.
+		update_term_meta( $term_id, 'default', 1 );
 	}
 }

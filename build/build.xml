@@ -90,7 +90,7 @@
 	<!-- generate documentation -->
 	<target name="generate-documentation" depends="composer-install">
 		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/wp-documentor">
-			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn --exclude=vendor --exclude=src --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php"/>
+			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn --exclude=vendor --exclude=src --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php --exclude=Widget_Base.php --exclude=Transients.php"/>
 		</exec>
 	</target>
 
@@ -117,11 +117,23 @@
 		</exec>
 	</target>
 
+	<!-- PHP Unit Tests -->
+	<target name="php-unit-tests" depends="composer-install">
+		<delete file="${log.dir}/php-unit-tests-1.txt"/>
+		<delete file="${log.dir}/php-unit-tests-2.txt"/>
+		<exec dir="${src.dir}" failonerror="true" executable="${composer.path}" output="${log.dir}/php-unit-tests-1.txt">
+			<arg line="test-install-during-build"/>
+		</exec>
+		<exec dir="${src.dir}" failonerror="true" executable="${composer.path}" output="${log.dir}/php-unit-tests-2.txt">
+			<arg line="test"/>
+		</exec>
+	</target>
+
 	<!-- init project -->
 	<target name="init" description="initialize the project" depends="autoloader-generation-dev,npm-build" />
 
 	<!-- create release-zip -->
-	<target name="build" description="builds a new release" depends="init,npm-build,check-wcs,generate-documentation,autoloader-generation,check-phpstan,setVersionNumber">
+	<target name="build" description="builds a new release" depends="init,php-unit-tests,check-wcs,generate-documentation,autoloader-generation,check-phpstan,setVersionNumber">
 		<delete file="${build.dir}/${plugin.slug}_${plugin.version}.zip"/>
 		<zip destfile="${build.dir}/${plugin.slug}_${plugin.version}.zip">
 			<zipfileset dir="${src.dir}/admin" prefix="${plugin.slug}/admin" />

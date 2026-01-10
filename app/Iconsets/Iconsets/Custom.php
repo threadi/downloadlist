@@ -69,7 +69,7 @@ class Custom extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get style for given file-type.
+	 * Return style for given file-type.
 	 *
 	 * @param int    $post_id ID of the icon-post.
 	 * @param string $term_slug The slug of the term this iconset is using.
@@ -177,7 +177,7 @@ class Custom extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get icons this set is assigned to.
+	 * Return icons this set is assigned to.
 	 *
 	 * @return array<int,int> The post-IDs of the icons as array.
 	 */

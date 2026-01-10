@@ -5,9 +5,11 @@
 ### Added
 
 - Added SBOM generation for the plugin
+- Added PHP Unit Tests
 
 ### Changed
 
+- Optimized iconset handling
 - Updated dependencies
 
 ## [4.0.1] - 12.11.2025

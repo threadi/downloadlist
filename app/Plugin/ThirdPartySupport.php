@@ -8,8 +8,6 @@
 namespace DownloadListWithIcons\Plugin;
 
 // prevent direct access.
-use WP_Post;
-
 defined( 'ABSPATH' ) || exit;
 
 /**

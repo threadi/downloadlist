@@ -8,9 +8,9 @@
 namespace DownloadListWithIcons\Files;
 
 // prevent direct access.
-use WP_Post;
-
 defined( 'ABSPATH' ) || exit;
+
+use WP_Post;
 
 /**
  * Object to handle files.
@@ -69,7 +69,7 @@ class Files {
 
 		// add field for title.
 		$form_fields['dl_title'] = array(
-			'label' => __( 'Title for downloadlist (optional)', 'download-list-block-with-icons' ),
+			'label' => __( 'Title for download list (optional)', 'download-list-block-with-icons' ),
 			'input' => 'text',
 			'value' => $dl_title,
 		);
@@ -79,7 +79,7 @@ class Files {
 
 		// add field for title.
 		$form_fields['dl_description'] = array(
-			'label' => __( 'Description for downloadlist (optional)', 'download-list-block-with-icons' ),
+			'label' => __( 'Description for download list (optional)', 'download-list-block-with-icons' ),
 			'input' => 'textarea',
 			'value' => $dl_description,
 		);
