@@ -68,7 +68,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get all possible bootstrap as array.
+	 * Return all possible bootstrap as array.
 	 *
 	 * @return array<string,string>
 	 */
@@ -194,10 +194,10 @@ class Bootstrap extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get style for given file-type.
+	 * Return style for given file-type.
 	 *
 	 * @param int    $post_id ID of the icon-post.
-	 * @param string $term_slug ID of the iconset-term.
+	 * @param string $term_slug Slug of the iconset-term.
 	 * @param string $filetype Name for the filetype to add.
 	 * @return string
 	 */

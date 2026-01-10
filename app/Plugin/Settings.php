@@ -641,12 +641,21 @@ class Settings {
 			// get the post ID.
 			$post_id = absint( $post_id ); // @phpstan-ignore argument.type
 
+			// get the unformatted post title.
+			$post_title = get_post_field( 'post_title', $post_id );
+			if ( ! is_string( $post_title ) ) {
+				$post_title = (string) $post_id;
+			}
+
 			// update the title.
 			/* translators: %1$s will be replaced by the object title. */
-			update_option( 'downloadlist_inheriting_status', sprintf( __( 'Updating %1$s', 'download-list-block-with-icons' ), get_post_field( 'post_title', $post_id ) ) );
+			update_option( 'downloadlist_inheriting_status', sprintf( __( 'Updating %1$s', 'download-list-block-with-icons' ), $post_title ) );
 
 			// get the content.
 			$content = get_post_field( 'post_content', $post_id, 'raw' );
+			if ( ! is_string( $content ) ) {
+				$content = '';
+			}
 
 			// get the list of parsed blocks.
 			$blocks = parse_blocks( $content );
@@ -845,6 +854,11 @@ class Settings {
 	private function add_block( int $post_id ): void {
 		// get the content.
 		$content = get_post_field( 'post_content', $post_id, 'raw' );
+
+		// bail if no content could be loaded.
+		if ( ! is_string( $content ) ) {
+			return;
+		}
 
 		// add our own block at the end.
 		$content .= '<!-- wp:downloadlist/list /-->';

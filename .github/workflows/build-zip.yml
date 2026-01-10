@@ -35,6 +35,8 @@ jobs:
           cp node_modules/bootstrap-icons/font/bootstrap-icons.css css/bootstrap/bootstrap-icons.css
           cp -r node_modules/bootstrap-icons/font/fonts/ css/bootstrap/
 
+      - uses: anchore/sbom-action@v0
+
       - name: Generate autoloader
         run: composer dump-autoload -oa --no-dev
 

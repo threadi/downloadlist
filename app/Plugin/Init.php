@@ -360,7 +360,7 @@ class Init {
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
 			// if no iconset could be detected, get the default iconset.
 			if ( false === $iconset_obj ) {
-				$iconset_obj = Iconsets::get_instance()->get_default_iconset();
+				$iconset_obj = Iconsets::get_instance()->get_preset_default_iconset();
 				if ( ! $iconset_obj ) {
 					$iconset = 'iconset-generic';
 				} else {
@@ -369,7 +369,7 @@ class Init {
 			}
 		} else {
 			// set default iconset if none is set (for lists from < 3.0).
-			$iconset_obj = Iconsets::get_instance()->get_default_iconset();
+			$iconset_obj = Iconsets::get_instance()->get_preset_default_iconset();
 			if ( ! $iconset_obj ) {
 				$iconset = 'iconset-generic';
 			} else {
@@ -665,7 +665,7 @@ class Init {
 
 			// if text should be output instead of link, use the other template.
 			ob_start();
-			if ( false !== $attributes['hideLink'] ) {
+			if ( isset( $attributes['hideLink'] ) && false !== $attributes['hideLink'] ) {
 				// add the not-linked entry to output.
 				include Templates::get_instance()->get( 'list-item-not-linked.php' );
 			} else {

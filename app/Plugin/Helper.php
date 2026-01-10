@@ -13,6 +13,8 @@ defined( 'ABSPATH' ) || exit;
 use DownloadListWithIcons\Iconsets\Iconset_Base;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use WP_Error;
+use WP_Filesystem_Base;
+use WP_Filesystem_Direct;
 use WP_Image_Editor;
 use WP_Post;
 use WP_Query;
@@ -107,40 +109,6 @@ class Helper {
 	}
 
 	/**
-	 * Set given iconset as default.
-	 *
-	 * @param int $term_id ID of the term to set as default.
-	 * @return void
-	 */
-	public static function set_iconset_default( int $term_id ): void {
-		// delete all default-marker for icon-sets.
-		$query   = array(
-			'taxonomy'   => 'dl_icon_set',
-			'hide_empty' => false,
-		);
-		$results = new WP_Term_Query( $query );
-
-		// get the results.
-		$terms = $results->get_terms();
-
-		// convert them if terms are not an array.
-		if ( ! is_array( $terms ) ) {
-			$terms = array( $terms );
-		}
-
-		// loop through them.
-		foreach ( $terms as $term ) {
-			if ( ! $term instanceof WP_Term ) {
-				continue;
-			}
-			delete_term_meta( $term->term_id, 'default' );
-		}
-
-		// mark this as default icon-set.
-		update_term_meta( $term_id, 'default', 1 );
-	}
-
-	/**
 	 * Generate the style-file for the icons on request (e.g. if a new cpt is saved).
 	 *
 	 * @param int $term_id Only generate styles for the given term_id.
@@ -148,8 +116,6 @@ class Helper {
 	 * @noinspection PhpConditionAlreadyCheckedInspection
 	 */
 	public static function generate_css( int $term_id = 0 ): void {
-		global $wp_filesystem;
-
 		$false = false;
 		/**
 		 * Prevent generation of new CSS-files.
@@ -161,7 +127,7 @@ class Helper {
 			return;
 		}
 
-		// define variable for resulting styles.
+		// define variable for the resulting styles.
 		$styles = '';
 
 		// get all icons of non-generic iconsets which are configured with icon-set and file-type.
@@ -299,13 +265,12 @@ class Helper {
 			$iconset_generated_slugs[ $iconset_obj->get_slug() ] = 1;
 		}
 
+		// get the filesystem handler.
+		$wp_filesystem = self::get_wp_filesystem();
+
 		// write resulting code in upload-directory.
 		$style_path = self::get_style_path();
 		if ( ! empty( $styles ) ) {
-			// Make sure that the above variable is properly setup.
-			require_once ABSPATH . 'wp-admin/includes/file.php'; // @phpstan-ignore requireOnce.fileNotFound
-			WP_Filesystem();
-
 			// create directory if it does not exist atm.
 			if ( false === $wp_filesystem->exists( dirname( $style_path ) ) ) {
 				$wp_filesystem->mkdir( dirname( $style_path ) );
@@ -331,8 +296,8 @@ class Helper {
 			 * @since 3.4.0 Available since 3.4.0
 			 */
 			do_action( 'downloadlist_generate_css', $styles );
-		} elseif ( file_exists( $style_path ) ) {
-			wp_delete_file( $style_path );
+		} elseif ( $wp_filesystem->exists( $style_path ) ) {
+			$wp_filesystem->delete( $style_path );
 		}
 	}
 
@@ -343,6 +308,11 @@ class Helper {
 	 * @return array<int,string>
 	 */
 	public static function get_type_and_subtype_from_mimetype( string $mimetype ): array {
+		// bail if no mime type is given.
+		if ( empty( $mimetype ) ) {
+			return array();
+		}
+
 		// split the string.
 		$mimetype_array = explode( '/', $mimetype );
 
@@ -568,7 +538,7 @@ class Helper {
 
 				// set this iconset as default, if set.
 				if ( $iconset_obj->should_be_default() ) {
-					update_term_meta( $term['term_id'], 'default', 1 );
+					Iconsets::get_instance()->set_default_iconset( $term['term_id'] );
 				}
 
 				// set width and height to default ones.
@@ -655,12 +625,18 @@ class Helper {
 	 * @return array<string,mixed>
 	 */
 	public static function get_files_from_directory( string $path = '.' ): array {
-		// get WP_Filesystem as object.
-		global $wp_filesystem;
-		WP_Filesystem();
+		$wp_filesystem = self::get_wp_filesystem();
+
+		// get the directory listing.
+		$dir_list = $wp_filesystem->dirlist( $path, true, true );
+
+		// bail if no dir list could be loaded.
+		if ( ! is_array( $dir_list ) ) {
+			return array();
+		}
 
 		// load files recursive in array and return resulting list.
-		return self::get_files( $wp_filesystem->dirlist( $path, true, true ), $path );
+		return self::get_files( $dir_list, $path );
 	}
 
 	/**
@@ -753,5 +729,46 @@ class Helper {
 	 */
 	public static function is_cli(): bool {
 		return defined( 'WP_CLI' ) && WP_CLI;
+	}
+
+	/**
+	 * Return the WP Filesystem object.
+	 *
+	 * @param bool $local True to get the local filesystem object.
+	 *
+	 * @return WP_Filesystem_Base
+	 */
+	public static function get_wp_filesystem( bool $local = false ): WP_Filesystem_Base {
+		// get WP Filesystem-handler for local files if requested.
+		if ( $local ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+
+			return new WP_Filesystem_Direct( false );
+		}
+
+		// get global WP Filesystem handler.
+		require_once ABSPATH . '/wp-admin/includes/file.php';
+		\WP_Filesystem();
+		global $wp_filesystem;
+
+		// bail if wp_filesystem is not of "WP_Filesystem_Base".
+		if ( ! $wp_filesystem instanceof WP_Filesystem_Base ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+			return new WP_Filesystem_Direct( false );
+		}
+
+		// return local object on any error.
+		if ( $wp_filesystem->errors->has_errors() ) {
+			// embed the local directory object.
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+
+			return new WP_Filesystem_Direct( false );
+		}
+
+		// return the requested filesystem object.
+		return $wp_filesystem;
 	}
 }

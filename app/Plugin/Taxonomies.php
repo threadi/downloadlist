@@ -109,7 +109,7 @@ class Taxonomies {
 	 *
 	 * @return array<string,mixed>
 	 */
-	private function get_taxonomies(): array {
+	public function get_taxonomies(): array {
 		$taxonomies = array(
 			'dl_icon_set'   => array(
 				'post_types' => array( 'dl_icons' ),
@@ -429,7 +429,7 @@ class Taxonomies {
 
 		// mark the icon-set as default if checkbox is set.
 		if ( ! empty( $_POST['default'] ) ) {
-			Helper::set_iconset_default( $term_id );
+			Iconsets::get_instance()->set_default_iconset( $term_id );
 		}
 
 		// get sizes for icons if they have been changed.

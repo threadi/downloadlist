@@ -12,15 +12,16 @@
 	"minimum-stability": "stable",
 	"scripts": {
 		"post-install-cmd": [
-			"\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra,vendor/sirbrillig/phpcs-variable-analysis,vendor/automattic/vipwpcs",
 			"\"vendor/bin/mozart\" compose",
 			"composer dump-autoload"
 		],
 		"post-update-cmd": [
-			"\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra,vendor/sirbrillig/phpcs-variable-analysis,vendor/automattic/vipwpcs",
 			"\"vendor/bin/mozart\" compose",
 			"composer dump-autoload"
-		]
+		],
+		"test": "phpunit",
+		"test-install": "bash bin/install-wp-tests.sh wordpress_test root 'debian' 127.0.0.1 latest",
+		"test-install-during-build": "bash bin/install-wp-tests.sh wordpress_test root 'debian' 127.0.0.1 latest false true"
 	},
 	"extra": {
 		"mozart": {
@@ -50,6 +51,11 @@
 			"DownloadListWithIcons\\": "app/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"DownloadListWithIcons\\Tests\\": "tests/"
+		}
+	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^3.1.0",
 		"pronamic/wp-documentor": "^1.3.2",
@@ -58,7 +64,9 @@
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"phpstan/extension-installer": "^1.4",
 		"php-stubs/wp-cli-stubs": "^2.11",
-		"coenjacobs/mozart": "^0.7.1"
+		"coenjacobs/mozart": "^0.7.1",
+		"yoast/phpunit-polyfills": "^1.0",
+		"wp-phpunit/wp-phpunit": "^6.3"
 	},
 	"require": {
 		"php": "^8.1",

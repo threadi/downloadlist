@@ -120,10 +120,13 @@ class Uninstaller {
 		// cleanup options from our taxonomy.
 		delete_option( $taxonomy . '_children' );
 
+		// get the filesystem handler.
+		$wp_filesystem = Helper::get_wp_filesystem();
+
 		// delete style-file.
 		$path = Helper::get_style_path();
-		if ( file_exists( $path ) ) {
-			wp_delete_file( $path );
+		if ( $wp_filesystem->exists( $path ) ) {
+			$wp_filesystem->delete( $path );
 		}
 
 		// get media files with title and/or description to delete these entries.

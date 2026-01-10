@@ -68,7 +68,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get style for given file-type.
+	 * Return style for given file-type.
 	 *
 	 * @param int    $post_id ID of the icon-post.
 	 * @param string $term_slug ID of the iconset-term.
@@ -120,7 +120,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 	}
 
 	/**
-	 * Get all possible dashicons as array.
+	 * Return all possible dashicons as array.
 	 *
 	 * @return array<string,string>
 	 */
