@@ -58,7 +58,7 @@ class Iconsets {
 	public function init(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_styles' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_styles_run' ), 10, 0 );
+		add_action( 'enqueue_block_assets', array( $this, 'enqueue_styles_run' ), 10, 0 );
 		add_action( 'admin_action_downloadlist_iconset_default', array( $this, 'set_default_by_request' ) );
 		add_action( 'pre_get_posts', array( $this, 'hide_generated_iconsets' ) );
 	}
@@ -226,7 +226,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Run the enqueuing (used in frontend and block editor).
+	 * Run the enqueuing of iconset styles (used in frontend and block editor).
 	 *
 	 * @param array<int,Iconset_Base> $iconsets List of iconsets to enqueue.
 	 * @return void
