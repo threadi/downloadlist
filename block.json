@@ -1,8 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/block.json",
-	"apiVersion": 2,
+	"apiVersion": 3,
 	"name": "downloadlist/list",
-	"version": "4.0.0",
+	"version": "4.0.2",
 	"title": "Download List Block with Icons",
 	"category": "widgets",
 	"icon": "list-view",

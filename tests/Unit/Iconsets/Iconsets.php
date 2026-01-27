@@ -5,7 +5,7 @@
  * @package download-list-block-with-icons
  */
 
-namespace DownloadListWithIcons\Tests\Unit\Plugin;
+namespace DownloadListWithIcons\Tests\Unit\Iconsets;
 
 use DownloadListWithIcons\Tests\DownloadListTestCase;
 

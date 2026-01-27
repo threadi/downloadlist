@@ -31,7 +31,7 @@ class GenerateCss extends DownloadListTestCase {
 	 * @return void
 	 */
 	public function test_generate_complete_css(): void {
-		// sleep for 2 seconds to allow to check if the css file has been generated.
+		// sleep for 2 seconds to allow to check if the CSS file has been generated.
 		sleep( 2 );
 
 		// get the filesystem object.

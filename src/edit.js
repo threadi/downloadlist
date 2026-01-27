@@ -635,6 +635,7 @@ export default function Edit( object ) {
 							label={__('Hide icons', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideIcon }
 							onChange={ value => onChangeHideIcon( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						{false === object.attributes.hideIcon &&
 							<SelectControl
@@ -643,6 +644,7 @@ export default function Edit( object ) {
 								value={ object.attributes.iconset }
 								onChange={(value) => onChangeIconSet( value, object )}
 								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'download-list-block-with-icons' ) }</ExternalLink>}
+								__next40pxDefaultSize
 							/>
 						}
 					</PanelBody>
@@ -651,6 +653,7 @@ export default function Edit( object ) {
 							label={__('Show text instead of link', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideLink }
 							onChange={ value => onChangeHideLink( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						{false === object.attributes.hideLink && <div>
 							<SelectControl
@@ -661,12 +664,14 @@ export default function Edit( object ) {
 									{ label: __('Attachment page', 'download-list-block-with-icons'), value: 'attachmentpage' },
 								] }
 								onChange={ value => onChangeLinkTarget( value, object ) }
+								__next40pxDefaultSize
 							/>
 							{'direct' === object.attributes.linkTarget &&
 								<CheckboxControl
 									label={__('Do not force download', 'download-list-block-with-icons')}
 									checked={ object.attributes.doNotForceDownload }
 									onChange={ value => onChangeDoNotForceDownload( value, object ) }
+									__nextHasNoMarginBottom
 								/>
 							}
 							<SelectControl
@@ -682,6 +687,7 @@ export default function Edit( object ) {
 								] }
 								onChange={ value => onChangeLinkBrowserTarget( value, object ) }
 								help={object.attributes.linkBrowserTarget.length > 0 && __( 'Be aware that this setting could be overridden by the visitors browser. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) }
+								__next40pxDefaultSize
 							/>
 							{'own' === object.attributes.linkBrowserTarget && <TextControl label={__( 'Set frame name', 'download-list-block-with-icons' )} value={ object.attributes.linkBrowserTargetName } onChange={ value => onChangeLinkBrowserTargetName( value, object ) } />}
 						</div>}
@@ -691,6 +697,7 @@ export default function Edit( object ) {
 							label={__('Show download-button', 'download-list-block-with-icons')}
 							checked={ object.attributes.showDownloadButton }
 							onChange={ value => onChangeShowDownloadButton( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						{true === object.attributes.showDownloadButton && <div>
 							<SelectControl
@@ -706,6 +713,7 @@ export default function Edit( object ) {
 								] }
 								onChange={ value => onChangeDownloadLinkTarget( value, object ) }
 								help={object.attributes.downloadLinkTarget.length > 0 && __( 'Be aware that this setting could be overridden by the visitors browser. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) }
+								__next40pxDefaultSize
 							/>
 							{'own' === object.attributes.downloadLinkTarget && <TextControl label={__( 'Set frame name', 'download-list-block-with-icons' )} value={ object.attributes.downloadLinkTargetName } onChange={ value => onChangeDownloadLinkTargetName( value, object ) } />}
 						</div>
@@ -716,21 +724,25 @@ export default function Edit( object ) {
 							label={__('Hide file sizes', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideFileSize }
 							onChange={ value => onChangeHideFileSize( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						<CheckboxControl
 							label={__('Hide descriptions', 'download-list-block-with-icons')}
 							checked={ object.attributes.hideDescription }
 							onChange={ value => onChangeHideDescription( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						<CheckboxControl
 							label={__('Show file dates', 'download-list-block-with-icons')}
 							checked={ object.attributes.showFileDates }
 							onChange={ value => onChangeShowFileDates( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						<CheckboxControl
 							label={__('Show file format labels', 'download-list-block-with-icons')}
 							checked={ object.attributes.showFileFormatLabel }
 							onChange={ value => onChangeShowFileFormatLabel( value, object ) }
+							__nextHasNoMarginBottom
 						/>
 						<SelectControl
 							label={__('Robots', 'download-list-block-with-icons')}
@@ -740,6 +752,7 @@ export default function Edit( object ) {
 								{ label: __('nofollow', 'download-list-block-with-icons'), value: 'nofollow' },
 							] }
 							onChange={ value => onChangeLinkRobots( value, object ) }
+							__next40pxDefaultSize
 						/>
 					</PanelBody>
 					<PanelBody initialOpen={false} title={ __( 'Do you need help?', 'download-list-block-with-icons' ) }>
