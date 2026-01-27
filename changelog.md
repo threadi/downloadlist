@@ -10,6 +10,7 @@
 ### Changed
 
 - Optimized iconset handling
+- Updated Block API version to 3
 - Updated dependencies
 
 ## [4.0.1] - 12.11.2025
