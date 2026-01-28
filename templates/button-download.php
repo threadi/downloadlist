@@ -11,5 +11,8 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
 ?>
 <a href="<?php echo esc_url( $url ); ?>" class="download-button button button-secondary" target="<?php echo esc_attr( $download_target_attribute ); ?>" <?php echo esc_attr( $download_button_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ); ?>><?php echo esc_html__( 'Download', 'download-list-block-with-icons' ); ?></a>

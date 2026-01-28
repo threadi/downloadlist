@@ -21,6 +21,9 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
 ?>
 <li class="attachment-<?php echo absint( $file_id ); ?> file_<?php echo esc_attr( $type ); ?> file_<?php echo esc_attr( $subtype ); ?> <?php echo esc_attr( $hide_icon ); ?>"><a href="<?php echo esc_url( $url ); ?>"<?php echo esc_attr( $download_link_attribute ); ?>
 <?php

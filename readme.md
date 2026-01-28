@@ -89,6 +89,31 @@ Hint: this check runs against the VIP-GO-platform which is not our target for th
 
 `vendor/bin/phpcs --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/block/*,*/svn/*,*/src/* --standard=WordPress-VIP-Go .`
 
+## Check PHP compatibility
+
+`vendor/bin/phpcs -p app --standard=PHPCompatibilityWP`
+
 ### Generate documentation
 
 `vendor/bin/wp-documentor parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php`
+
+## Check with the plugin "Plugin Check"
+
+This runs the plugin check as the plugin check in the WordPress repository does on every plugin update. It should result in no errors.
+
+Hint: run this not in the development environment, it would also check all dependencies that is unnecessary.
+Use a normal WordPress installation with an installed PCP plugin.
+
+`wp plugin check --error-severity=7 --warning-severity=6 --include-low-severity-errors --categories=plugin_repo --format=json --slug=personio-integration-light .`
+
+## PHP Unit tests
+
+### Preparation
+
+Be sure to have run `composer install` or `composer update` before.
+
+Then: `composer test-install`
+
+### Run
+
+`composer test`

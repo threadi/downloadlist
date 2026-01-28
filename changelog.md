@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [4.0.2] - 28.01.2026
 
 ### Added
 
@@ -11,8 +11,13 @@
 
 - Optimized iconset handling
 - Optimized style loading of iconsets
+- Optimized spaces around the title of downloads without link
 - Updated Block API version to 3
 - Updated dependencies
+
+### Fixed
+
+- Fixed missing check for direct requests on template files
 
 ## [4.0.1] - 12.11.2025
 
