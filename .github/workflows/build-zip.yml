@@ -43,6 +43,9 @@ jobs:
       - name: Run PHPStan check
         run: vendor/bin/phpstan analyse
 
+      - name: PHP Compatibility check
+        run: vendor/bin/phpcs -p app --standard=PHPCompatibilityWP
+
       - name: Run WordPress Coding Standard fixes
         run: vendor/bin/phpcbf --standard=ruleset.xml .
         continue-on-error: true
