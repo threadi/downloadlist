@@ -6,5 +6,8 @@
  * @package download-list-block-with-icons
  */
 
+// prevent direct access.
+defined( 'ABSPATH' ) || exit;
+
 ?>
 </ul></div>

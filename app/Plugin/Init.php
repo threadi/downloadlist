@@ -62,6 +62,16 @@ class Init {
 	 * @return void
 	 */
 	public function init(): void {
+		// get the icon-set files.
+		$downloadlist_iconset_files = glob( plugin_dir_path( DL_PLUGIN ) . 'inc/iconsets/*.php' );
+
+		// include all icon-set-files.
+		if ( is_array( $downloadlist_iconset_files ) ) {
+			foreach ( $downloadlist_iconset_files as $downloadlist_filename ) {
+				include_once $downloadlist_filename;
+			}
+		}
+
 		// initialize updates.
 		Updates::get_instance()->init();
 

@@ -45,7 +45,7 @@ The development repository is on [GitHub](https://github.com/threadi/downloadlis
 
 1. Upload "download-list-block-with-icons" to the "/wp-content/plugins/" directory.
 2. Activate the plugin through the "Plugins" menu in WordPress.
-3. Add the Download List Block to the post or page where you want to show the downloadlist. Choose the file(s) you wish to present.
+3. Add the Download List Block to the post or page where you want to show the download list. Choose the file(s) you wish to present.
 
 == Upgrade Notice ==
 
@@ -76,10 +76,10 @@ Yes, you can manage your custom iconsets in WordPress-backend.
 
 = No icon is displayed at a file. Why? =
 
-The file will probably have a file type that does not comply with the WordPress standard and is therefore not included in our plugin. You have 2 options:
+The file will probably have a file type that does not follow the WordPress standard and is therefore not included in our plugin. You have 2 options:
 
-* Use the iconset specific hook downloadlist_*_icons to add the list of icons. Check beforehand with the developer of your chosen icon set if the icon you want is included there.
-* Use another icon set which supports the file type if necessary.
+* Use the iconset specific hook "downloadlist_*_icons" to add the list of icons. Check beforehand with the developer of your chosen icon set if the icon you want is included there.
+* Use another icon set, which supports the file type if necessary.
 
 = Does the plugin also support Elementor or other PageBuilders? =
 
@@ -89,7 +89,12 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Compatibility With WordPress 6.9
-- New created blocks get a false default iconset
+- Added SBOM generation for the plugin
+- Added PHP Unit Tests
+- Optimized iconset handling
+- Optimized style loading of iconsets
+- Optimized spaces around the title of downloads without link
+- Updated Block API version to 3
+- Updated dependencies
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
