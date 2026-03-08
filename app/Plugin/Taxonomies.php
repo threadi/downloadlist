@@ -82,7 +82,7 @@ class Taxonomies {
 	public function register(): void {
 		// loop through the taxonomies.
 		foreach ( $this->get_taxonomies() as $taxonomy_name => $settings ) {
-			// bail if post_types or args are not set.
+			// bail if "post_types" or args are not set.
 			if ( ! isset( $settings['post_types'], $settings['args'] ) ) {
 				continue;
 			}

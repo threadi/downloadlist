@@ -55,7 +55,7 @@ class Updates {
 	 * @return void
 	 */
 	public function init(): void {
-		add_action( 'plugins_loaded', array( $this, 'run' ) );
+		add_action( 'init', array( $this, 'run' ) );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class Updates {
 			// initialize transients.
 			Admin::get_instance()->configure_transients();
 
-			// force refresh of css on every plugin update.
+			// force refresh of CSS on every plugin update.
 			$transient_obj = Transients::get_instance()->add();
 			$transient_obj->set_action( array( 'DownloadListWithIcons\Plugin\Helper', 'generate_css' ) );
 			$transient_obj->set_name( 'downloadlist_refresh_css' );
@@ -98,6 +98,11 @@ class Updates {
 			// run this on update from version before 4.0.0.
 			if ( version_compare( $db_plugin_version, '4.0.0', '<' ) ) {
 				$this->version400();
+			}
+
+			// run this on update from version before 4.1.0.
+			if ( version_compare( $db_plugin_version, '4.1.0', '<' ) ) {
+				$this->version410();
 			}
 
 			// save new plugin-version in DB.
@@ -152,5 +157,17 @@ class Updates {
 		// install settings.
 		Settings::get_instance()->add_settings();
 		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+	}
+
+	/**
+	 * Run on update to 4.1.0 or newer.
+	 *
+	 * @return void
+	 */
+	private function version410(): void {
+		// initialize our own post-type and taxonomies during installation.
+		Taxonomies::get_instance()->register();
+		Helper::add_generic_iconsets();
+		Helper::generate_css();
 	}
 }

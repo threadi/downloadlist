@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added "Themify Icons" as new iconset
+
+### Changed
+
+- Set compatibility with WordPress 7.0
+
 ## [4.0.2] - 28.01.2026
 
 ### Added
