@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -39,7 +39,7 @@ The development repository is on [GitHub](https://github.com/threadi/downloadlis
 
 1. After adding the Block you have to choose the files.
 2. After adding files to the Block they will be listed.
-3. The files will be listed in frontend.
+3. The files will be listed in the frontend.
 
 == Installation ==
 
@@ -49,7 +49,7 @@ The development repository is on [GitHub](https://github.com/threadi/downloadlis
 
 == Upgrade Notice ==
 
-There is nothing else to consider when updating this plugin.
+Nothing else to consider when updating this plugin.
 
 == Frequently Asked Questions ==
 
@@ -60,11 +60,11 @@ The description stored at the file in the Media Library itself is used as the de
 - Open the file in the Media Library for editing. There you will find the field "Description". Enter the desired description here.
 - Or open this editing mask via the pencil at the file in the block you have created.
 
-You can also add a custom title and description per file used only by the Block of this plugin.
+You can also add a custom title and description for each file used only by the Block of this plugin.
 
-= Is there a limit to the number of files? =
+= Is there a limit to the amount files? =
 
-No, there are no limitations.
+No, there are no restrictions.
 
 = Can I use the block in my theme? =
 
@@ -93,7 +93,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added PHP Unit Tests
 - Optimized iconset handling
 - Optimized style loading of iconsets
-- Optimized spaces around the title of downloads without link
+- Optimized spaces around the title of downloads without a link
 - Updated Block API version to 3
 - Updated dependencies
 
