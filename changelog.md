@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added "Themify Icons" as new iconset
+
 ### Changed
 
 - Set compatibility with WordPress 7.0

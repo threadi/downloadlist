@@ -18,7 +18,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 
 - Choose files from media library
 - Output chosen files as list with file-type-specific icon, download-link, title, size and description from media library
-- Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons)
+- Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons, Themify-Icons)
 - Drag & Drop sorting for the list
 - Remove files from list
 

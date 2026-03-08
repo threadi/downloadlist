@@ -22,7 +22,7 @@ class Iconsets extends DownloadListTestCase {
 		$iconsets = \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_icon_sets();
 		$this->assertIsArray( $iconsets );
 		$this->assertNotEmpty( $iconsets );
-		$this->assertCount( 3, $iconsets );
+		$this->assertCount( 4, $iconsets );
 		$this->assertArrayHasObjectOfType( 'DownloadListWithIcons\Iconsets\Iconset_Base', $iconsets );
 	}
 
