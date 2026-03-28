@@ -10,19 +10,27 @@ namespace DownloadListWithIcons\Plugin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Button;
-use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Checkbox;
-use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Select;
-use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\SelectPostTypeObject;
-use DownloadListWithIcons\Dependencies\easySettingsForWordPress\Fields\Text;
 use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
 use DownloadListWithIcons\Iconsets\Iconsets;
+use easySettingsForWordPress\Fields\Button;
+use easySettingsForWordPress\Fields\Checkbox;
+use easySettingsForWordPress\Fields\Select;
+use easySettingsForWordPress\Fields\SelectPostTypeObject;
+use easySettingsForWordPress\Fields\Text;
+use easySettingsForWordPress\Page;
 use WP_Query;
 
 /**
- * Object which handles the settings of this plugin.
+ * Object, which handles the settings of this plugin.
  */
 class Settings {
+
+	/**
+	 * The settings object.
+	 *
+	 * @var \easySettingsForWordPress\Settings
+	 */
+	private \easySettingsForWordPress\Settings $settings_obj;
 
 	/**
 	 * Instance of actual object.
@@ -101,24 +109,22 @@ class Settings {
 		/**
 		 * Configure the basic settings object.
 		 */
-		$settings_obj = \DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance();
-		$settings_obj->set_slug( 'downloadlist' );
-		$settings_obj->set_plugin_slug( DL_PLUGIN );
-		$settings_obj->set_path( Helper::get_plugin_path() . '/app/Dependencies/easySettingsForWordPress/' );
-		$settings_obj->set_url( Helper::get_plugin_url() . '/app/Dependencies/easySettingsForWordPress/' );
-		$settings_obj->set_menu_title( __( 'Download List Block with Icons', 'download-list-block-with-icons' ) );
-		$settings_obj->set_title( __( 'Settings for Download List Block with Icons', 'download-list-block-with-icons' ) );
-		$settings_obj->set_menu_slug( $this->get_menu_slug() );
-		$settings_obj->set_menu_parent_slug( $this->get_php_page() );
-		$settings_obj->set_translations(
+		$this->settings_obj = new \easySettingsForWordPress\Settings( DL_PLUGIN );
+		$this->settings_obj->set_slug( 'downloadlist' );
+		$this->settings_obj->set_plugin_slug( DL_PLUGIN );
+		$this->settings_obj->set_menu_title( __( 'Download List Block with Icons', 'download-list-block-with-icons' ) );
+		$this->settings_obj->set_title( __( 'Settings for Download List Block with Icons', 'download-list-block-with-icons' ) );
+		$this->settings_obj->set_menu_slug( $this->get_menu_slug() );
+		$this->settings_obj->set_menu_parent_slug( $this->get_php_page() );
+		$this->settings_obj->set_translations(
 			array(
-				'title_settings_import_file_missing' => __( 'Required file missing', 'download-list-block-with-icons' ),
+				'title_settings_import_file_missing' => __( 'A required file missing', 'download-list-block-with-icons' ),
 				'text_settings_import_file_missing'  => __( 'Please choose a JSON-file with settings to import.', 'download-list-block-with-icons' ),
 				'lbl_ok'                             => __( 'OK', 'download-list-block-with-icons' ),
 				'lbl_cancel'                         => __( 'Cancel', 'download-list-block-with-icons' ),
 				'import_title'                       => __( 'Import', 'download-list-block-with-icons' ),
 				'dialog_import_title'                => __( 'Import plugin settings', 'download-list-block-with-icons' ),
-				'dialog_import_text'                 => __( 'Click on the button below to chose your JSON-file with the settings.', 'download-list-block-with-icons' ),
+				'dialog_import_text'                 => __( 'Click on the button below to choose your JSON-file with the settings.', 'download-list-block-with-icons' ),
 				'dialog_import_button'               => __( 'Import now', 'download-list-block-with-icons' ),
 				'dialog_import_error_title'          => __( 'Error during import', 'download-list-block-with-icons' ),
 				'dialog_import_error_text'           => __( 'The file could not be imported!', 'download-list-block-with-icons' ),
@@ -150,7 +156,12 @@ class Settings {
 		/**
 		 * Add the settings page.
 		 */
-		$settings_page = $settings_obj->add_page( $this->get_menu_slug() );
+		$settings_page = $this->get_settings_obj()->get_page( $this->get_menu_slug() );
+
+		// bail if page could not be loaded.
+		if ( ! $settings_page instanceof Page ) {
+			return;
+		}
 
 		/**
 		 * Configure the tabs for this object.
@@ -179,41 +190,41 @@ class Settings {
 		$general_tab_info = $general_tab->add_section( 'info', 10 );
 		$general_tab_info->set_title( _x( 'How to use', 'Settings', 'download-list-block-with-icons' ) );
 		$general_tab_info->set_callback( array( $this, 'show_info' ) );
-		$general_tab_info->set_setting( $settings_obj );
+		$general_tab_info->set_setting( $this->get_settings_obj() );
 
 		// the icons section.
 		$general_tab_icons = $general_tab->add_section( 'icons', 20 );
 		$general_tab_icons->set_title( __( 'Icons', 'download-list-block-with-icons' ) );
-		$general_tab_icons->set_setting( $settings_obj );
+		$general_tab_icons->set_setting( $this->get_settings_obj() );
 
 		// the link section.
 		$general_tab_link = $general_tab->add_section( 'link', 30 );
 		$general_tab_link->set_title( __( 'Link', 'download-list-block-with-icons' ) );
-		$general_tab_link->set_setting( $settings_obj );
+		$general_tab_link->set_setting( $this->get_settings_obj() );
 
 		// the download button section.
 		$general_tab_db = $general_tab->add_section( 'download_button', 40 );
 		$general_tab_db->set_title( __( 'Download button', 'download-list-block-with-icons' ) );
-		$general_tab_db->set_setting( $settings_obj );
+		$general_tab_db->set_setting( $this->get_settings_obj() );
 
 		// the advanced section.
 		$general_tab_advanced = $general_tab->add_section( 'advanced', 50 );
 		$general_tab_advanced->set_title( __( 'Advanced settings', 'download-list-block-with-icons' ) );
-		$general_tab_advanced->set_setting( $settings_obj );
+		$general_tab_advanced->set_setting( $this->get_settings_obj() );
 
 		// the tasks section.
 		$tasks_tab_tasks = $tasks_tab->add_section( 'tasks', 10 );
 		$tasks_tab_tasks->set_title( __( 'Tasks', 'download-list-block-with-icons' ) );
-		$tasks_tab_tasks->set_setting( $settings_obj );
+		$tasks_tab_tasks->set_setting( $this->get_settings_obj() );
 
 		// add setting.
-		$hide_icon_setting = $settings_obj->add_setting( 'downloadlist_hide_icons' );
+		$hide_icon_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_icons' );
 		$hide_icon_setting->set_section( $general_tab_icons );
 		$hide_icon_setting->set_type( 'integer' );
 		$hide_icon_setting->set_default( 0 );
 		$hide_icon_setting->add_custom_var( 'block-name', 'hideIcon' );
 		$hide_icon_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Hide icons', 'download-list-block-with-icons' ) );
 		$hide_icon_setting->set_field( $field );
 
@@ -224,37 +235,37 @@ class Settings {
 		}
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_iconset' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_iconset' );
 		$setting->set_section( $general_tab_icons );
 		$setting->set_type( 'string' );
 		$setting->set_default( 'dashicons' );
 		$setting->add_custom_var( 'block-name', 'iconset' );
 		$setting->add_custom_var( 'block-format', 'string' );
-		$field = new Select();
+		$field = new Select( $this->get_settings_obj() );
 		$field->set_title( __( 'Choose an iconset', 'download-list-block-with-icons' ) );
 		$field->set_description( '<a href="' . esc_url( Iconsets::get_instance()->get_edit_link() ) . '">' . __( 'Manage Iconsets', 'download-list-block-with-icons' ) . '</a>' );
 		$field->set_options( $iconsets );
 		$setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_link_text' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_text' );
 		$setting->set_section( $general_tab_link );
 		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'hideLink' );
 		$setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Show text instead of link', 'download-list-block-with-icons' ) );
 		$setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_link_target' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_target' );
 		$setting->set_section( $general_tab_link );
 		$setting->set_type( 'string' );
 		$setting->set_default( 'direct' );
 		$setting->add_custom_var( 'block-name', 'linkTarget' );
 		$setting->add_custom_var( 'block-format', 'string' );
-		$field = new Select();
+		$field = new Select( $this->get_settings_obj() );
 		$field->set_title( __( 'Choose link target', 'download-list-block-with-icons' ) );
 		$field->set_options(
 			array(
@@ -265,26 +276,26 @@ class Settings {
 		$setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_link_no_forced_download' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_no_forced_download' );
 		$setting->set_section( $general_tab_link );
 		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'doNotForceDownload' );
 		$setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Do not force download', 'download-list-block-with-icons' ) );
 		$setting->set_field( $field );
 
 		// add setting.
-		$browser_target_setting = $settings_obj->add_setting( 'downloadlist_link_browser_target' );
+		$browser_target_setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_browser_target' );
 		$browser_target_setting->set_section( $general_tab_link );
 		$browser_target_setting->set_type( 'string' );
 		$browser_target_setting->set_default( '' );
 		$browser_target_setting->add_custom_var( 'block-name', 'linkBrowserTarget' );
 		$browser_target_setting->add_custom_var( 'block-format', 'string' );
-		$field = new Select();
+		$field = new Select( $this->get_settings_obj() );
 		$field->set_title( __( 'Handling for link', 'download-list-block-with-icons' ) );
-		$field->set_description( __( 'Be aware that this setting could be overridden by the visitors browser. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'This setting could be overridden by the browser of your visitors. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) );
 		$field->set_options(
 			array(
 				''        => __( 'Do not use', 'download-list-block-with-icons' ),
@@ -298,38 +309,38 @@ class Settings {
 		$browser_target_setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_link_browser_target_own' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_browser_target_own' );
 		$setting->set_section( $general_tab_link );
 		$setting->set_type( 'string' );
 		$setting->set_default( '' );
 		$setting->add_custom_var( 'block-name', 'linkBrowserTargetName' );
 		$setting->add_custom_var( 'block-format', 'string' );
-		$field = new Text();
+		$field = new Text( $this->get_settings_obj() );
 		$field->set_title( __( 'Set frame name', 'download-list-block-with-icons' ) );
 		$field->add_depend( $browser_target_setting, 'own' );
 		$setting->set_field( $field );
 
 		// add setting.
-		$download_button_setting = $settings_obj->add_setting( 'downloadlist_show_download_button' );
+		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_download_button' );
 		$download_button_setting->set_section( $general_tab_db );
 		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showDownloadButton' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Show download-button', 'download-list-block-with-icons' ) );
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$browser_target_setting_db = $settings_obj->add_setting( 'downloadlist_link_browser_target' );
+		$browser_target_setting_db = $this->get_settings_obj()->add_setting( 'downloadlist_link_browser_target' );
 		$browser_target_setting_db->set_section( $general_tab_db );
 		$browser_target_setting_db->set_type( 'string' );
 		$browser_target_setting_db->set_default( '' );
 		$browser_target_setting_db->add_custom_var( 'block-name', 'downloadLinkTarget' );
 		$browser_target_setting_db->add_custom_var( 'block-format', 'string' );
-		$field = new Select();
+		$field = new Select( $this->get_settings_obj() );
 		$field->set_title( __( 'Handling for link', 'download-list-block-with-icons' ) );
-		$field->set_description( __( 'Be aware that this setting could be overridden by the visitors browser. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'This setting could be overridden by the browser of your visitors. It is also against the rules for accessibility in the web.', 'download-list-block-with-icons' ) );
 		$field->set_options(
 			array(
 				''        => __( 'Do not use', 'download-list-block-with-icons' ),
@@ -343,69 +354,69 @@ class Settings {
 		$browser_target_setting_db->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_download_button_browser_target_own' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_download_button_browser_target_own' );
 		$setting->set_section( $general_tab_db );
 		$setting->set_type( 'string' );
 		$setting->set_default( '' );
 		$setting->add_custom_var( 'block-name', 'downloadLinkTargetName' );
 		$setting->add_custom_var( 'block-format', 'string' );
-		$field = new Text();
+		$field = new Text( $this->get_settings_obj() );
 		$field->set_title( __( 'Set frame name', 'download-list-block-with-icons' ) );
 		$field->add_depend( $browser_target_setting_db, 'own' );
 		$setting->set_field( $field );
 
 		// add setting.
-		$download_button_setting = $settings_obj->add_setting( 'downloadlist_hide_file_sizes' );
+		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_file_sizes' );
 		$download_button_setting->set_section( $general_tab_advanced );
 		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'hideFileSize' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Hide file sizes', 'download-list-block-with-icons' ) );
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$download_button_setting = $settings_obj->add_setting( 'downloadlist_hide_description' );
+		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_description' );
 		$download_button_setting->set_section( $general_tab_advanced );
 		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'hideDescription' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Hide description', 'download-list-block-with-icons' ) );
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$download_button_setting = $settings_obj->add_setting( 'downloadlist_show_file_dates' );
+		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_file_dates' );
 		$download_button_setting->set_section( $general_tab_advanced );
 		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showFileDates' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Show file dates', 'download-list-block-with-icons' ) );
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$download_button_setting = $settings_obj->add_setting( 'downloadlist_show_file_format_labels' );
+		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_file_format_labels' );
 		$download_button_setting->set_section( $general_tab_advanced );
 		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showFileFormatLabel' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
-		$field = new Checkbox();
+		$field = new Checkbox( $this->get_settings_obj() );
 		$field->set_title( __( 'Show file format labels', 'download-list-block-with-icons' ) );
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_robots' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_robots' );
 		$setting->set_section( $general_tab_advanced );
 		$setting->set_type( 'string' );
 		$setting->set_default( 'nofollow' );
 		$setting->add_custom_var( 'block-name', 'robots' );
 		$setting->add_custom_var( 'block-format', 'string' );
-		$field = new Select();
+		$field = new Select( $this->get_settings_obj() );
 		$field->set_title( __( 'Robots', 'download-list-block-with-icons' ) );
 		$field->set_options(
 			array(
@@ -415,11 +426,11 @@ class Settings {
 		);
 		$setting->set_field( $field );
 
-		// create dialog.
+		// create the dialog.
 		$dialog = array(
 			'title'   => __( 'Inherit settings', 'download-list-block-with-icons' ),
 			'texts'   => array(
-				'<p><strong>' . __( 'Do you really want to inherit the settings to all download list blocks?', 'download-list-block-with-icons' ) . '</strong></p>',
+				'<p><strong>' . __( 'Do you real want to inherit the settings to all download list blocks?', 'download-list-block-with-icons' ) . '</strong></p>',
 				'<p>' . __( 'This will override all custom settings on these blocks.', 'download-list-block-with-icons' ) . '</p>',
 			),
 			'buttons' => array(
@@ -437,10 +448,10 @@ class Settings {
 		);
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_inherit_settings' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_inherit_settings' );
 		$setting->set_section( $tasks_tab_tasks );
 		$setting->prevent_export( true );
-		$field = new Button();
+		$field = new Button( $this->get_settings_obj() );
 		$field->set_title( __( 'Inherit settings', 'download-list-block-with-icons' ) );
 		$field->set_button_url( '#' );
 		$field->set_button_title( __( 'Inherit settings to all download list blocks', 'download-list-block-with-icons' ) );
@@ -458,22 +469,22 @@ class Settings {
 		);
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_reset_css' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_reset_css' );
 		$setting->set_section( $tasks_tab_tasks );
 		$setting->prevent_export( true );
-		$field = new Button();
+		$field = new Button( $this->get_settings_obj() );
 		$field->set_title( __( 'Reset styles', 'download-list-block-with-icons' ) );
 		$field->set_button_url( $reset_styles_url );
 		$field->set_button_title( __( 'Reset styles', 'download-list-block-with-icons' ) );
 		$setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_add_block_to_page' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_add_block_to_page' );
 		$setting->set_section( $tasks_tab_tasks );
 		$setting->prevent_export( true );
 		$setting->set_save_callback( array( $this, 'add_block_in_page' ) );
-		$field = new SelectPostTypeObject();
-		$field->set_title( __( 'Add block to page', 'download-list-block-with-icons' ) );
+		$field = new SelectPostTypeObject( $this->get_settings_obj() );
+		$field->set_title( __( 'Add the block to a page', 'download-list-block-with-icons' ) );
 		$field->set_button_title( __( 'Choose a page', 'download-list-block-with-icons' ) );
 		$field->set_popup_title( __( 'Choose and select a page', 'download-list-block-with-icons' ) );
 		$field->set_endpoint( '/wp-json/wp/v2/pages' );
@@ -485,12 +496,12 @@ class Settings {
 		$setting->set_field( $field );
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_add_block_to_post' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_add_block_to_post' );
 		$setting->set_section( $tasks_tab_tasks );
 		$setting->prevent_export( true );
 		$setting->set_save_callback( array( $this, 'add_block_in_post' ) );
-		$field = new SelectPostTypeObject();
-		$field->set_title( __( 'Add block to post', 'download-list-block-with-icons' ) );
+		$field = new SelectPostTypeObject( $this->get_settings_obj() );
+		$field->set_title( __( 'Add the block to a post', 'download-list-block-with-icons' ) );
 		$field->set_button_title( __( 'Choose a post', 'download-list-block-with-icons' ) );
 		$field->set_popup_title( __( 'Choose and select a post', 'download-list-block-with-icons' ) );
 		$field->set_endpoint( '/wp-json/wp/v2/posts' );
@@ -510,12 +521,12 @@ class Settings {
 			get_admin_url() . 'admin.php'
 		);
 
-		// create dialog.
+		// create the dialog.
 		$reset_dialog = array(
 			'title'   => __( 'Reset plugin', 'download-list-block-with-icons' ),
 			'texts'   => array(
 				/* translators: %1$s will be replaced by the plugin name. */
-				'<p><strong>' . sprintf( __( 'Do you really want to reset the plugin %1$s?', 'download-list-block-with-icons' ), Helper::get_plugin_name() ) . '</strong></p>',
+				'<p><strong>' . sprintf( __( 'Do you real want to reset the plugin %1$s?', 'download-list-block-with-icons' ), Helper::get_plugin_name() ) . '</strong></p>',
 				'<p>' . __( 'This will remove any custom icons and iconsets.', 'download-list-block-with-icons' ) . '</p>',
 				'<p>' . __( 'Any setting of this plugin will be reset.', 'download-list-block-with-icons' ) . '</p>',
 				'<p>' . __( 'It will NOT remove the download lists from your content.', 'download-list-block-with-icons' ) . '</p>',
@@ -535,10 +546,10 @@ class Settings {
 		);
 
 		// add setting.
-		$setting = $settings_obj->add_setting( 'downloadlist_reset' );
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_reset' );
 		$setting->set_section( $tasks_tab_tasks );
 		$setting->prevent_export( true );
-		$field = new Button();
+		$field = new Button( $this->get_settings_obj() );
 		$field->set_title( __( 'Reset plugin', 'download-list-block-with-icons' ) );
 		$field->set_button_url( '#' );
 		$field->set_button_title( __( 'Reset plugin', 'download-list-block-with-icons' ) );
@@ -547,7 +558,7 @@ class Settings {
 		$setting->set_field( $field );
 
 		// initialize this settings object.
-		$settings_obj->init();
+		$this->get_settings_obj()->init();
 	}
 
 	/**
@@ -575,13 +586,13 @@ class Settings {
 		// check nonce.
 		check_ajax_referer( 'downloadlist-inherit-info', 'nonce' );
 
-		// create dialog.
+		// create the dialog.
 		$dialog = array(
 			'detail' => array(
 				'title'   => __( 'Inherit settings', 'download-list-block-with-icons' ),
 				'texts'   => array(
 					'<p><strong>' . __( 'Settings for download list block have been inherited.', 'download-list-block-with-icons' ) . '</strong></p>',
-					'<p>' . __( 'Please check your download list blocks now', 'download-list-block-with-icons' ) . '</p>',
+					'<p>' . __( 'Please check now your download list blocks.', 'download-list-block-with-icons' ) . '</p>',
 				),
 				'buttons' => array(
 					array(
@@ -668,7 +679,7 @@ class Settings {
 				}
 
 				// loop through the settings of this plugin and set the values on the block.
-				foreach ( \DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->get_settings() as $setting_obj ) {
+				foreach ( $this->get_settings_obj()->get_settings() as $setting_obj ) {
 					// get the block name of this setting.
 					$settings_block_name = $setting_obj->get_custom_var( 'block-name' );
 
@@ -737,7 +748,7 @@ class Settings {
 			'page' => $this->get_menu_slug(),
 		);
 
-		// add tab, if set.
+		// add the tab, if set.
 		if ( ! empty( $tab ) ) {
 			$array['tab'] = $tab;
 		}
@@ -770,7 +781,7 @@ class Settings {
 	}
 
 	/**
-	 * Add block to given page.
+	 * Add the block to a given page.
 	 *
 	 * It will be added at the end of the content of the given page.
 	 *
@@ -808,7 +819,7 @@ class Settings {
 	}
 
 	/**
-	 * Add block to given post.
+	 * Add the block to a given post.
 	 *
 	 * It will be added at the end of the content of the given post.
 	 *
@@ -846,7 +857,7 @@ class Settings {
 	}
 
 	/**
-	 * Add block to any post-entry.
+	 * Add the block to any post-entry.
 	 *
 	 * @param int $post_id The post ID to use.
 	 * @return void
@@ -917,5 +928,14 @@ class Settings {
 
 		// forward user.
 		wp_safe_redirect( (string) wp_get_referer() );
+	}
+
+	/**
+	 * Return the settings object.
+	 *
+	 * @return \easySettingsForWordPress\Settings
+	 */
+	public function get_settings_obj(): \easySettingsForWordPress\Settings {
+		return $this->settings_obj;
 	}
 }

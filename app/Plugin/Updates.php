@@ -155,8 +155,9 @@ class Updates {
 	 */
 	private function version400(): void {
 		// install settings.
-		Settings::get_instance()->add_settings();
-		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+		$settings_obj = Settings::get_instance();
+		$settings_obj->add_settings();
+		$settings_obj->get_settings_obj()->activation();
 	}
 
 	/**

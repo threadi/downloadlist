@@ -58,7 +58,7 @@ class Admin {
 	 * @return void
 	 */
 	public function init(): void {
-		// initialize the template support in backend.
+		// initialize the template support in the backend.
 		Templates::get_instance()->init();
 
 		// initialize help system.
@@ -75,7 +75,7 @@ class Admin {
 	}
 
 	/**
-	 * Add our own styles and js in backend.
+	 * Add our own styles and JS in the backend.
 	 *
 	 * @return void
 	 */
@@ -136,7 +136,7 @@ class Admin {
 	}
 
 	/**
-	 * Add link to icon management in plugin list.
+	 * Add a link to icon management in plugin list.
 	 *
 	 * @param array<int,string> $links List of links.
 	 * @return array<int,string>
@@ -144,7 +144,7 @@ class Admin {
 	public function add_setting_link( array $links ): array {
 		$links[] = '<a href="' . esc_url( Settings::get_instance()->get_url() ) . '">' . __( 'Settings', 'download-list-block-with-icons' ) . '</a>';
 
-		// create link to custom icon list.
+		// create the link to custom icon list.
 		$url = add_query_arg(
 			array(
 				'post_type' => 'dl_icons',

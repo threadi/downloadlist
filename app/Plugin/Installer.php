@@ -58,7 +58,9 @@ class Installer {
 		}
 
 		// install settings.
-		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+		$settings_obj = Settings::get_instance();
+		$settings_obj->add_settings();
+		$settings_obj->get_settings_obj()->activation();
 
 		// initialize our own post-type and taxonomies during installation.
 		Taxonomies::get_instance()->register();

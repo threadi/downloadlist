@@ -108,7 +108,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Return all iconsets which are registered.
+	 * Return all iconsets, which are registered.
 	 *
 	 * @return array<int,Iconset_Base>
 	 */
@@ -118,7 +118,7 @@ class Iconsets {
 		/**
 		 * Register a single iconset through adding it to the list.
 		 *
-		 * The iconset must be an object extending Iconset_Base and implement Iconset.
+		 * The iconset must be an object extending "Iconset_Base" and implement Iconset.
 		 *
 		 * @since 3.0.0 Available since 3.0.0.
 		 *
@@ -189,7 +189,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Get iconset based on slug.
+	 * Return iconset based on the slug.
 	 *
 	 * @param string $slug The slug of the iconset.
 	 * @return Iconset_Base|false
@@ -242,7 +242,7 @@ class Iconsets {
 
 		// enqueue each style of the configured iconsets.
 		foreach ( $iconsets as $iconset_obj ) {
-			// add the files of this iconset in frontend.
+			// add the files of this iconset in the frontend.
 			foreach ( $iconset_obj->get_style_files() as $file ) {
 				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
 			}
@@ -272,7 +272,7 @@ class Iconsets {
 	}
 
 	/**
-	 * Hide post-entry which are assigned to generated iconsets.
+	 * Hide post-entry, which are assigned to generated iconsets.
 	 *
 	 * @param WP_Query $query The Query.
 	 * @return void
@@ -294,7 +294,7 @@ class Iconsets {
 			)
 		);
 
-		// add filter for slugs which are marked as generic iconsets.
+		// add a filter for slugs, which are marked as generic iconsets.
 		$query->set(
 			'tax_query',
 			array(
@@ -376,7 +376,7 @@ class Iconsets {
 
 		// loop through them.
 		foreach ( $terms as $term ) {
-			// bail if entry is not a WP_Term object.
+			// bail if entry is not a "WP_Term" object.
 			if ( ! $term instanceof WP_Term ) {
 				continue;
 			}
