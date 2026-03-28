@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [4.1.0] - 28.03.2026
 
 ### Added
 
@@ -8,7 +8,9 @@
 
 ### Changed
 
+- Updated settings library to new main version for optimized handling
 - Set compatibility with WordPress 7.0
+- Optimized some texts
 
 ## [4.0.2] - 28.01.2026
 

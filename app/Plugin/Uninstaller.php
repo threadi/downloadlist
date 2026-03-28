@@ -180,8 +180,10 @@ class Uninstaller {
 		}
 
 		// enable the settings.
-		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->activation();
+		$settings_obj = Settings::get_instance();
+		$settings_obj->add_settings();
+		$settings_obj->get_settings_obj()->activation();
 		// and remove them.
-		\DownloadListWithIcons\Dependencies\easySettingsForWordPress\Settings::get_instance()->delete_settings();
+		$settings_obj->get_settings_obj()->delete_settings();
 	}
 }
