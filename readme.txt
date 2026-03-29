@@ -89,12 +89,9 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 
 = @@VersionNumber@@ =
 
-- Added SBOM generation for the plugin
-- Added PHP Unit Tests
-- Optimized iconset handling
-- Optimized style loading of iconsets
-- Optimized spaces around the title of downloads without a link
-- Updated Block API version to 3
-- Updated dependencies
+- Added "Themify Icons" as new iconset
+- Updated settings library to new main version for optimized handling
+- Set compatibility with WordPress 7.0
+- Optimized some texts
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
