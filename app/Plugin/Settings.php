@@ -28,9 +28,9 @@ class Settings {
 	/**
 	 * The settings object.
 	 *
-	 * @var \easySettingsForWordPress\Settings
+	 * @var ?\easySettingsForWordPress\Settings
 	 */
-	private \easySettingsForWordPress\Settings $settings_obj;
+	private ?\easySettingsForWordPress\Settings $settings_obj = null;
 
 	/**
 	 * Instance of actual object.
@@ -109,7 +109,7 @@ class Settings {
 		/**
 		 * Configure the basic settings object.
 		 */
-		$this->settings_obj = new \easySettingsForWordPress\Settings( DL_PLUGIN );
+		$this->settings_obj = $this->get_settings_obj();
 		$this->settings_obj->set_slug( 'downloadlist' );
 		$this->settings_obj->set_plugin_slug( DL_PLUGIN );
 		$this->settings_obj->set_menu_title( __( 'Download List Block with Icons', 'download-list-block-with-icons' ) );
@@ -931,11 +931,19 @@ class Settings {
 	}
 
 	/**
-	 * Return the settings object.
+	 * Return the configured settings object.
 	 *
 	 * @return \easySettingsForWordPress\Settings
 	 */
 	public function get_settings_obj(): \easySettingsForWordPress\Settings {
+		/**
+		 * Get the object one time.
+		 */
+		if ( null === $this->settings_obj ) {
+			$this->settings_obj = new \easySettingsForWordPress\Settings( DL_PLUGIN );
+		}
+
+		// return it.
 		return $this->settings_obj;
 	}
 }
