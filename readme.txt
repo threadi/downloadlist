@@ -88,10 +88,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 == Changelog ==
 
 = @@VersionNumber@@ =
-
-- Added "Themify Icons" as new iconset
-- Updated settings library to new main version for optimized handling
-- Set compatibility with WordPress 7.0
-- Optimized some texts
+- Updated dependencies
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)
