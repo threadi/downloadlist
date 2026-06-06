@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Optimized capability checks
+- Optimized sanitization of entered data
+- Updated dependencies
+
+### Fixed
+
+- Fixed error if custom icon is added without a selected file type
+
+### Removed
+
+- Removed now unsued function to dismiss a notices, now handled by easy-transients-for-wordpress
+
 ## [4.1.1] - 26.04.2026
 
 ### Changed

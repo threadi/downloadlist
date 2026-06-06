@@ -416,8 +416,8 @@ class Taxonomies {
 			return;
 		}
 
-		// bail if nonce does not match.
-		if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) ) {
+		// bail if capability is not given.
+		if ( ! current_user_can( 'edit_posts' ) ) {
 			return;
 		}
 
@@ -427,45 +427,42 @@ class Taxonomies {
 		// delete marker for default icon-set.
 		delete_term_meta( $term_id, 'default' );
 
+		// get the values.
+		$default     = absint( filter_input( INPUT_POST, 'default', FILTER_SANITIZE_NUMBER_INT ) );
+		$font        = esc_url_raw( wp_unslash( filter_input( INPUT_POST, 'font', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
+		$font_size   = filter_input( INPUT_POST, 'font_size', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$font_weight = filter_input( INPUT_POST, 'font_weight', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
 		// mark the icon-set as default if checkbox is set.
-		if ( ! empty( $_POST['default'] ) ) {
+		if ( 1 === $default ) {
 			Iconsets::get_instance()->set_default_iconset( $term_id );
 		}
 
 		// get sizes for icons if they have been changed.
-		$width  = ! empty( $_POST['width'] ) ? absint( $_POST['width'] ) : 0;
-		$height = ! empty( $_POST['height'] ) ? absint( $_POST['height'] ) : 0;
+		$width  = absint( filter_input( INPUT_POST, 'width', FILTER_SANITIZE_NUMBER_INT ) );
+		$height = absint( filter_input( INPUT_POST, 'height', FILTER_SANITIZE_NUMBER_INT ) );
 
 		// save the width.
-		if ( isset( $_POST['width'] ) && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
+		if ( $width > 0 && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
 			update_term_meta( $term_id, 'width', $width );
 			$generate_styles = true;
 		}
 
 		// save the height.
-		if ( isset( $_POST['height'] ) && absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
+		if ( $height > 0 && absint( get_term_meta( $term_id, 'height', true ) ) !== $height ) {
 			update_term_meta( $term_id, 'height', $height );
 			$generate_styles = true;
 		}
-
-		// get the font URL from field, if set.
-		$font = ! empty( $_POST['font'] ) ? sanitize_url( wp_unslash( $_POST['font'] ) ) : '';
 
 		// save the font URL.
 		if ( ! empty( $font ) ) {
 			update_term_meta( $term_id, 'font', $font );
 		}
 
-		// get the font weight.
-		$font_size = ! empty( $_POST['font_size'] ) ? absint( $_POST['font_size'] ) : 0;
-
 		// save the font size.
 		if ( ! empty( $font_size ) ) {
 			update_term_meta( $term_id, 'font_size', $font_size );
 		}
-
-		// get the font weight.
-		$font_weight = ! empty( $_POST['font_weight'] ) ? absint( $_POST['font_weight'] ) : 0;
 
 		// save the font weight.
 		if ( ! empty( $font_weight ) ) {

@@ -239,8 +239,8 @@ class Helper {
 			$font = get_term_meta( $terms[0]->term_id, 'font', true );
 			if ( ! empty( $font ) ) {
 				$styles .= '@font-face {
-  font-family: "' . $terms[0]->slug . '";
-  src: url("' . $font . '");
+  font-family: "' . sanitize_html_class( $terms[0]->slug ) . '";
+  src: url("' . esc_url( $font ) . '");
 }';
 			}
 
@@ -252,12 +252,14 @@ class Helper {
 				$file_type_name = get_post_meta( $post_id, 'file_type', true );
 
 				// get type and subtype.
-				list($type, $subtype) = self::get_type_and_subtype_from_mimetype( $file_type_name );
+				if( ! empty( $file_type_name ) ) {
+					list($type, $subtype) = self::get_type_and_subtype_from_mimetype($file_type_name);
 
-				// get iconset-specific styles.
-				$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
-				if ( ! empty( $subtype ) ) {
-					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
+					// get iconset-specific styles.
+					$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $type);
+					if (!empty($subtype)) {
+						$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $subtype);
+					}
 				}
 			}
 
@@ -752,7 +754,7 @@ class Helper {
 		\WP_Filesystem();
 		global $wp_filesystem;
 
-		// bail if wp_filesystem is not of "WP_Filesystem_Base".
+		// bail if "wp_filesystem" is not of "WP_Filesystem_Base".
 		if ( ! $wp_filesystem instanceof WP_Filesystem_Base ) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
@@ -770,5 +772,14 @@ class Helper {
 
 		// return the requested filesystem object.
 		return $wp_filesystem;
+	}
+
+	/**
+	 * Return whether plugin developer modus is enabled.
+	 *
+	 * @return bool
+	 */
+	public static function is_development_mode_active(): bool {
+		return function_exists( 'wp_is_development_mode' ) && wp_is_development_mode( 'plugin' );
 	}
 }

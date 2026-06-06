@@ -570,6 +570,11 @@ class Settings {
 		// check nonce.
 		check_ajax_referer( 'downloadlist-inherit-settings', 'nonce' );
 
+		// bail if capability is missing.
+		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
+			return;
+		}
+
 		// run the inheriting.
 		$this->inherit_settings_to_blocks();
 
@@ -585,6 +590,11 @@ class Settings {
 	public function get_inherit_settings_progress_info(): void {
 		// check nonce.
 		check_ajax_referer( 'downloadlist-inherit-info', 'nonce' );
+
+		// bail if capability is missing.
+		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
+			return;
+		}
 
 		// create the dialog.
 		$dialog = array(
@@ -891,6 +901,11 @@ class Settings {
 		// check nonce.
 		check_admin_referer( 'downloadlist-reset-css', 'nonce' );
 
+		// bail if capability is missing.
+		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
+			return;
+		}
+
 		// reset it.
 		Helper::regenerate_icons();
 		Helper::generate_css();
@@ -914,6 +929,11 @@ class Settings {
 	public function reset_plugin_by_request(): void {
 		// check nonce.
 		check_admin_referer( 'downloadlist-reset', 'nonce' );
+
+		// bail if capability is missing.
+		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
+			return;
+		}
 
 		// run it.
 		Uninstaller::get_instance()->run();
