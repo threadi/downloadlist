@@ -11,6 +11,7 @@ namespace DownloadListWithIcons\Iconsets;
 defined( 'ABSPATH' ) || exit;
 
 use DownloadListWithIcons\Plugin\Helper;
+use DownloadListWithIcons\Plugin\Settings;
 use WP_Post;
 use WP_Query;
 use WP_Term;
@@ -253,10 +254,14 @@ class Iconsets {
 	 * Set iconset as default via link-request.
 	 *
 	 * @return void
-	 * @noinspection PhpNoReturnAttributeCanBeAddedInspection
 	 */
 	public function set_default_by_request(): void {
 		check_ajax_referer( 'downloadlist-set_iconset-default', 'nonce' );
+
+		// bail if capability is missing.
+		if ( ! current_user_can( Settings::get_instance()->get_settings_obj()->get_capability() ) ) {
+			return;
+		}
 
 		// get the term-ID from request.
 		$term_id = ! empty( $_GET['term_id'] ) ? absint( $_GET['term_id'] ) : 0;

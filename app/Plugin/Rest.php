@@ -98,10 +98,10 @@ class Rest {
 	 * @noinspection PhpUnused
 	 */
 	public function get_files_data( WP_REST_Request $request ): array {
-		// get the post_ids from request.
+		// get the post IDs from request.
 		$post_ids = $request->get_param( 'post_ids' );
 
-		// bail if no ids are given.
+		// bail if no IDs are given.
 		if ( empty( $post_ids ) ) {
 			return array();
 		}
@@ -110,7 +110,7 @@ class Rest {
 		$file_data = array();
 		foreach ( $post_ids as $post_id ) {
 			// get the JS-data of this attachment.
-			$js = wp_prepare_attachment_for_js( $post_id );
+			$js = wp_prepare_attachment_for_js( absint( $post_id ) );
 
 			// bail if it is empty.
 			if ( empty( $js ) ) {

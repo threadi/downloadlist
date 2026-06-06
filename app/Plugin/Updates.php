@@ -59,7 +59,7 @@ class Updates {
 	}
 
 	/**
-	 * Check on each load if plugin-version has been changed.
+	 * Check each load if plugin-version has been changed.
 	 * If yes, run appropriated functions for migrate to the new version.
 	 *
 	 * @return void
@@ -68,14 +68,14 @@ class Updates {
 		// get installed plugin-version (version of the actual files in this plugin).
 		$installed_plugin_version = DL_VERSION;
 
-		// get db-version (version which was last installed).
+		// get db-version (version, which was last installed).
 		$db_plugin_version = get_option( 'downloadlistVersion', '3.0.0' );
 
 		// compare version if we are not in development-mode.
 		if (
 			(
 				(
-					function_exists( 'wp_is_development_mode' ) && false === wp_is_development_mode( 'plugin' )
+					Helper::is_development_mode_active()
 				)
 				|| ! function_exists( 'wp_is_development_mode' )
 			)
@@ -90,28 +90,28 @@ class Updates {
 			$transient_obj->set_name( 'downloadlist_refresh_css' );
 			$transient_obj->save();
 
-			// run this on update from version before 3.4.0.
+			// run this on an update from the version before 3.4.0.
 			if ( version_compare( $db_plugin_version, '3.4.0', '<' ) ) {
 				$this->version340();
 			}
 
-			// run this on update from version before 4.0.0.
+			// run this on an update from the version before 4.0.0.
 			if ( version_compare( $db_plugin_version, '4.0.0', '<' ) ) {
 				$this->version400();
 			}
 
-			// run this on update from version before 4.1.0.
+			// run this on an update from the version before 4.1.0.
 			if ( version_compare( $db_plugin_version, '4.1.0', '<' ) ) {
 				$this->version410();
 			}
 
-			// save new plugin-version in DB.
+			// save new plugin-version in the database.
 			update_option( 'downloadlistVersion', $installed_plugin_version, true );
 		}
 	}
 
 	/**
-	 * Run on update to 3.4.0 or newer.
+	 * Run on an update to 3.4.0 or newer.
 	 *
 	 * @return void
 	 */
@@ -149,7 +149,7 @@ class Updates {
 	}
 
 	/**
-	 * Run on update to 4.0.0 or newer.
+	 * Run on an update to 4.0.0 or newer.
 	 *
 	 * @return void
 	 */
@@ -161,7 +161,7 @@ class Updates {
 	}
 
 	/**
-	 * Run on update to 4.1.0 or newer.
+	 * Run on an update to 4.1.0 or newer.
 	 *
 	 * @return void
 	 */

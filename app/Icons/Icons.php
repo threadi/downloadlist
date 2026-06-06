@@ -124,34 +124,44 @@ class Icons {
 	 * @return void
 	 */
 	public function check_taxonomy( int $post_id ): void {
-		// bail if nonce does not match.
-		if ( ! empty( $_POST['_wpnonce'] ) && false === wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'update-post_' . $post_id ) ) {
-			return;
-		}
-
 		// do nothing if post is in trash or auto-draft.
 		if ( in_array( get_post_status( $post_id ), array( 'trash', 'auto-draft' ), true ) ) {
 			return;
 		}
 
+		// bail if capabilities are missing.
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		// bail if nonce is missing or invalid.
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce(
+			sanitize_key( $_POST['_wpnonce'] ),
+			'update-post_' . $post_id
+		) ) {
+			return;
+		}
+
+		// get the values from request.
+		$icon      = absint( filter_input( INPUT_POST, 'icon', FILTER_SANITIZE_NUMBER_INT ) );
+		$file_type = sanitize_text_field( wp_unslash( filter_input( INPUT_POST, 'file_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
+		$unicode   = sanitize_text_field( wp_unslash( filter_input( INPUT_POST, 'unicode', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
+
 		// save assigned icon-file.
-		if ( ! empty( $_POST['icon'] ) ) {
-			update_post_meta( $post_id, 'icon', absint( $_POST['icon'] ) );
+		if ( 1 === $icon ) {
+			update_post_meta( $post_id, 'icon', 1 );
 		}
 
 		// save assigned file-type.
-		if ( ! empty( $_POST['file_type'] ) ) {
-			update_post_meta( $post_id, 'file_type', sanitize_text_field( wp_unslash( $_POST['file_type'] ) ) );
+		if ( ! empty( $file_type ) ) {
+			update_post_meta( $post_id, 'file_type', $file_type );
 		} elseif ( 'draft' !== get_post_status( $post_id ) ) {
 			delete_post_meta( $post_id, 'file_type' );
 		}
 
-		// save given unicode.
-		if ( ! empty( $_POST['unicode'] ) ) {
-			// get the unicode from request.
-			$unicode = sanitize_text_field( wp_unslash( $_POST['unicode'] ) );
-
-			// add slash before the code.
+		// save the given Unicode.
+		if ( ! empty( $unicode ) ) {
+			// add a slash before the code.
 			$unicode = '\\\\' . $unicode;
 
 			// save it.
