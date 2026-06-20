@@ -252,13 +252,13 @@ class Helper {
 				$file_type_name = get_post_meta( $post_id, 'file_type', true );
 
 				// get type and subtype.
-				if( ! empty( $file_type_name ) ) {
-					list($type, $subtype) = self::get_type_and_subtype_from_mimetype($file_type_name);
+				if ( ! empty( $file_type_name ) ) {
+					list($type, $subtype) = self::get_type_and_subtype_from_mimetype( $file_type_name );
 
 					// get iconset-specific styles.
-					$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $type);
-					if (!empty($subtype)) {
-						$styles .= $iconset_obj->get_style_for_filetype($post_id, $terms[0]->slug, $subtype);
+					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
+					if ( ! empty( $subtype ) ) {
+						$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $subtype );
 					}
 				}
 			}

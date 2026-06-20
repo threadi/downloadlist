@@ -88,6 +88,10 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 == Changelog ==
 
 = @@VersionNumber@@ =
+- Optimized capability checks
+- Optimized sanitization of entered data
 - Updated dependencies
+- Fixed error if custom icon is added without a selected file type
+- Removed now unsued function to dismiss a notices, now handled by easy-transients-for-wordpress
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

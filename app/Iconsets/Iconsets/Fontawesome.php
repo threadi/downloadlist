@@ -97,7 +97,7 @@ class Fontawesome extends Iconset_Base implements Iconset {
 		foreach ( $this->get_icon_codes() as $local_filetype => $icon ) {
 			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $local_filetype );
 			if ( empty( $types[ $type ] ) ) {
-				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ). ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "Font Awesome 7 Free", sans-serif;font-size: ' . $width . 'px;font-weight: 900 }';
+				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "Font Awesome 7 Free", sans-serif;font-size: ' . $width . 'px;font-weight: 900 }';
 				$types[ $type ] = 1;
 			}
 			if ( ! empty( $subtype ) && empty( $types[ $subtype ] ) ) {
