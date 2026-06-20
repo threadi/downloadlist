@@ -223,7 +223,7 @@ class Bootstrap extends Iconset_Base implements Iconset {
 		foreach ( $this->get_icon_codes() as $icon_filetype => $icon ) {
 			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $icon_filetype );
 			if ( empty( $types[ $type ] ) ) {
-				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ). ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
+				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "bootstrap-icons", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $type ] = 1;
 			}
 			if ( ! empty( $subtype ) ) {
