@@ -3,7 +3,7 @@
  * Plugin Name:       Download List Block with Icons
  * Description:       Provides a Gutenberg Block to manage a download list with file type specific icons.
  * Requires at least: 6.0
- * Requires PHP:      8.0
+ * Requires PHP:      8.2
  * Version:           @@VersionNumber@@
  * Author:            Thomas Zwirner
  * Author URI:        https://www.thomaszwirner.de
@@ -17,8 +17,8 @@
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-// do nothing if PHP-version is not 8.0 or newer.
-if ( PHP_VERSION_ID < 80000 ) { // @phpstan-ignore smaller.alwaysFalse
+// do nothing if PHP-version is not 8.2 or newer.
+if ( PHP_VERSION_ID < 80200 ) { // @phpstan-ignore smaller.alwaysFalse
 	return;
 }
 

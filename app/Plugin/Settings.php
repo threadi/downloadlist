@@ -220,7 +220,6 @@ class Settings {
 		// add setting.
 		$hide_icon_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_icons' );
 		$hide_icon_setting->set_section( $general_tab_icons );
-		$hide_icon_setting->set_type( 'integer' );
 		$hide_icon_setting->set_default( 0 );
 		$hide_icon_setting->add_custom_var( 'block-name', 'hideIcon' );
 		$hide_icon_setting->add_custom_var( 'block-format', 'bool' );
@@ -250,7 +249,6 @@ class Settings {
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_text' );
 		$setting->set_section( $general_tab_link );
-		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'hideLink' );
 		$setting->add_custom_var( 'block-format', 'bool' );
@@ -278,7 +276,6 @@ class Settings {
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_no_forced_download' );
 		$setting->set_section( $general_tab_link );
-		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'doNotForceDownload' );
 		$setting->add_custom_var( 'block-format', 'bool' );
@@ -323,7 +320,6 @@ class Settings {
 		// add setting.
 		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_download_button' );
 		$download_button_setting->set_section( $general_tab_db );
-		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showDownloadButton' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
@@ -368,7 +364,6 @@ class Settings {
 		// add setting.
 		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_file_sizes' );
 		$download_button_setting->set_section( $general_tab_advanced );
-		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'hideFileSize' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
@@ -379,7 +374,6 @@ class Settings {
 		// add setting.
 		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_hide_description' );
 		$download_button_setting->set_section( $general_tab_advanced );
-		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'hideDescription' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
@@ -390,7 +384,6 @@ class Settings {
 		// add setting.
 		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_file_dates' );
 		$download_button_setting->set_section( $general_tab_advanced );
-		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showFileDates' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
@@ -401,7 +394,6 @@ class Settings {
 		// add setting.
 		$download_button_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_file_format_labels' );
 		$download_button_setting->set_section( $general_tab_advanced );
-		$download_button_setting->set_type( 'integer' );
 		$download_button_setting->set_default( 0 );
 		$download_button_setting->add_custom_var( 'block-name', 'showFileFormatLabel' );
 		$download_button_setting->add_custom_var( 'block-format', 'bool' );
