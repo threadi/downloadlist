@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup WP-CLI
         uses: godaddy-wordpress/setup-wp-cli@1
@@ -20,13 +20,8 @@ jobs:
       - name: Run package installs and builds
         run: |
           composer install
-          composer update
           npm i
           npm run build
-          cd vendor/threadi/easy-dialog-for-wordpress/
-          npm i
-          npm run build
-          cd ../../../
           mkdir -p css/fontawesome/
           mkdir -p css/webfonts/
           cp node_modules/@fortawesome/fontawesome-free/css/all.css css/fontawesome/fontawesome6.css
@@ -47,21 +42,21 @@ jobs:
         run: vendor/bin/phpcs -p app --standard=PHPCompatibilityWP
 
       - name: Run WordPress Coding Standard fixes
-        run: vendor/bin/phpcbf --standard=ruleset.xml .
+        run: vendor/bin/phpcbf .
         continue-on-error: true
 
       - name: Run WordPress Coding Standard checks
-        run: vendor/bin/phpcs --standard=ruleset.xml .
+        run: vendor/bin/phpcs .
 
       - name: Set version number 1
-        uses: richardrigutins/replace-in-files@v2
+        uses: richardrigutins/replace-in-files@v3
         with:
           files: 'download-list-block-with-icons.php'
           search-text: '@@VersionNumber@@'
           replacement-text: ${{ github.ref_name }}
 
-      - name: Set version number 3
-        uses: richardrigutins/replace-in-files@v2
+      - name: Set version number 2
+        uses: richardrigutins/replace-in-files@v3
         with:
           files: 'readme.txt'
           search-text: '@@VersionNumber@@'
@@ -77,10 +72,9 @@ jobs:
           rm -fr src
           rm changelog.md
           rm readme.md
-          rm ruleset.xml
           cd ..
           mv ${{ github.event.repository.name }} download-list-block-with-icons
-          zip -rq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/* -x "*/.git/*" "*/.github/*" "*/blocks/*/src/*" "*/docs/*" "*/phpcs.xml" "*/composer.json" "*/composer.lock" "*/package.json" "*/package-lock.json" "*/ruleset.xml" "*/.gitignore" "*/vendor/*" "*/node_modules/*" "/.editorconfig" "*/.gitkeep"
+          zip -rq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/* -x "*/.git/*" "*/.github/*" "*/blocks/*/src/*" "*/docs/*" "*/phpcs.xml" "*/composer.json" "*/composer.lock" "*/package.json" "*/package-lock.json" "*/phpcs.xml.dist" "*/.gitignore" "*/vendor/*" "*/node_modules/*" "/.editorconfig" "*/.gitkeep"
           zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/autoload.php
           zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/composer/*
           zip -urq ${{ github.event.repository.name }}_${{ github.ref_name }}.zip download-list-block-with-icons/vendor/threadi/easy-settings-for-wordpress/*
@@ -89,7 +83,7 @@ jobs:
           cp ${{ github.event.repository.name }}_${{ github.ref_name }}.zip ${{ github.event.repository.name }}/
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

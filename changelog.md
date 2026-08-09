@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.1.3] - 09.08.2026
+
+### Changed
+
+- Compatible with WordPress 7.1
+- Now requires PHP 8.2 or newer
+- Updated dialog lib to 2.0.0
+- Updated settings lib to 3.0.0
+- Updated dependencies for the block
+
 ## [4.1.2] - 20.06.2026
 
 ### Changed

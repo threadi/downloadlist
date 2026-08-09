@@ -1,6 +1,6 @@
 {
     "name": "threadi/downloadlist",
-	"version": "4.0.3",
+	"version": "4.1.3",
 	"authors": [
 		{
 			"name": "Thomas Zwirner",
@@ -70,9 +70,9 @@
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.2"
 	},
 	"require": {
-		"php": "^8.1",
-		"threadi/easy-dialog-for-wordpress": "^1.0.1",
-		"threadi/easy-settings-for-wordpress": "^2.1.5",
-		"threadi/easy-transients-for-wordpress": "^1.1.3"
+		"php": "^8.2",
+		"threadi/easy-dialog-for-wordpress": "^2.0.2",
+		"threadi/easy-settings-for-wordpress": "^3.0.2",
+		"threadi/easy-transients-for-wordpress": "^1.4.7"
 	}
 }

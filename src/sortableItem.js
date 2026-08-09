@@ -4,7 +4,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { Icon, dragHandle, edit, trash } from '@wordpress/icons';
+import { Icon, dragHandle, pencil, trash } from '@wordpress/icons';
 import { CSS } from '@dnd-kit/utilities';
 import { getActualDate } from "./components";
 import { gmdateI18n } from '@wordpress/date';
@@ -159,7 +159,7 @@ export function SortableItem(props) {
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
 			{0 === props.object.attributes.list && <Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>}
-			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ edit } /></Button>
+			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ pencil } /></Button>
 			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
 			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}{<div dangerouslySetInnerHTML={{ __html: file_format_label }}/>}{<div dangerouslySetInnerHTML={{ __html: file_date }}/>}
 		</div>
