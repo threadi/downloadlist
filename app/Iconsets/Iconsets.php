@@ -163,7 +163,7 @@ class Iconsets {
 			'post_status'    => array( 'any', 'trash' ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				'relation' => 'AND',
 				array(
 					'key'     => 'generic-downloadlist',
@@ -290,7 +290,7 @@ class Iconsets {
 
 		// add filter for generic iconsets.
 		$query->set(
-			'meta_query',
+			'meta_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 			array(
 				array(
 					'key'     => 'generic-downloadlist',
@@ -301,7 +301,7 @@ class Iconsets {
 
 		// add a filter for slugs, which are marked as generic iconsets.
 		$query->set(
-			'tax_query',
+			'tax_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 			array(
 				array(
 					'taxonomy' => 'dl_icon_set',
@@ -338,7 +338,7 @@ class Iconsets {
 		$query   = array(
 			'taxonomy'   => 'dl_icon_set',
 			'hide_empty' => false,
-			'meta_query' => array(
+			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'default',
 					'value'   => 1,

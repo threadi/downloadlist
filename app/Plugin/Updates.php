@@ -121,7 +121,7 @@ class Updates {
 			'post_status'    => array( 'any', 'trash' ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				'relation' => 'AND',
 				array(
 					'key'     => 'generic-downloadlist',
