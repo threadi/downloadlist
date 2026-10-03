@@ -97,7 +97,7 @@ class Uninstaller {
 
 		// delete all terms of our taxonomy.
 		$taxonomy = 'dl_icon_set';
-		$wpdb->query(
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct access necessary for uninstallation.
 			$wpdb->prepare(
 				'DELETE FROM ' . $wpdb->terms . '
 			WHERE term_id IN
@@ -115,7 +115,7 @@ class Uninstaller {
 		);
 
 		// delete all taxonomy-entries.
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->term_taxonomy . ' WHERE taxonomy = %s', array( $taxonomy ) ) );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->term_taxonomy . ' WHERE taxonomy = %s', array( $taxonomy ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct access necessary for uninstallation.
 
 		// cleanup options from our taxonomy.
 		delete_option( $taxonomy . '_children' );
@@ -135,7 +135,7 @@ class Uninstaller {
 			'post_status'    => array( 'any', 'trash' ),
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				'relation' => 'OR',
 				array(
 					'key'     => 'dl_title',

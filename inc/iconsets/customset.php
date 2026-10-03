@@ -22,7 +22,7 @@ function downloadlist_register_custom_iconset( array $iconset_list ): array {
 	$query     = array(
 		'taxonomy'   => 'dl_icon_set',
 		'hide_empty' => false,
-		'meta_query' => array(
+		'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 			'relation' => 'OR',
 			array(
 				'key'   => 'type',

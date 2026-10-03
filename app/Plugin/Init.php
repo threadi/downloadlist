@@ -396,7 +396,7 @@ class Init {
 				'post_type'      => 'attachment',
 				'post_status'    => 'inherit',
 				'posts_per_page' => -1,
-				'tax_query'      => array(
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 					array(
 						'taxonomy' => 'dl_icon_lists',
 						'field'    => 'term_id',

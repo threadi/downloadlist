@@ -135,13 +135,13 @@ class Helper {
 			'post_type'      => 'dl_icons',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
 					'compare' => 'EXISTS',
 				),
 			),
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'operator' => 'EXISTS',
@@ -150,7 +150,7 @@ class Helper {
 			'fields'         => 'ids',
 		);
 		if ( $term_id > 0 ) {
-			$query_non_generic_icons['tax_query']   = array();
+			$query_non_generic_icons['tax_query']   = array();  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 			$query_non_generic_icons['tax_query'][] = array(
 				'taxonomy' => 'dl_icon_set',
 				'field'    => 'term_id',
@@ -164,13 +164,13 @@ class Helper {
 			'post_type'      => 'dl_icons',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'meta_query'     => array(
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
 					'compare' => 'NOT EXISTS',
 				),
 			),
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'terms'    => Iconsets::get_instance()->get_generic_sets_as_slug_array(),
@@ -181,7 +181,7 @@ class Helper {
 			'fields'         => 'ids',
 		);
 		if ( $term_id > 0 ) {
-			$query_generic_icons['tax_query']   = array();
+			$query_generic_icons['tax_query']   = array();  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 			$query_generic_icons['tax_query'][] = array(
 				'taxonomy' => 'dl_icon_set',
 				'field'    => 'term_id',
@@ -552,7 +552,7 @@ class Helper {
 					$query = array(
 						'post_type'  => 'dl_icons',
 						'post_title' => $iconset_obj->get_label(),
-						'tax_query'  => array(
+						'tax_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 							array(
 								'taxonomy' => 'dl_icon_set',
 								'terms'    => $term['term_id'],

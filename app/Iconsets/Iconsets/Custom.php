@@ -137,13 +137,13 @@ class Custom extends Iconset_Base implements Iconset {
 		$query   = array(
 			'post_type'   => 'dl_icons',
 			'post_status' => 'publish',
-			'meta_query'  => array(
+			'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
 					'compare' => 'EXISTS',
 				),
 			),
-			'tax_query'   => array(
+			'tax_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'terms'    => $this->get_slug(),
@@ -186,7 +186,7 @@ class Custom extends Iconset_Base implements Iconset {
 			'post_type'   => 'dl_icons',
 			'post_status' => 'any',
 			'fields'      => 'ids',
-			'tax_query'   => array(
+			'tax_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'terms'    => $this->get_slug(),
