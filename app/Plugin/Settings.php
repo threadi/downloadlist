@@ -721,7 +721,7 @@ class Settings {
 			);
 
 			// show progress on WP CLI.
-			if( $progress ) {
+			if ( $progress ) {
 				$progress->tick();
 			}
 
@@ -733,7 +733,7 @@ class Settings {
 		}
 
 		// end progress on WP CLI.
-		if( $progress ) {
+		if ( $progress ) {
 			$progress->finish();
 		}
 

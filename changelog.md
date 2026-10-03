@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Switches to dataview for plugin settings
+- Switched to dataview for plugin settings
 - Updated dependencies
 
 ## [4.1.3] - 09.08.2026
