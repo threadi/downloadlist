@@ -152,6 +152,7 @@ class Settings {
 				'drag_n_drop'                        => __( 'Hold to drag & drop', 'download-list-block-with-icons' ),
 			)
 		);
+		$this->settings_obj->set_view( 'dataview' );
 
 		/**
 		 * Add the settings page.
@@ -179,6 +180,7 @@ class Settings {
 
 		// the helper tab.
 		$helper_tab = $settings_page->add_tab( 'downloadlist_helper', 70 );
+		$helper_tab->set_title( ' ' );
 		$helper_tab->set_url( Helper::get_plugin_support_url() );
 		$helper_tab->set_url_target( '_blank' );
 		$helper_tab->set_tab_class( 'nav-tab-help dashicons dashicons-editor-help' );
@@ -719,7 +721,9 @@ class Settings {
 			);
 
 			// show progress on WP CLI.
-			$progress ? $progress->tick() : '';
+			if ( $progress ) {
+				$progress->tick();
+			}
 
 			// set initial title.
 			update_option( 'downloadlist_inheriting_status', __( 'Done', 'download-list-block-with-icons' ) );
@@ -729,7 +733,9 @@ class Settings {
 		}
 
 		// end progress on WP CLI.
-		$progress ? $progress->finish() : '';
+		if ( $progress ) {
+			$progress->finish();
+		}
 
 		// remove mark that inheriting is running.
 		delete_option( 'downloadlist_inheriting_running' );

@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.4] - 03.10.2026
+
+### Changed
+
+- Switched to dataview for plugin settings
+- Updated dependencies
+
 ## [4.1.3] - 09.08.2026
 
 ### Changed
