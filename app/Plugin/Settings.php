@@ -330,7 +330,7 @@ class Settings {
 		$download_button_setting->set_field( $field );
 
 		// add setting.
-		$browser_target_setting_db = $this->get_settings_obj()->add_setting( 'downloadlist_link_browser_target' );
+		$browser_target_setting_db = $this->get_settings_obj()->add_setting( 'downloadlist_download_button_browser_target' );
 		$browser_target_setting_db->set_section( $general_tab_db );
 		$browser_target_setting_db->set_type( 'string' );
 		$browser_target_setting_db->set_default( '' );
@@ -522,6 +522,7 @@ class Settings {
 				/* translators: %1$s will be replaced by the plugin name. */
 				'<p><strong>' . sprintf( __( 'Do you real want to reset the plugin %1$s?', 'download-list-block-with-icons' ), Helper::get_plugin_name() ) . '</strong></p>',
 				'<p>' . __( 'This will remove any custom icons and iconsets.', 'download-list-block-with-icons' ) . '</p>',
+				'<p>' . __( 'The titles and descriptions you have set for files in download lists will also be removed.', 'download-list-block-with-icons' ) . '</p>',
 				'<p>' . __( 'Any setting of this plugin will be reset.', 'download-list-block-with-icons' ) . '</p>',
 				'<p>' . __( 'It will NOT remove the download lists from your content.', 'download-list-block-with-icons' ) . '</p>',
 			),
@@ -566,7 +567,12 @@ class Settings {
 
 		// bail if capability is missing.
 		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
-			return;
+			wp_send_json_error( null, 403 );
+		}
+
+		// bail if inheriting is already running.
+		if ( $this->is_inheriting_running() ) {
+			wp_send_json_error( array( 'message' => __( 'The settings are already being inherited. Please wait until this is finished.', 'download-list-block-with-icons' ) ), 409 );
 		}
 
 		// run the inheriting.
@@ -587,7 +593,7 @@ class Settings {
 
 		// bail if capability is missing.
 		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
-			return;
+			wp_send_json_error( null, 403 );
 		}
 
 		// create the dialog.
@@ -614,10 +620,22 @@ class Settings {
 				absint( get_option( 'downloadlist_inheriting_count' ) ),
 				absint( get_option( 'downloadlist_inheriting_max' ) ),
 				absint( get_option( 'downloadlist_inheriting_running' ) ),
-				get_option( 'downloadlist_inheriting_status' ),
+				esc_html( (string) get_option( 'downloadlist_inheriting_status' ) ),
 				$dialog,
 			)
 		);
+	}
+
+	/**
+	 * Return whether inheriting of settings is running at the moment.
+	 *
+	 * A marker older than 10 minutes is ignored, e.g. after a timeout of the request.
+	 *
+	 * @return bool
+	 */
+	private function is_inheriting_running(): bool {
+		$running = absint( get_option( 'downloadlist_inheriting_running' ) );
+		return $running > 0 && ( time() - $running ) < 10 * MINUTE_IN_SECONDS;
 	}
 
 	/**
@@ -632,24 +650,34 @@ class Settings {
 		// set initial title.
 		update_option( 'downloadlist_inheriting_status', __( 'Load objects ..', 'download-list-block-with-icons' ) );
 
+		// get all post types which use the block editor (posts, pages, custom post types, synced patterns, templates).
+		$post_types = array_values( array_diff( get_post_types_by_support( 'editor' ), array( 'attachment' ) ) );
+
 		// get all objects with our block.
 		$query   = array(
-			'post_type'      => array( 'page', 'post' ),
-			'post_status'    => 'any',
-			's'              => 'wp:downloadlist/list',
-			'fields'         => 'ids',
-			'posts_per_page' => -1,
+			'post_type'              => $post_types,
+			'post_status'            => 'any',
+			's'                      => 'wp:downloadlist/list',
+			'fields'                 => 'ids',
+			'posts_per_page'         => -1,
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
 		);
 		$results = new WP_Query( $query );
+		$count   = count( $results->get_posts() );
 
 		// show progress on WP CLI.
-		$progress = Helper::is_cli() ? \WP_CLI\Utils\make_progress_bar( _n( 'Updating the object', 'Updating the objects', $results->found_posts, 'download-list-block-with-icons' ), $results->found_posts ) : false;
+		$progress = Helper::is_cli() ? \WP_CLI\Utils\make_progress_bar( _n( 'Updating the object', 'Updating the objects', $count, 'download-list-block-with-icons' ), $count ) : false;
 
 		// save the count.
-		update_option( 'downloadlist_inheriting_max', $results->found_posts );
+		update_option( 'downloadlist_inheriting_max', $count );
 
 		// reset the count.
 		update_option( 'downloadlist_inheriting_count', 0 );
+
+		// get the values of the settings in block format (only once for all objects).
+		$values = $this->get_block_values();
 
 		// loop through the posts.
 		foreach ( $results->get_posts() as $post_id ) {
@@ -672,65 +700,35 @@ class Settings {
 				$content = '';
 			}
 
-			// get the list of parsed blocks.
-			$blocks = parse_blocks( $content );
+			// get the list of parsed blocks and set the values on our blocks, also in nested blocks.
+			$changed = false;
+			$blocks  = $this->set_values_on_blocks( parse_blocks( $content ), $values, $changed );
 
-			// loop through the blocks and get our own download list block.
-			foreach ( $blocks as $index => $block ) {
-				// bail if block does not match.
-				if ( 'downloadlist/list' !== $block['blockName'] ) {
-					continue;
-				}
-
-				// loop through the settings of this plugin and set the values on the block.
-				foreach ( $this->get_settings_obj()->get_settings() as $setting_obj ) {
-					// get the block name of this setting.
-					$settings_block_name = $setting_obj->get_custom_var( 'block-name' );
-
-					// bail if block-name is not set as custom var.
-					if ( empty( $settings_block_name ) ) {
-						continue;
-					}
-
-					// get value.
-					$value = get_option( $setting_obj->get_name() );
-
-					// convert value depending on settings to block compatible value.
-					switch ( $setting_obj->get_custom_var( 'block-format' ) ) {
-						case 'bool':
-							$value = 1 === absint( $value );
-							break;
-						default:
-							$value = (string) $value;
-							break;
-					}
-
-					$blocks[ $index ]['attrs'][ $settings_block_name ] = $value;
-				}
+			// save the content only if one of our blocks has been found.
+			if ( $changed ) {
+				// wp_update_post() expects slashed data, so slash it to keep backslashes (e.g. in JSON of block attributes).
+				wp_update_post(
+					array(
+						'ID'           => $post_id,
+						'post_content' => wp_slash( serialize_blocks( $blocks ) ),
+					)
+				);
 			}
-
-			// get the updated list of blocks.
-			$content = serialize_blocks( $blocks );
-
-			// save this.
-			wp_update_post(
-				array(
-					'ID'           => $post_id,
-					'post_content' => $content,
-				)
-			);
 
 			// show progress on WP CLI.
 			if ( $progress ) {
 				$progress->tick();
 			}
 
-			// set initial title.
-			update_option( 'downloadlist_inheriting_status', __( 'Done', 'download-list-block-with-icons' ) );
-
 			// update the count.
-			update_option( 'downloadlist_inheriting_count', absint( get_option( 'downloadlist_inheriting_count' ) + 1 ) );
+			update_option( 'downloadlist_inheriting_count', absint( get_option( 'downloadlist_inheriting_count' ) ) + 1 );
+
+			// keep the marker up to date, so a long run is not seen as dead.
+			update_option( 'downloadlist_inheriting_running', time() );
 		}
+
+		// set final title.
+		update_option( 'downloadlist_inheriting_status', __( 'Done', 'download-list-block-with-icons' ) );
 
 		// end progress on WP CLI.
 		if ( $progress ) {
@@ -739,6 +737,104 @@ class Settings {
 
 		// remove mark that inheriting is running.
 		delete_option( 'downloadlist_inheriting_running' );
+	}
+
+	/**
+	 * Return the values of the settings of this plugin as block attributes.
+	 *
+	 * @return array<string,bool|string>
+	 */
+	private function get_block_values(): array {
+		$values = array();
+		foreach ( $this->get_settings_obj()->get_settings() as $setting_obj ) {
+			// get the block name of this setting.
+			$settings_block_name = $setting_obj->get_custom_var( 'block-name' );
+
+			// bail if block-name is not set as custom var.
+			if ( empty( $settings_block_name ) || ! is_string( $settings_block_name ) ) {
+				continue;
+			}
+
+			// get value.
+			$value = get_option( $setting_obj->get_name() );
+
+			// convert value depending on settings to block compatible value.
+			switch ( $setting_obj->get_custom_var( 'block-format' ) ) {
+				case 'bool':
+					$value = 1 === absint( $value );
+					break;
+				default:
+					$value = is_scalar( $value ) ? (string) $value : '';
+					break;
+			}
+
+			$values[ $settings_block_name ] = $value;
+		}
+		return $values;
+	}
+
+	/**
+	 * Set the given values on all download list blocks in the given list, including nested blocks.
+	 *
+	 * @param array<int|string,array<string,mixed>> $blocks The parsed blocks.
+	 * @param array<string,bool|string>             $values The values to set.
+	 * @param bool                                  $changed Will be set to true if one of our blocks has been found.
+	 *
+	 * @return array<int|string,array<string,mixed>>
+	 * @phpstan-param array<int|string, array{blockName: string|null, attrs: array<mixed>, innerBlocks: array<mixed>[], innerHTML: string, innerContent: array<mixed>}> $blocks
+	 * @phpstan-return array<int|string, array{blockName: string|null, attrs: array<mixed>, innerBlocks: array<mixed>[], innerHTML: string, innerContent: array<mixed>}>
+	 */
+	private function set_values_on_blocks( array $blocks, array $values, bool &$changed ): array {
+		foreach ( $blocks as $index => $block ) {
+			// handle nested blocks (e.g. in groups or columns).
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$blocks[ $index ]['innerBlocks'] = $this->set_values_on_inner_blocks( $block['innerBlocks'], $values, $changed );
+			}
+
+			// bail if block does not match.
+			if ( 'downloadlist/list' !== $block['blockName'] ) {
+				continue;
+			}
+
+			// set the values.
+			foreach ( $values as $name => $value ) {
+				$blocks[ $index ]['attrs'][ $name ] = $value;
+			}
+			$changed = true;
+		}
+		return $blocks;
+	}
+
+	/**
+	 * Set the given values on all download list blocks in the given list of inner blocks, including their inner blocks.
+	 *
+	 * @param array<array<mixed>>       $blocks The inner blocks.
+	 * @param array<string,bool|string> $values The values to set.
+	 * @param bool                      $changed Will be set to true if one of our blocks has been found.
+	 *
+	 * @return array<array<mixed>>
+	 */
+	private function set_values_on_inner_blocks( array $blocks, array $values, bool &$changed ): array {
+		foreach ( $blocks as $index => $block ) {
+			// handle nested blocks.
+			if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
+				$blocks[ $index ]['innerBlocks'] = $this->set_values_on_inner_blocks( $block['innerBlocks'], $values, $changed );
+			}
+
+			// bail if block does not match.
+			if ( empty( $block['blockName'] ) || 'downloadlist/list' !== $block['blockName'] ) {
+				continue;
+			}
+
+			// set the values.
+			$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+			foreach ( $values as $name => $value ) {
+				$attrs[ $name ] = $value;
+			}
+			$blocks[ $index ]['attrs'] = $attrs;
+			$changed                   = true;
+		}
+		return $blocks;
 	}
 
 	/**
@@ -822,7 +918,7 @@ class Settings {
 		$transient_obj->set_name( 'downloadlist_block_added' );
 		$transient_obj->set_type( 'success' );
 		/* translators: %1$s will be replaced by a string. */
-		$transient_obj->set_message( '<strong>' . sprintf( __( 'The block has been added to %1$s.', 'download-list-block-with-icons' ), '<em>' . $title . '</em>' ) . '</strong> ' . sprintf( __( '<a href="%1$s">Edit the page</a> and add the files you want to list to the block.', 'download-list-block-with-icons' ), $edit_url ) );
+		$transient_obj->set_message( '<strong>' . sprintf( __( 'The block has been added to %1$s.', 'download-list-block-with-icons' ), '<em>' . esc_html( $title ) . '</em>' ) . '</strong> ' . sprintf( __( '<a href="%1$s">Edit the page</a> and add the files you want to list to the block.', 'download-list-block-with-icons' ), esc_url( $edit_url ) ) );
 		$transient_obj->save();
 	}
 
@@ -860,7 +956,7 @@ class Settings {
 		$transient_obj->set_name( 'downloadlist_block_added' );
 		$transient_obj->set_type( 'success' );
 		/* translators: %1$s will be replaced by a string. */
-		$transient_obj->set_message( '<strong>' . sprintf( __( 'The block has been added to the post %1$s.', 'download-list-block-with-icons' ), '<em>' . $title . '</em>' ) . '</strong> ' . sprintf( __( '<a href="%1$s">Edit the post</a> and add the files you want to list to the block.', 'download-list-block-with-icons' ), $edit_url ) );
+		$transient_obj->set_message( '<strong>' . sprintf( __( 'The block has been added to the post %1$s.', 'download-list-block-with-icons' ), '<em>' . esc_html( $title ) . '</em>' ) . '</strong> ' . sprintf( __( '<a href="%1$s">Edit the post</a> and add the files you want to list to the block.', 'download-list-block-with-icons' ), esc_url( $edit_url ) ) );
 		$transient_obj->save();
 	}
 
@@ -882,10 +978,10 @@ class Settings {
 		// add our own block at the end.
 		$content .= '<!-- wp:downloadlist/list /-->';
 
-		// save the content.
+		// save the content. wp_update_post() expects slashed data, so slash it to keep backslashes.
 		$query = array(
 			'ID'           => $post_id,
-			'post_content' => $content,
+			'post_content' => wp_slash( $content ),
 		);
 		wp_update_post( $query );
 	}
@@ -901,7 +997,7 @@ class Settings {
 
 		// bail if capability is missing.
 		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
-			return;
+			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'download-list-block-with-icons' ), 403 );
 		}
 
 		// reset it.
@@ -917,6 +1013,7 @@ class Settings {
 
 		// forward user.
 		wp_safe_redirect( (string) wp_get_referer() );
+		exit;
 	}
 
 	/**
@@ -930,11 +1027,11 @@ class Settings {
 
 		// bail if capability is missing.
 		if ( ! current_user_can( self::get_instance()->get_settings_obj()->get_capability() ) ) {
-			return;
+			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'download-list-block-with-icons' ), 403 );
 		}
 
 		// run it.
-		Uninstaller::get_instance()->run();
+		Uninstaller::get_instance()->run( false );
 		Installer::get_instance()->activation();
 
 		// add success message.
@@ -946,6 +1043,7 @@ class Settings {
 
 		// forward user.
 		wp_safe_redirect( (string) wp_get_referer() );
+		exit;
 	}
 
 	/**

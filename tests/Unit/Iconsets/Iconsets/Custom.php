@@ -26,6 +26,7 @@ class Custom extends DownloadListTestCase {
 	 * @return void
 	 */
 	public function set_up(): void {
+		parent::set_up();
 		$this->object = new \DownloadListWithIcons\Iconsets\Iconsets\Custom();
 	}
 

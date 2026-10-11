@@ -111,11 +111,14 @@ class Helper {
 	/**
 	 * Generate the style-file for the icons on request (e.g. if a new cpt is saved).
 	 *
-	 * @param int $term_id Only generate styles for the given term_id.
+	 * The styles of all iconsets are saved in one file, so it is always generated for all iconsets.
+	 *
+	 * @param int $term_id Deprecated since 4.2.0, the styles are always generated for all iconsets.
 	 * @return void
 	 * @noinspection PhpConditionAlreadyCheckedInspection
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public static function generate_css( int $term_id = 0 ): void {
+	public static function generate_css( int $term_id = 0 ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$false = false;
 		/**
 		 * Prevent generation of new CSS-files.
@@ -135,6 +138,7 @@ class Helper {
 			'post_type'      => 'dl_icons',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
+			'no_found_rows'  => true,
 			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
@@ -149,21 +153,14 @@ class Helper {
 			),
 			'fields'         => 'ids',
 		);
-		if ( $term_id > 0 ) {
-			$query_non_generic_icons['tax_query']   = array();  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
-			$query_non_generic_icons['tax_query'][] = array(
-				'taxonomy' => 'dl_icon_set',
-				'field'    => 'term_id',
-				'terms'    => $term_id,
-			);
-		}
-		$non_generic_icons = new WP_Query( $query_non_generic_icons );
+		$non_generic_icons       = new WP_Query( $query_non_generic_icons );
 
 		// get all generic iconsets.
 		$query_generic_icons = array(
 			'post_type'      => 'dl_icons',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
+			'no_found_rows'  => true,
 			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
@@ -180,22 +177,16 @@ class Helper {
 			),
 			'fields'         => 'ids',
 		);
-		if ( $term_id > 0 ) {
-			$query_generic_icons['tax_query']   = array();  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
-			$query_generic_icons['tax_query'][] = array(
-				'taxonomy' => 'dl_icon_set',
-				'field'    => 'term_id',
-				'terms'    => $term_id,
-				'operator' => '=',
-			);
-		}
-		$generic_icons = new WP_Query( $query_generic_icons );
+		$generic_icons       = new WP_Query( $query_generic_icons );
 
 		// merge all results.
 		$icons = array_merge( $non_generic_icons->posts, $generic_icons->posts );
 
 		// list of slugs which are generated.
 		$iconset_generated_slugs = array();
+
+		// list of terms for which the font face has been added.
+		$font_faces_added = array();
 
 		// loop through the resulting list of icons.
 		foreach ( $icons as $post_id ) {
@@ -209,11 +200,6 @@ class Helper {
 
 			// bail if terms is not an array.
 			if ( ! is_array( $terms ) ) {
-				continue;
-			}
-
-			// continue with next if no iconset is assigned.
-			if ( empty( $terms ) ) {
 				continue;
 			}
 
@@ -237,11 +223,12 @@ class Helper {
 
 			// add font face if font is set on iconset and has not already been added.
 			$font = get_term_meta( $terms[0]->term_id, 'font', true );
-			if ( ! empty( $font ) ) {
-				$styles .= '@font-face {
+			if ( ! empty( $font ) && is_string( $font ) && empty( $font_faces_added[ $terms[0]->term_id ] ) ) {
+				$styles                                .= '@font-face {
   font-family: "' . sanitize_html_class( $terms[0]->slug ) . '";
   src: url("' . esc_url( $font ) . '");
 }';
+				$font_faces_added[ $terms[0]->term_id ] = 1;
 			}
 
 			// load just the styles on generic iconsets.
@@ -252,8 +239,8 @@ class Helper {
 				$file_type_name = get_post_meta( $post_id, 'file_type', true );
 
 				// get type and subtype.
-				if ( ! empty( $file_type_name ) ) {
-					list($type, $subtype) = self::get_type_and_subtype_from_mimetype( $file_type_name );
+				if ( ! empty( $file_type_name ) && is_string( $file_type_name ) ) {
+					list($type, $subtype) = array_pad( self::get_type_and_subtype_from_mimetype( $file_type_name ), 2, '' );
 
 					// get iconset-specific styles.
 					$styles .= $iconset_obj->get_style_for_filetype( $post_id, $terms[0]->slug, $type );
@@ -270,37 +257,84 @@ class Helper {
 		// get the filesystem handler.
 		$wp_filesystem = self::get_wp_filesystem();
 
-		// write resulting code in upload-directory.
+		// get the path.
 		$style_path = self::get_style_path();
-		if ( ! empty( $styles ) ) {
-			// create directory if it does not exist atm.
-			if ( false === $wp_filesystem->exists( dirname( $style_path ) ) ) {
-				$wp_filesystem->mkdir( dirname( $style_path ) );
-			}
 
-			/**
-			 * Filter the CSS-code just before it is saved.
-			 *
-			 * @since 3.4.0 Available since 3.4.0
-			 *
-			 * @param string $styles The CSS-code.
-			 */
-			$styles = apply_filters( 'downloadlist_generate_css', $styles );
-
-			// save the given content to the path.
-			$wp_filesystem->put_contents( $style_path, $styles );
-
-			/**
-			 * Run additional tasks after generating of the CSS-file.
-			 *
-			 * @param string $styles The CSS-code.
-			 *
-			 * @since 3.4.0 Available since 3.4.0
-			 */
-			do_action( 'downloadlist_generate_css', $styles );
-		} elseif ( $wp_filesystem->exists( $style_path ) ) {
-			$wp_filesystem->delete( $style_path );
+		// create directory if it does not exist atm.
+		if ( false === $wp_filesystem->exists( dirname( $style_path ) ) ) {
+			$wp_filesystem->mkdir( dirname( $style_path ) );
 		}
+
+		/**
+		 * Filter the CSS-code just before it is saved.
+		 *
+		 * @since 3.4.0 Available since 3.4.0
+		 *
+		 * @param string $styles The CSS-code.
+		 */
+		$styles = apply_filters( 'downloadlist_generate_css', $styles );
+
+		// save an empty file if no styles are generated, so the file is not generated again on every request.
+		if ( empty( $styles ) ) {
+			$styles = '/* no custom icons */';
+		}
+
+		// save the content in a temporary file first and replace the file then, so visitors never get an incomplete file.
+		$temp_path = $style_path . '.' . wp_generate_password( 8, false ) . '.tmp';
+		if ( ! $wp_filesystem->put_contents( $temp_path, $styles ) ) {
+			return;
+		}
+
+		// rename() replaces the file in one step on local file systems; the other file systems delete it first.
+		$moved = $wp_filesystem instanceof \WP_Filesystem_Direct ? rename( $temp_path, $style_path ) : $wp_filesystem->move( $temp_path, $style_path, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+		if ( ! $moved ) {
+			$wp_filesystem->delete( $temp_path );
+			return;
+		}
+
+		/**
+		 * Run additional tasks after generating of the CSS-file.
+		 *
+		 * @param string $styles The CSS-code.
+		 *
+		 * @since 3.4.0 Available since 3.4.0
+		 */
+		do_action( 'downloadlist_generate_css', $styles );
+	}
+
+	/**
+	 * Return whether an iconset is marked as default.
+	 *
+	 * @return bool
+	 */
+	private static function has_default_iconset(): bool {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'dl_icon_set',
+				'hide_empty' => false,
+				'fields'     => 'ids',
+				'number'     => 1,
+				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup, runs only on activation.
+					array(
+						'key'   => 'default',
+						'value' => 1,
+					),
+				),
+			)
+		);
+		return is_array( $terms ) && ! empty( $terms );
+	}
+
+	/**
+	 * Return a string which could be used safely as string value in CSS (e.g. for "content").
+	 *
+	 * Removes all characters which could end the string or the rule.
+	 *
+	 * @param string $value The value.
+	 * @return string
+	 */
+	public static function sanitize_css_string( string $value ): string {
+		return str_replace( array( '"', "'", '<', '>', '{', '}', ';', "\n", "\r" ), '', $value );
 	}
 
 	/**
@@ -373,7 +407,7 @@ class Helper {
 			'hide_empty' => false,
 		);
 		if ( $term_id > 0 ) {
-			$query['term_taxonomy_id'] = $term_id;
+			$query['include'] = array( $term_id );
 		}
 		$results = new WP_Term_Query( $query );
 
@@ -422,7 +456,7 @@ class Helper {
 			 * @param string $suffix The suffix to use.
 			 * @since 3.4.0 Available since 3.4.0
 			 */
-			$suffix = apply_filters( 'downloadlist_prevent_icon_generation', $suffix );
+			$suffix = apply_filters( 'downloadlist_icon_filename_suffix', $suffix );
 
 			// get icons of this set.
 			foreach ( $iconset_obj->get_icons() as $post_id ) {
@@ -482,18 +516,28 @@ class Helper {
 					$destination_filename = $image_editor->generate_filename( $suffix );
 
 					// resize the image via image editor object.
-					$image_editor->resize( $width, $height );
+					$resized = $image_editor->resize( $width, $height );
+
+					// bail on error.
+					if ( is_wp_error( $resized ) ) {
+						continue;
+					}
 
 					// save the resulting image under the generated destination filename.
-					$image_editor->save( $destination_filename );
+					$saved = $image_editor->save( $destination_filename );
 
-					// update attachments metadata to add the new size.
+					// bail on error.
+					if ( ! is_array( $saved ) || empty( $saved['path'] ) || ! file_exists( $saved['path'] ) ) {
+						continue;
+					}
+
+					// update attachments metadata to add the new size (path and type could be changed during saving).
 					$metadata['sizes'][ 'downloadlist-icon-' . $term->slug ] = array(
-						'file'      => basename( $destination_filename ),
-						'width'     => $width,
-						'height'    => $height,
-						'mime-type' => wp_get_image_mime( $destination_filename ),
-						'filesize'  => filesize( $destination_filename ),
+						'file'      => basename( $saved['path'] ),
+						'width'     => $saved['width'],
+						'height'    => $saved['height'],
+						'mime-type' => $saved['mime-type'],
+						'filesize'  => $saved['filesize'],
 					);
 					wp_update_attachment_metadata( $attachment_id, $metadata );
 				}
@@ -514,53 +558,65 @@ class Helper {
 				continue;
 			}
 
-			// check if this term already exists.
-			$term = false;
-			if ( ! term_exists( $iconset_obj->get_label(), 'dl_icon_set' ) ) {
+			// check if this term already exists (by its slug, which is also used to add it).
+			$term     = false;
+			$is_new   = false;
+			$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
+			if ( $term_obj instanceof WP_Term ) {
+				$term = array(
+					'term_id' => $term_obj->term_id,
+				);
+			} else {
 				// no, it does not exist. then add it now.
-				$term = wp_insert_term(
+				$term   = wp_insert_term(
 					$iconset_obj->get_label(),
 					'dl_icon_set',
 					array(
 						'slug' => $iconset_obj->get_slug(),
 					)
 				);
-			} else {
-				$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
-				if ( $term_obj instanceof WP_Term ) {
-					$term = array(
-						'term_id' => $term_obj->term_id,
-					);
-				}
+				$is_new = is_array( $term );
 			}
 
 			if ( is_array( $term ) ) {
 				// save the type for this term.
 				update_term_meta( $term['term_id'], 'type', $iconset_obj->get_type() );
 
-				// set this iconset as default, if set.
-				if ( $iconset_obj->should_be_default() ) {
+				// set this iconset as default, if set and if no other iconset is the default (keep the choice of the user).
+				if ( $iconset_obj->should_be_default() && ( $is_new || ! self::has_default_iconset() ) ) {
 					Iconsets::get_instance()->set_default_iconset( $term['term_id'] );
 				}
 
-				// set width and height to default ones.
-				update_term_meta( $term['term_id'], 'width', 24 );
-				update_term_meta( $term['term_id'], 'height', 24 );
+				// set width and height to default ones, but do not overwrite values set by the user.
+				if ( $is_new || empty( get_term_meta( $term['term_id'], 'width', true ) ) ) {
+					update_term_meta( $term['term_id'], 'width', 24 );
+				}
+				if ( $is_new || empty( get_term_meta( $term['term_id'], 'height', true ) ) ) {
+					update_term_meta( $term['term_id'], 'height', 24 );
+				}
 
 				// generate icon entry, if this is a generic or graphic iconset, if it does not exist.
 				if ( $iconset_obj->is_generic() || $iconset_obj->is_gfx() ) {
 					$query = array(
-						'post_type'  => 'dl_icons',
-						'post_title' => $iconset_obj->get_label(),
-						'tax_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
+						'post_type'      => 'dl_icons',
+						'post_status'    => array( 'any', 'trash' ),
+						'posts_per_page' => 1,
+						'no_found_rows'  => true,
+						'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 							array(
 								'taxonomy' => 'dl_icon_set',
 								'terms'    => $term['term_id'],
-								'field'    => 'slug',
+								'field'    => 'term_id',
 								'operator' => 'IN',
 							),
 						),
-						'fields'     => 'ids',
+						'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup; admin/sync context.
+							array(
+								'key'     => 'generic-downloadlist',
+								'compare' => 'EXISTS',
+							),
+						),
+						'fields'         => 'ids',
 					);
 					$check = new WP_Query( $query );
 					if ( 0 === $check->post_count ) {
@@ -594,7 +650,7 @@ class Helper {
 	 */
 	public static function get_file_version( string $filepath ): string {
 		// check for WP_DEBUG.
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && file_exists( $filepath ) ) {
 			return (string) filemtime( $filepath );
 		}
 
@@ -696,6 +752,10 @@ class Helper {
 	 * @return string
 	 */
 	public static function get_plugin_name(): string {
+		// get_plugin_data() is only loaded in backend, but this is also used in frontend, REST and cron.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 		$plugin_data = get_plugin_data( DL_PLUGIN, false, false );
 		if ( ! empty( $plugin_data['Name'] ) ) {
 			return $plugin_data['Name'];

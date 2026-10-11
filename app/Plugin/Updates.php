@@ -55,7 +55,8 @@ class Updates {
 	 * @return void
 	 */
 	public function init(): void {
-		add_action( 'init', array( $this, 'run' ) );
+		// run after the settings have been registered (on init with priority 10).
+		add_action( 'init', array( $this, 'run' ), 20 );
 	}
 
 	/**
@@ -71,16 +72,28 @@ class Updates {
 		// get db-version (version, which was last installed).
 		$db_plugin_version = get_option( 'downloadlistVersion', '3.0.0' );
 
-		// compare version if we are not in development-mode.
-		if (
-			(
-				(
-					Helper::is_development_mode_active()
-				)
-				|| ! function_exists( 'wp_is_development_mode' )
-			)
-			&& version_compare( $installed_plugin_version, $db_plugin_version, '>' )
-		) {
+		// do not run migrations in development-mode (the version number is not set there).
+		if ( Helper::is_development_mode_active() ) {
+			return;
+		}
+
+		// bail if the version number is not a valid version (e.g. the placeholder in a checkout).
+		if ( ! preg_match( '/^\d+\.\d+\.\d+/', $installed_plugin_version ) ) {
+			return;
+		}
+
+		// compare version.
+		if ( version_compare( $installed_plugin_version, $db_plugin_version, '>' ) ) {
+			// bail if another request runs the migration at the moment (add_option() fails if the option exists).
+			$running = absint( get_option( 'downloadlist_update_running', 0 ) );
+			if ( $running > 0 && ( time() - $running ) > 10 * MINUTE_IN_SECONDS ) {
+				// remove an old marker, e.g. after a timeout.
+				delete_option( 'downloadlist_update_running' );
+			}
+			if ( ! add_option( 'downloadlist_update_running', time(), '', false ) ) {
+				return;
+			}
+
 			// initialize transients.
 			Admin::get_instance()->configure_transients();
 
@@ -105,8 +118,16 @@ class Updates {
 				$this->version410();
 			}
 
+			// run this on an update from the version before 4.2.0.
+			if ( version_compare( $db_plugin_version, '4.2.0', '<' ) ) {
+				$this->version415();
+			}
+
 			// save new plugin-version in the database.
 			update_option( 'downloadlistVersion', $installed_plugin_version, true );
+
+			// remove the marker for the running migration.
+			delete_option( 'downloadlist_update_running' );
 		}
 	}
 
@@ -129,6 +150,15 @@ class Updates {
 				),
 				array(
 					'key'     => 'icon',
+					'compare' => 'NOT EXISTS',
+				),
+				// custom icons always have a file type or a unicode, generic entries never.
+				array(
+					'key'     => 'file_type',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'unicode',
 					'compare' => 'NOT EXISTS',
 				),
 			),
@@ -154,10 +184,8 @@ class Updates {
 	 * @return void
 	 */
 	private function version400(): void {
-		// install settings.
-		$settings_obj = Settings::get_instance();
-		$settings_obj->add_settings();
-		$settings_obj->get_settings_obj()->activation();
+		// install settings (they are already registered, see init()).
+		Settings::get_instance()->get_settings_obj()->activation();
 	}
 
 	/**
@@ -170,5 +198,68 @@ class Updates {
 		Taxonomies::get_instance()->register();
 		Helper::add_generic_iconsets();
 		Helper::generate_css();
+	}
+
+	/**
+	 * Run on an update to 4.2.0 or newer.
+	 *
+	 * - Use an own setting for the target of the download button (it shared the setting of the link before).
+	 * - Remove duplicate generic icon entries, which have been added on each activation or reset before.
+	 *
+	 * @return void
+	 */
+	private function version415(): void {
+		// copy the value of the shared setting to the new setting for the download button.
+		if ( false === get_option( 'downloadlist_download_button_browser_target', false ) ) {
+			add_option( 'downloadlist_download_button_browser_target', (string) get_option( 'downloadlist_link_browser_target', '' ) );
+		}
+
+		// get all generic icon entries.
+		Taxonomies::get_instance()->register();
+		$query = array(
+			'post_type'      => 'dl_icons',
+			'post_status'    => array( 'any', 'trash' ),
+			'posts_per_page' => -1,
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
+			'fields'         => 'ids',
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup, runs only once.
+				'relation' => 'AND',
+				array(
+					'key'     => 'generic-downloadlist',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'file_type',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+		);
+		$posts = new WP_Query( $query );
+
+		// published entries first, so they are kept (only they are used for the styles).
+		$post_ids = array_map( 'absint', $posts->get_posts() ); // @phpstan-ignore argument.type
+		usort(
+			$post_ids,
+			function ( int $a, int $b ): int {
+				$by_status = ( 'publish' === get_post_status( $b ) ? 1 : 0 ) <=> ( 'publish' === get_post_status( $a ) ? 1 : 0 );
+				return 0 !== $by_status ? $by_status : $a <=> $b;
+			}
+		);
+
+		// keep the first entry per iconset and delete the others.
+		$kept = array();
+		foreach ( $post_ids as $post_id ) {
+			$terms = wp_get_object_terms( $post_id, 'dl_icon_set', array( 'fields' => 'ids' ) );
+			if ( ! is_array( $terms ) || empty( $terms ) ) {
+				continue;
+			}
+			$term_id = absint( $terms[0] );
+			if ( ! isset( $kept[ $term_id ] ) ) {
+				$kept[ $term_id ] = $post_id;
+				continue;
+			}
+			wp_delete_post( $post_id, true );
+		}
 	}
 }

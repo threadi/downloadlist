@@ -1,0 +1,15 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "preferredVersions": { "php": "8.4", "wp": "latest" },
+    "login": true,
+    "steps": [
+        {
+            "step": "activatePlugin",
+            "pluginPath": "download-list-block-with-icons/download-list-block-with-icons.php"
+        },
+        {
+            "step": "runPHP",
+            "code": "<?php require_once '/wordpress/wp-load.php'; if ( ! defined( 'DL_VERSION' ) ) { throw new Exception( 'plugin constants missing' ); } if ( ! WP_Block_Type_Registry::get_instance()->is_registered( 'downloadlist/list' ) ) { throw new Exception( 'block not registered' ); } $html = render_block( array( 'blockName' => 'downloadlist/list', 'attrs' => array( 'files' => array() ), 'innerBlocks' => array(), 'innerHTML' => '', 'innerContent' => array() ) ); if ( ! is_string( $html ) ) { throw new Exception( 'block could not be rendered' ); } file_put_contents( '/wordpress/wp-content/plugins/download-list-block-with-icons/smoke-result.txt', 'SMOKE_OK' );"
+        }
+    ]
+}

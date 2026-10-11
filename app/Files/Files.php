@@ -97,16 +97,17 @@ class Files {
 	 */
 	public function save_custom_text_attachment_field( array $post, array $fields ): array {
 		// save the value for the title.
-		if ( isset( $fields['dl_title'] ) ) {
+		// only if the field has been sent (other forms do not contain it), an empty value removes it.
+		if ( isset( $fields['dl_title'] ) && '' !== trim( (string) $fields['dl_title'] ) ) {
 			update_post_meta( $post['ID'], 'dl_title', sanitize_text_field( $fields['dl_title'] ) );
-		} else {
+		} elseif ( isset( $fields['dl_title'] ) ) {
 			delete_post_meta( $post['ID'], 'dl_title' );
 		}
 
 		// save the value for the description.
-		if ( isset( $fields['dl_description'] ) ) {
+		if ( isset( $fields['dl_description'] ) && '' !== trim( (string) $fields['dl_description'] ) ) {
 			update_post_meta( $post['ID'], 'dl_description', sanitize_textarea_field( $fields['dl_description'] ) );
-		} else {
+		} elseif ( isset( $fields['dl_description'] ) ) {
 			delete_post_meta( $post['ID'], 'dl_description' );
 		}
 

@@ -1,7 +1,7 @@
 === Download List Block with Icons ===
 Contributors: threadi
 Tags: list, download, icons, block
-Requires at least: 6.0
+Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.2
 License: GPL-2.0-or-later
@@ -88,7 +88,16 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 == Changelog ==
 
 = @@VersionNumber@@ =
-- Switched to dataview for plugin settings
-- Updated dependencies
+- Security: only users who can see notices of this plugin can dismiss them
+- Security: REST API returns data of files only if the user is allowed to read them
+- Security: stricter checks of file types and CSS values of custom icons
+- Fixed uninstallation of the plugin
+- Fixed backslashes in posts after inheriting the settings to the blocks
+- Fixed saving of images for custom icons
+- Fixed styles of other iconsets getting lost after saving an icon
+- Fixed updates of the plugin not running its migration tasks
+- Fixed duplicate entries for generic iconsets
+- Optimized loading of icon fonts: only the used iconset is loaded in frontend
+- Now requires WordPress 6.6 or newer
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

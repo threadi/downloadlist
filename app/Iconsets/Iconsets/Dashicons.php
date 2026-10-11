@@ -228,13 +228,13 @@ class Dashicons extends Iconset_Base implements Iconset {
 
 		// loop through the icons and add them to styling.
 		foreach ( $this->get_icon_codes() as $local_filetype => $icon ) {
-			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $local_filetype );
+			list($type, $subtype) = array_pad( Helper::get_type_and_subtype_from_mimetype( $local_filetype ), 2, '' );
 			if ( empty( $types[ $type ] ) ) {
-				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "dashicons", sans-serif;font-size: ' . $width . 'px; }';
+				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . Helper::sanitize_css_string( $icon ) . '";font-family: "dashicons", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $type ] = 1;
 			}
 			if ( ! empty( $subtype ) && empty( $types[ $subtype ] ) ) {
-				$style            .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $subtype ) . ':before { content: "' . $icon . '";font-family: "dashicons", sans-serif;font-size: ' . $width . 'px; }';
+				$style            .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $subtype ) . ':before { content: "' . Helper::sanitize_css_string( $icon ) . '";font-family: "dashicons", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $subtype ] = 1;
 			}
 		}

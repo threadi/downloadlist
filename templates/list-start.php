@@ -5,7 +5,7 @@
  * @param string $wrapper_attributes List of attributes.
  * @param string $iconset Style-classes for used iconset.
  *
- * @version: 3.7.0
+ * @version: 4.2.0
  * @package download-list-block-with-icons
  */
 
@@ -13,4 +13,4 @@
 defined( 'ABSPATH' ) || exit;
 
 ?>
-<div <?php echo wp_kses_data( $wrapper_attributes ); ?>><ul class="downloadlist-list wp-block-downloadlist-list <?php echo esc_attr( $iconset ); ?>">
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns escaped attributes. ?>><ul class="downloadlist-list wp-block-downloadlist-list <?php echo esc_attr( $iconset ); ?>">

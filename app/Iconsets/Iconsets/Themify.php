@@ -223,13 +223,13 @@ class Themify extends Iconset_Base implements Iconset {
 
 		// loop through the icons and add them to styling.
 		foreach ( $this->get_icon_codes() as $icon_filetype => $icon ) {
-			list($type, $subtype) = Helper::get_type_and_subtype_from_mimetype( $icon_filetype );
+			list($type, $subtype) = array_pad( Helper::get_type_and_subtype_from_mimetype( $icon_filetype ), 2, '' );
 			if ( empty( $types[ $type ] ) ) {
-				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . $icon . '";font-family: "themify", sans-serif;font-size: ' . $width . 'px; }';
+				$style         .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $type ) . ':before { content: "' . Helper::sanitize_css_string( $icon ) . '";font-family: "themify", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $type ] = 1;
 			}
-			if ( ! empty( $subtype ) ) {
-				$style            .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $subtype ) . ':before { content: "' . $icon . '";font-family: "themify", sans-serif;font-size: ' . $width . 'px; }';
+			if ( ! empty( $subtype ) && empty( $types[ $subtype ] ) ) {
+				$style            .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $subtype ) . ':before { content: "' . Helper::sanitize_css_string( $icon ) . '";font-family: "themify", sans-serif;font-size: ' . $width . 'px; }';
 				$types[ $subtype ] = 1;
 			}
 		}
@@ -257,12 +257,12 @@ class Themify extends Iconset_Base implements Iconset {
 			array(
 				'handle' => 'themify',
 				'url'    => plugins_url( '/css/themify/themify-icons.css', DL_PLUGIN ),
-				'path'   => plugin_dir_path( DL_PLUGIN ) . '/css/themify/themify-icons.css',
+				'path'   => plugin_dir_path( DL_PLUGIN ) . 'css/themify/themify-icons.css',
 			),
 		);
 
 		/**
-		 * Filter the files used for bootstrap.
+		 * Filter the files used for themify.
 		 *
 		 * @param array<int,array<string,mixed>> $files List of the files.
 		 * @since 4.1.0 Available since 4.1.0

@@ -4,13 +4,15 @@ Iconsets wurden mit Version 3.0 dieses Plugins eingeführt. Sie ermöglichen es 
 
 Das Plugin liefert selbst bereits folgende Iconsets mit:
 
+* Bootstrap Icons = die Icon-Schriftart von Bootstrap
 * Dashicons = von WordPress selbst bereitgestellte Icons
 * FontAweSome = die beliebte Schriftart deren Symbole als Icons verwendet werden
-* Custom Icons = ermöglicht es eigene Grafiken als Icons zu verwenden
+* Themify Icons = die Icon-Schriftart von Themify
+* Custom Icons = ermöglicht es eigene Grafiken oder eine eigene Schriftart als Icons zu verwenden
 
 ## Hinweise
 
-FontAweSome wird in der kostenfreien Version 6 in diesem Plugin mitgeliefert.
+FontAweSome wird in der kostenfreien Version 7 in diesem Plugin mitgeliefert.
 
 Das Plugin unterstützt alle von WordPress standardmäßig unterstützten Dateitypen. Abhängig davon, welche Dateitypen die Iconsets unterstützen, wird die Auswahl der möglichen Dateitypen am Download-Listen-Block entsprechend beschränkt. Wenn ein Custom Icon Set z.B. nur PDFs als Icons bereitgestellt, kann man nur PDFs für die betreffende Liste auswählen.
 

@@ -63,8 +63,12 @@ class Templates {
 	 * @return string
 	 */
 	public function get( string $template ): string {
+		// get the path to the plugin-own template.
+		$plugin_template = plugin_dir_path( DL_PLUGIN ) . 'templates/' . $template;
+
+		// use always the plugin-own template in embeds.
 		if ( is_embed() ) {
-			return $template;
+			return $plugin_template;
 		}
 
 		// get the template from theme-directory, if available.
@@ -74,7 +78,7 @@ class Templates {
 		}
 
 		// return the path to the plugin-own template.
-		return plugin_dir_path( DL_PLUGIN ) . 'templates/' . $template;
+		return $plugin_template;
 	}
 
 	/**
@@ -83,6 +87,11 @@ class Templates {
 	 * @return void
 	 */
 	public function check_child_theme_templates(): void {
+		// bail on AJAX-requests, the check is only necessary on page loads.
+		if ( wp_doing_ajax() ) {
+			return;
+		}
+
 		// get transients object.
 		$transients_obj = Transients::get_instance();
 

@@ -17,11 +17,24 @@ class Cli {
 	/**
 	 * Reset all settings of this plugin.
 	 *
+	 * Removes custom icons, iconsets and the titles and descriptions of files for download lists.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--yes]
+	 * : Reset without asking for confirmation.
+	 *
+	 * @param array<int,string>    $args List of arguments.
+	 * @param array<string,string> $assoc_args List of options.
+	 *
 	 * @return void
 	 * @noinspection PhpUnused
+	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function reset_plugin(): void {
-		Uninstaller::get_instance()->run();
+	public function reset_plugin( array $args = array(), array $assoc_args = array() ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
+		\WP_CLI::confirm( __( 'This removes all custom icons, iconsets and the titles and descriptions of files for download lists. Do you want to reset the plugin?', 'download-list-block-with-icons' ), $assoc_args );
+
+		Uninstaller::get_instance()->run( false );
 		Installer::get_instance()->activation();
 
 		// return ok-message.

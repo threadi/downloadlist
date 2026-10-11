@@ -135,7 +135,8 @@ class Taxonomies {
 					'show_in_quick_edit' => true,
 					'show_in_rest'       => true,
 					'query_var'          => true,
-					'rewrite'            => true,
+					// no own URLs for the terms, as the taxonomy is not public.
+					'rewrite'            => false,
 					'capabilities'       => array(
 						'manage_terms' => 'manage_options',
 						'edit_terms'   => 'manage_options',
@@ -175,7 +176,8 @@ class Taxonomies {
 					'show_in_quick_edit' => true,
 					'show_in_rest'       => true,
 					'query_var'          => true,
-					'rewrite'            => true,
+					// no own URLs for the terms, as the taxonomy is not public.
+					'rewrite'            => false,
 					'capabilities'       => array(
 						'manage_terms' => 'manage_options',
 						'edit_terms'   => 'manage_options',
@@ -208,11 +210,9 @@ class Taxonomies {
 		}
 
 		// change settings for iconset taxonomy.
-		$taxonomies['dl_icon_set']['args']['rewrite']      = false;
 		$taxonomies['dl_icon_set']['args']['show_in_rest'] = false;
 
 		// change settings for list taxonomy.
-		$taxonomies['dl_icon_lists']['args']['rewrite']      = false;
 		$taxonomies['dl_icon_lists']['args']['show_in_rest'] = false;
 
 		// return list of taxonomies.
@@ -330,7 +330,7 @@ class Taxonomies {
 				// output.
 				?>
 				<tr class="form-field">
-					<th scope="row"><label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label></th>
+					<th scope="row"><label for="downloadlist-iconset-default"><?php wp_nonce_field( 'downloadlist-iconset-fields', 'downloadlist_iconset_nonce' ); ?><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label></th>
 					<td>
 						<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1"<?php echo 1 === absint( $default ) ? ' checked="checked"' : ''; ?>>
 					</td>
@@ -386,6 +386,7 @@ class Taxonomies {
 			// output.
 			?>
 			<div class="form-field">
+				<?php wp_nonce_field( 'downloadlist-iconset-fields', 'downloadlist_iconset_nonce' ); ?>
 				<label for="downloadlist-iconset-default"><?php echo esc_html__( 'Set this as default iconset', 'download-list-block-with-icons' ); ?></label>
 				<input type="checkbox" id="downloadlist-iconset-default" name="default" value="1">
 			</div>
@@ -416,8 +417,13 @@ class Taxonomies {
 			return;
 		}
 
-		// bail if capability is not given.
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		// bail if capability is not given (same as for managing the terms of this taxonomy).
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// bail if our own fields have not been sent (e.g. quick edit, REST API or wp_update_term()).
+		if ( ! isset( $_POST['downloadlist_iconset_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['downloadlist_iconset_nonce'] ) ), 'downloadlist-iconset-fields' ) ) {
 			return;
 		}
 
@@ -427,20 +433,14 @@ class Taxonomies {
 		// delete marker for default icon-set.
 		delete_term_meta( $term_id, 'default' );
 
-		// get the values.
-		$default     = absint( filter_input( INPUT_POST, 'default', FILTER_SANITIZE_NUMBER_INT ) );
-		$font        = esc_url_raw( wp_unslash( filter_input( INPUT_POST, 'font', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
-		$font_size   = filter_input( INPUT_POST, 'font_size', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-		$font_weight = filter_input( INPUT_POST, 'font_weight', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-
 		// mark the icon-set as default if checkbox is set.
-		if ( 1 === $default ) {
+		if ( isset( $_POST['default'] ) && 1 === absint( wp_unslash( $_POST['default'] ) ) ) {
 			Iconsets::get_instance()->set_default_iconset( $term_id );
 		}
 
 		// get sizes for icons if they have been changed.
-		$width  = absint( filter_input( INPUT_POST, 'width', FILTER_SANITIZE_NUMBER_INT ) );
-		$height = absint( filter_input( INPUT_POST, 'height', FILTER_SANITIZE_NUMBER_INT ) );
+		$width  = isset( $_POST['width'] ) ? absint( wp_unslash( $_POST['width'] ) ) : 0;
+		$height = isset( $_POST['height'] ) ? absint( wp_unslash( $_POST['height'] ) ) : 0;
 
 		// save the width.
 		if ( $width > 0 && absint( get_term_meta( $term_id, 'width', true ) ) !== $width ) {
@@ -454,25 +454,39 @@ class Taxonomies {
 			$generate_styles = true;
 		}
 
-		// save the font URL.
-		if ( ! empty( $font ) ) {
-			update_term_meta( $term_id, 'font', $font );
+		// save the font URL, if the field has been sent. An empty field removes the URL.
+		if ( isset( $_POST['font'] ) ) {
+			$font = esc_url_raw( sanitize_text_field( wp_unslash( $_POST['font'] ) ) );
+			if ( get_term_meta( $term_id, 'font', true ) !== $font ) {
+				$generate_styles = true;
+			}
+			if ( ! empty( $font ) ) {
+				update_term_meta( $term_id, 'font', $font );
+			} else {
+				delete_term_meta( $term_id, 'font' );
+			}
 		}
 
-		// save the font size.
-		if ( ! empty( $font_size ) ) {
-			update_term_meta( $term_id, 'font_size', $font_size );
-		}
-
-		// save the font weight.
-		if ( ! empty( $font_weight ) ) {
-			update_term_meta( $term_id, 'font_weight', $font_weight );
+		// save the font size and weight, if the fields have been sent. An empty field removes the value.
+		foreach ( array( 'font_size', 'font_weight' ) as $field_name ) {
+			if ( ! isset( $_POST[ $field_name ] ) ) {
+				continue;
+			}
+			$value = absint( wp_unslash( $_POST[ $field_name ] ) );
+			if ( absint( get_term_meta( $term_id, $field_name, true ) ) !== $value ) {
+				$generate_styles = true;
+			}
+			if ( $value > 0 ) {
+				update_term_meta( $term_id, $field_name, $value );
+			} else {
+				delete_term_meta( $term_id, $field_name );
+			}
 		}
 
 		// run style-generation for this iconset if changes have been saved.
 		if ( $generate_styles ) {
 			Helper::regenerate_icons( $term_id );
-			Helper::generate_css( $term_id );
+			Helper::generate_css();
 		}
 	}
 
@@ -518,11 +532,15 @@ class Taxonomies {
 	 */
 	public function set_icons_columns( array $columns ): array {
 		$new_columns                           = array();
-		$new_columns['cb']                     = $columns['cb'];
-		$new_columns['title']                  = $columns['title'];
+		$new_columns['cb']                     = $columns['cb'] ?? '';
+		$new_columns['title']                  = $columns['title'] ?? __( 'Title', 'download-list-block-with-icons' );
 		$new_columns['downloadlist_file_type'] = __( 'File type', 'download-list-block-with-icons' );
-		$new_columns['taxonomy-dl_icon_set']   = $columns['taxonomy-dl_icon_set'];
-		$new_columns['date']                   = $columns['date'];
+		if ( isset( $columns['taxonomy-dl_icon_set'] ) ) {
+			$new_columns['taxonomy-dl_icon_set'] = $columns['taxonomy-dl_icon_set'];
+		}
+		if ( isset( $columns['date'] ) ) {
+			$new_columns['date'] = $columns['date'];
+		}
 
 		// return resulting array.
 		return $new_columns;

@@ -8,6 +8,8 @@ import { Icon, dragHandle, pencil, trash } from '@wordpress/icons';
 import { CSS } from '@dnd-kit/utilities';
 import { getActualDate } from "./components";
 import { gmdateI18n } from '@wordpress/date';
+import { useRef, useEffect } from '@wordpress/element';
+import { safeHTML } from '@wordpress/dom';
 
 /**
  * Represents single sortable item in list.
@@ -25,24 +27,48 @@ export function SortableItem(props) {
 	} = useSortable({id: props.file.id});
 
 	/**
-	 * Remote this item from the list.
+	 * Remove this item from the list.
 	 *
-	 * @param index
+	 * Only the IDs of the files are saved in the block.
 	 */
-	function removeListItem(index) {
-		props.files.splice(index, 1);
-		props.object.setAttributes( { files: props.files, date: getActualDate() } );
+	function removeListItem() {
+		const savedFiles = Array.isArray( props.object.attributes.files ) ? props.object.attributes.files : [];
+		const newFiles = savedFiles
+			.filter( ( file ) => file && file.id !== props.file.id )
+			.map( ( file ) => ( { id: file.id } ) );
+		props.object.setAttributes( { files: newFiles, date: getActualDate() } );
 	}
+
+	/**
+	 * The media frame to edit this file. It is created only once per item.
+	 */
+	const frameRef = useRef( null );
+
+	// remove the media frame if the item is removed.
+	useEffect( () => {
+		return () => {
+			if ( frameRef.current ) {
+				frameRef.current.off();
+				frameRef.current.remove();
+				frameRef.current = null;
+			}
+		};
+	}, [] );
 
 	/**
 	 * Edit the clicked item.
 	 *
-	 * @param index
+	 * @param postId
 	 */
-	let myFrame
 	function editListItem(postId) {
+		// use the existing frame.
+		if ( frameRef.current ) {
+			frameRef.current.open();
+			return;
+		}
+
 		// Create a new media frame
-		myFrame = wp.media({
+		const myFrame = wp.media({
 			title: __('Edit file', 'download-list-block-with-icons'),
 			button: {
 				text: __('Save', 'download-list-block-with-icons'),
@@ -50,7 +76,7 @@ export function SortableItem(props) {
 			multiple: false,
 			library: {
 				downloadlist_post_id: postId, // filter for this postId via ajax_query_attachments_args
-				downloadlist_nonce: downloadlistJsVars.downloadlist_nonce
+				downloadlist_nonce: window.downloadlistJsVars.downloadlist_nonce
 			},
 		})
 
@@ -58,15 +84,17 @@ export function SortableItem(props) {
 		myFrame.on( 'open', function() {
 			let selection = myFrame.state().get( 'selection' );
 			selection.reset( postId ? [ wp.media.attachment( postId ) ] : [] );
-			jQuery(".attachments-browser > .media-toolbar, #menu-item-upload, .load-more-count").remove();
+			// hide elements only in this frame, not in other media frames.
+			myFrame.$el.find(".attachments-browser > .media-toolbar, #menu-item-upload, .load-more-count").remove();
 		});
 
-		// reload the file list on close
+		// reload the data of the files on close.
 		myFrame.on( 'close', function() {
-			props.object.setAttributes( { files: props.files, date: getActualDate() } );
+			props.object.setAttributes( { date: getActualDate() } );
 		});
 
 		// Finally, open the modal on click
+		frameRef.current = myFrame;
 		myFrame.open()
 	}
 
@@ -114,9 +142,10 @@ export function SortableItem(props) {
 	 * @type {string}
 	 */
 	let file_date = '';
-	let settings = wp.data.select( 'core' ).getSite();
-	if( settings && props.object.attributes.showFileDates ) {
-		file_date = gmdateI18n( settings.date_format + ' ' + settings.time_format, props.file.date );
+	const dateFormat = window.downloadlistJsVars && window.downloadlistJsVars.date_format ? window.downloadlistJsVars.date_format : 'Y-m-d';
+	const timeFormat = window.downloadlistJsVars && window.downloadlistJsVars.time_format ? window.downloadlistJsVars.time_format : 'H:i';
+	if( props.file.date && props.object.attributes.showFileDates ) {
+		file_date = gmdateI18n( dateFormat + ' ' + timeFormat, props.file.date );
 	}
 
 	/**
@@ -149,19 +178,16 @@ export function SortableItem(props) {
 	}
 
 	/**
-	 * Add download-button
+	 * Get the description as safe HTML (it is already sanitized on the server, this is an additional protection).
 	 */
-	let downloadButton = ''
-	if( props.object.attributes.showDownloadButton ) {
-		downloadButton = '<a href="' + linkTarget + '" class="download-button button button-secondary">' + __('Download', 'download-list-block-with-icons') + '</a>'
-	}
+	const descriptionHtml = description ? safeHTML( String( description ) ) : '';
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} key={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
-			{0 === props.object.attributes.list && <Button className="downloadlist-list-trash" onClick={() => removeListItem(props.index)} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>}
+		<div ref={setNodeRef} style={style} {...attributes} {...listeners} id={`file${props.file.id}`} className={`wp-block-downloadlist-list-draggable file_${props.file.type} file_${props.file.subtype}${hideIcon}`}>
+			{0 === props.object.attributes.list && <Button className="downloadlist-list-trash" onClick={() => removeListItem()} title={__('Remove from list', 'download-list-block-with-icons')}><Icon icon={ trash } /></Button>}
 			<Button className="downloadlist-list-edit" onClick={() => editListItem(props.file.id)} title={__( 'Edit file', 'download-list-block-with-icons' )}><Icon icon={ pencil } /></Button>
 			<Button title={__( 'hold to pull', 'download-list-block-with-icons' )}>{dragHandle}</Button>
-			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{<span dangerouslySetInnerHTML={{ __html: downloadButton }}/>}{<div dangerouslySetInnerHTML={{ __html: description }}/>}{<div dangerouslySetInnerHTML={{ __html: file_format_label }}/>}{<div dangerouslySetInnerHTML={{ __html: file_date }}/>}
+			{!props.object.attributes.hideLink && <a href={linkTarget}>{title}</a>}{props.object.attributes.hideLink && title}{fileSize}{props.object.attributes.showDownloadButton && <span><a href={linkTarget} className="download-button button button-secondary">{__('Download', 'download-list-block-with-icons')}</a></span>}{<div dangerouslySetInnerHTML={{ __html: descriptionHtml }}/>}{<div>{file_format_label}</div>}{<div>{file_date}</div>}
 		</div>
 	);
 }

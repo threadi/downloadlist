@@ -32,53 +32,41 @@
 	<target name="npm-install">
 		<delete file="${log.dir}/npm-install.txt"/>
 		<exec dir="${src.dir}" failonerror="true" executable="${npm.path}" output="${log.dir}/npm-install.txt">
-			<arg line="i"/>
+			<arg line="ci"/>
 		</exec>
 	</target>
 
-	<!-- build the Blocks via npm and add font libs -->
+	<!-- build the Blocks via npm, this also copies the icon fonts (see package.json) -->
 	<target name="npm-build" depends="npm-install">
 		<delete file="${log.dir}/npm-build.txt"/>
-		<delete file="${log.dir}/npm-build2.txt"/>
 		<exec dir="${src.dir}" failonerror="true" executable="${npm.path}" output="${log.dir}/npm-build.txt">
 			<arg line="run build"/>
 		</exec>
-		<copy file="${src.dir}/node_modules/@fortawesome/fontawesome-free/css/all.css" tofile="${src.dir}/css/fontawesome/fontawesome6.css" />
-		<copy todir="${src.dir}/css/webfonts/">
-			<fileset dir="${src.dir}/node_modules/@fortawesome/fontawesome-free/webfonts/" />
-		</copy>
-		<copy file="${src.dir}/node_modules/bootstrap-icons/font/bootstrap-icons.css" tofile="${src.dir}/css/bootstrap/bootstrap-icons.css" />
-		<copy todir="${src.dir}/css/bootstrap/fonts/">
-			<fileset dir="${src.dir}/node_modules/bootstrap-icons/font/fonts/" />
-		</copy>
 	</target>
 
 	<!-- set version number for the release -->
 	<target name="setVersionNumber">
-		<delete file="${build.dir}/${plugin.slug}-release.php"/>
+		<delete file="${src.dir}/${plugin.slug}-release.php"/>
 		<copy file="${src.dir}/${plugin.slug}.php" tofile="${src.dir}/${plugin.slug}-release.php"/>
 		<replace file="${src.dir}/${plugin.slug}-release.php">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
 
-		<delete file="${build.dir}/uninstall-release.php"/>
+		<delete file="${src.dir}/uninstall-release.php"/>
 		<copy file="${src.dir}/uninstall.php" tofile="${src.dir}/uninstall-release.php"/>
 		<replace file="${src.dir}/uninstall-release.php">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
 
-		<delete file="${build.dir}/readme-release.php"/>
+		<delete file="${src.dir}/readme-release.txt"/>
 		<copy file="${src.dir}/readme.txt" tofile="${src.dir}/readme-release.txt"/>
 		<replace file="${src.dir}/readme-release.txt">
 			<replacefilter token="@@VersionNumber@@" value="${plugin.version}" />
 		</replace>
 	</target>
 
-	<!-- check WCS compatibility -->
+	<!-- check WCS compatibility (without automatic fixes, so the release contains exactly the checked code) -->
 	<target name="check-wcs" depends="composer-install">
-		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/phpcbf">
-			<arg line="."/>
-		</exec>
 		<exec dir="${src.dir}" failonerror="true" executable="vendor/bin/phpcs">
 			<arg line="."/>
 		</exec>
@@ -87,21 +75,21 @@
 	<!-- generate documentation -->
 	<target name="generate-documentation" depends="composer-install">
 		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/wp-documentor">
-			<arg line="parse . --ignore-vcs-ignored --format=markdown --exclude=block --exclude=svn --exclude=vendor --exclude=src --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php --exclude=Widget_Base.php --exclude=Transients.php"/>
+			<arg line="parse app --format=markdown --output=docs/hooks.md --prefix=downloadlist_ --exclude=Transients.php"/>
 		</exec>
 	</target>
 
 	<!-- check PHPStan -->
 	<target name="check-phpstan" depends="composer-install">
-		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/phpstan">
+		<exec dir="${src.dir}" failonerror="true" executable="vendor/bin/phpstan">
 			<arg line="analyse"/>
 		</exec>
 	</target>
 
 	<!-- check php compatibility -->
 	<target name="check-php-compatibility" depends="composer-install">
-		<exec dir="${src.dir}" failonerror="false" executable="vendor/bin/phpcs">
-			<arg line="-p app --standard=PHPCompatibilityWP"/>
+		<exec dir="${src.dir}" failonerror="true" executable="vendor/bin/phpcs">
+			<arg line="-p app --standard=PHPCompatibilityWP --runtime-set testVersion 8.2-"/>
 		</exec>
 	</target>
 

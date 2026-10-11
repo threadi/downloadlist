@@ -14,6 +14,7 @@ use DownloadListWithIcons\Iconsets\Iconset;
 use DownloadListWithIcons\Iconsets\Iconset_Base;
 use WP_Post;
 use WP_Query;
+use DownloadListWithIcons\Plugin\Helper;
 use WP_Term;
 
 /**
@@ -96,7 +97,7 @@ class Custom extends Iconset_Base implements Iconset {
 
 			// add output of this image for given file-type.
 			if ( false !== $url ) {
-				$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: url("' . esc_url( $url ) . '"); }';
+				$styles .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $filetype ) . ':before { content: url("' . esc_url( $url ) . '"); }';
 			}
 		}
 
@@ -117,7 +118,7 @@ class Custom extends Iconset_Base implements Iconset {
 			$font_weight = absint( get_term_meta( $term->term_id, 'font_weight', true ) );
 
 			// add the styles.
-			$styles .= '.wp-block-downloadlist-list.iconset-' . $term_slug . ' .file_' . $filetype . ':before { content: "' . esc_attr( $unicode ) . '";font-family: "' . esc_attr( $term_slug ) . '", sans-serif;font-size: ' . $font_size . 'px;font-weight: ' . $font_weight . ' }';
+			$styles .= '.wp-block-downloadlist-list.iconset-' . sanitize_html_class( $term_slug ) . ' .file_' . sanitize_html_class( $filetype ) . ':before { content: "' . esc_attr( Helper::sanitize_css_string( $unicode ) ) . '";font-family: "' . sanitize_html_class( $term_slug ) . '", sans-serif;' . ( $font_size > 0 ? 'font-size: ' . $font_size . 'px;' : '' ) . ( $font_weight > 0 ? 'font-weight: ' . $font_weight . ';' : '' ) . ' }';
 		}
 
 		// return resulting styles.
@@ -135,23 +136,25 @@ class Custom extends Iconset_Base implements Iconset {
 
 		// get list of all possible file-types in this iconset.
 		$query   = array(
-			'post_type'   => 'dl_icons',
-			'post_status' => 'publish',
-			'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
+			'post_type'      => 'dl_icons',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 				array(
 					'key'     => 'file_type',
 					'compare' => 'EXISTS',
 				),
 			),
-			'tax_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'terms'    => $this->get_slug(),
 					'field'    => 'slug',
-					'operator' => '=',
+					'operator' => 'IN',
 				),
 			),
-			'fields'      => 'ids',
+			'fields'         => 'ids',
 		);
 		$results = new WP_Query( $query );
 		foreach ( $results->get_posts() as $post_id ) {
@@ -183,22 +186,23 @@ class Custom extends Iconset_Base implements Iconset {
 	 */
 	public function get_icons(): array {
 		$query   = array(
-			'post_type'   => 'dl_icons',
-			'post_status' => 'any',
-			'fields'      => 'ids',
-			'tax_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
+			'post_type'      => 'dl_icons',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 				array(
 					'taxonomy' => 'dl_icon_set',
 					'terms'    => $this->get_slug(),
 					'field'    => 'slug',
-					'operator' => '=',
+					'operator' => 'IN',
 				),
 			),
 		);
 		$results = new WP_Query( $query );
 
 		// bail on no results.
-		if ( 0 === $results->found_posts ) {
+		if ( empty( $results->get_posts() ) ) {
 			return array();
 		}
 
