@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85fc4caf470e1e29ace95542e24c71ff",
+    "content-hash": "5347aed70b7f589ae57f1ddc8c8522e7",
     "packages": [
         {
             "name": "threadi/easy-dialog-for-wordpress",
