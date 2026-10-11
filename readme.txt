@@ -21,6 +21,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons, Themify-Icons)
 - Optional preview images for images, PDF files and audio or video files with cover image
 - Optional frame for icons and preview images with color, radius, inner spacing and background
+- Overview of all posts, pages, patterns and templates which use the block
 - Drag & Drop sorting for the list
 - Remove files from list
 
@@ -104,6 +105,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 = @@VersionNumber@@ =
 - Added optional preview images for images, PDF files and audio or video files with cover image
 - Added optional frame for icons and preview images
+- Added overview of all objects using the block in the plugin settings
 - Security: only users who can see notices of this plugin can dismiss them
 - Security: REST API returns data of files only if the user is allowed to read them
 - Security: stricter checks of file types and CSS values of custom icons

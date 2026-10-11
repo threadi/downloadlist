@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
 use DownloadListWithIcons\Iconsets\Iconsets;
+use DownloadListWithIcons\Plugin\Admin\Usage_Table;
 use easySettingsForWordPress\Fields\Button;
 use easySettingsForWordPress\Fields\Checkbox;
 use easySettingsForWordPress\Fields\Number;
@@ -178,6 +179,13 @@ class Settings {
 		$tasks_tab = $settings_page->add_tab( 'downloadlist_tasks', 20 );
 		$tasks_tab->set_name( 'downloadlist_tasks' );
 		$tasks_tab->set_title( __( 'Tasks', 'download-list-block-with-icons' ) );
+
+		// the usage tab.
+		$usage_tab = $settings_page->add_tab( 'downloadlist_usage', 30 );
+		$usage_tab->set_name( 'downloadlist_usage' );
+		$usage_tab->set_title( __( 'Usage', 'download-list-block-with-icons' ) );
+		$usage_tab->set_hide_save( true );
+		$usage_tab->set_callback( array( $this, 'show_usage' ) );
 
 		// the helper tab.
 		$helper_tab = $settings_page->add_tab( 'downloadlist_helper', 70 );
@@ -1014,6 +1022,25 @@ class Settings {
 	public function show_info(): void {
 		/* translators: %1$s will be replaced by a URL. */
 		echo '<p>' . wp_kses_post( sprintf( __( 'Set the default settings for new download list blocks here. Under <a href="%1$s">Tasks</a>, you can also inherit these settings to all existing blocks.', 'download-list-block-with-icons' ), $this->get_url( 'downloadlist_tasks' ) ) ) . '</p>';
+	}
+
+	/**
+	 * Show the list of all objects which use our block.
+	 *
+	 * @return void
+	 */
+	public function show_usage(): void {
+		// bail if the table could not be loaded outside of WP admin.
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		// load and show the table.
+		$table = new Usage_Table();
+		$table->prepare_items();
+		echo '<h2>' . esc_html__( 'Usage of the download list block', 'download-list-block-with-icons' ) . '</h2>';
+		echo '<p>' . esc_html__( 'These posts, pages, patterns and templates contain at least one download list. Content which only shows a synced pattern with a download list is not listed separately.', 'download-list-block-with-icons' ) . '</p>';
+		$table->display();
 	}
 
 	/**

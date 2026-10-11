@@ -13,7 +13,8 @@
 ### Added
 
 - Optional preview images for images, PDF files and audio or video files with cover image, with the width as setting per block and as default in the plugin settings
-- Optional border for icons and preview images with border width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
+- Optional border for icons and preview images with frame width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
+- New tab "Usage" in the plugin settings, which lists all posts, pages, patterns and templates with a download list, with the number of lists and files and links to edit them
 - Hints in the block editor for files without preview image and their reason
 - Lists with the iconset of the plugin "File-Preview for Download List Block with Icons" show the preview images now without this plugin
 - Own setting for the browser target of the download button (it used the setting of the link before)
