@@ -22,7 +22,8 @@ class Iconsets extends DownloadListTestCase {
 		$iconsets = \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_icon_sets();
 		$this->assertIsArray( $iconsets );
 		$this->assertNotEmpty( $iconsets );
-		$this->assertCount( 4, $iconsets );
+		// the 4 generic iconsets and any custom iconsets.
+		$this->assertGreaterThanOrEqual( 4, count( $iconsets ) );
 		$this->assertArrayHasObjectOfType( 'DownloadListWithIcons\Iconsets\Iconset_Base', $iconsets );
 	}
 

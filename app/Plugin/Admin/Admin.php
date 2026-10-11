@@ -72,6 +72,34 @@ class Admin {
 		add_filter( 'admin_footer_text', array( $this, 'show_plugin_hint_in_footer' ) );
 		add_action( 'init', array( $this, 'configure_transients' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_dialog_scripts' ) );
+
+		// secure the AJAX request to dismiss notices of the transients library (it only checks the nonce).
+		add_action( 'wp_ajax_efw_dismiss_admin_notice', array( $this, 'secure_dismiss_request' ), 1 );
+	}
+
+	/**
+	 * Allow the dismissing of notices only for users who can see them.
+	 *
+	 * The library "easy-transients-for-wordpress" checks only the nonce, which every logged-in user gets.
+	 * This runs before the handler of the library and stops the request for any other user.
+	 *
+	 * @return void
+	 */
+	public function secure_dismiss_request(): void {
+		// bail if the user is allowed to see the notices.
+		if ( current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// bail if this is not a notice of this plugin (other plugins with this library use the same request).
+		check_ajax_referer( 'etfw-dismiss-nonce', 'nonce' );
+		$option_name = isset( $_POST['option_name'] ) ? sanitize_text_field( wp_unslash( $_POST['option_name'] ) ) : '';
+		if ( ! empty( $option_name ) && ! str_starts_with( $option_name, 'downloadlist_' ) ) {
+			return;
+		}
+
+		// stop the request.
+		wp_send_json_error( null, 403 );
 	}
 
 	/**
@@ -93,7 +121,7 @@ class Admin {
 			'downloadlist-admin',
 			trailingslashit( plugin_dir_url( DL_PLUGIN ) ) . 'admin/js.js',
 			array( 'jquery' ),
-			Helper::get_file_version( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . '/admin/js.js' ),
+			Helper::get_file_version( trailingslashit( plugin_dir_path( DL_PLUGIN ) ) . 'admin/js.js' ),
 			true
 		);
 
@@ -117,6 +145,9 @@ class Admin {
 				'lbl_upload_button'      => __( 'Upload image', 'download-list-block-with-icons' ),
 				'title_rate_us'          => __( 'Rate this plugin', 'download-list-block-with-icons' ),
 				'title_inherit_progress' => __( 'Please wait', 'download-list-block-with-icons' ),
+				'title_error'            => __( 'An error occurred', 'download-list-block-with-icons' ),
+				'txt_error'              => __( 'The request could not be completed. Please reload the page and try it again.', 'download-list-block-with-icons' ),
+				'lbl_ok'                 => __( 'OK', 'download-list-block-with-icons' ),
 				'info_timeout'           => 200,
 			)
 		);
@@ -157,7 +188,7 @@ class Admin {
 
 		// get language-dependent URL for the how-to.
 		$url = 'https://github.com/threadi/downloadlist/tree/master/docs/how_to_use.md';
-		if ( str_starts_with( 'de_', get_locale() ) ) {
+		if ( str_starts_with( get_locale(), 'de_' ) ) {
 			$url = 'https://github.com/threadi/downloadlist/tree/master/docs/how_to_use_de.md';
 		}
 
@@ -178,7 +209,7 @@ class Admin {
 	 */
 	public function add_row_meta_links( array $links, string $file ): array {
 		// bail if this is not our plugin.
-		if ( DL_PLUGIN !== WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $file ) {
+		if ( plugin_basename( DL_PLUGIN ) !== $file ) {
 			return $links;
 		}
 
@@ -214,8 +245,8 @@ class Admin {
 			return;
 		}
 
-		// bail if PHP >= 8.2 is used.
-		if ( PHP_VERSION_ID > 80200 ) { // @phpstan-ignore smaller.alwaysFalse
+		// bail if PHP 8.3 or newer is used.
+		if ( PHP_VERSION_ID >= 80300 ) {
 			$transients_obj->delete_transient( $transients_obj->get_transient_by_name( 'downloadlist_php_hint' ) );
 			return;
 		}
@@ -225,7 +256,7 @@ class Admin {
 		$transient_obj->set_type( 'error' );
 		$transient_obj->set_name( 'downloadlist_php_hint' );
 		$transient_obj->set_dismissible_days( 90 );
-		$transient_obj->set_message( '<strong>' . __( 'Your website is using an outdated PHP-version!', 'download-list-block-with-icons' ) . '</strong><br>' . __( 'Future versions of <i>Download List Block with Icons</i> will no longer be compatible with PHP 8.2 or older. These versions <a href="https://www.php.net/supported-versions.php" target="_blank">are outdated</a> since December 2023. To continue using the plugins new features, please update your PHP version.', 'download-list-block-with-icons' ) . '<br>' . __( 'Talk to your hosters support team about this.', 'download-list-block-with-icons' ) );
+		$transient_obj->set_message( '<strong>' . __( 'Your website is using an outdated PHP-version!', 'download-list-block-with-icons' ) . '</strong><br>' . __( 'Future versions of <i>Download List Block with Icons</i> will no longer be compatible with PHP 8.2 or older. These versions <a href="https://www.php.net/supported-versions.php" target="_blank">will no longer get security updates</a> after December 2026. To continue using the plugins new features, please update your PHP version.', 'download-list-block-with-icons' ) . '<br>' . __( 'Talk to your hosters support team about this.', 'download-list-block-with-icons' ) );
 		$transient_obj->save();
 	}
 
@@ -243,7 +274,7 @@ class Admin {
 		if ( 'upload.php' === $pagenow ) {
 			// show hint for our plugin.
 			/* translators: %1$s will be replaced by the plugin name. */
-			return $content . ' ' . sprintf( __( 'This page has been expanded by the plugin %1$s.', 'download-list-block-with-icons' ), '<em>' . Helper::get_plugin_name() . '</em>' );
+			return $content . ' ' . sprintf( __( 'This page has been expanded by the plugin %1$s.', 'download-list-block-with-icons' ), '<em>' . esc_html( Helper::get_plugin_name() ) . '</em>' );
 		}
 
 		// get requested taxonomy.
@@ -262,7 +293,7 @@ class Admin {
 
 		// show hint for our plugin.
 		/* translators: %1$s will be replaced by the plugin name. */
-		return $content . ' ' . sprintf( __( 'This page is provided by the plugin %1$s.', 'download-list-block-with-icons' ), '<em>' . Helper::get_plugin_name() . '</em>' );
+		return $content . ' ' . sprintf( __( 'This page is provided by the plugin %1$s.', 'download-list-block-with-icons' ), '<em>' . esc_html( Helper::get_plugin_name() ) . '</em>' );
 	}
 
 	/**
@@ -321,11 +352,13 @@ class Admin {
 		// embed the dialog-components CSS-script.
 		$admin_css      = $url . 'build/style-index.css';
 		$admin_css_path = $path . 'build/style-index.css';
-		wp_enqueue_style(
-			'easy-dialog-for-wordpress',
-			$admin_css,
-			array( 'wp-components' ),
-			(string) filemtime( $admin_css_path )
-		);
+		if ( file_exists( $admin_css_path ) ) {
+			wp_enqueue_style(
+				'easy-dialog-for-wordpress',
+				$admin_css,
+				array( 'wp-components' ),
+				(string) filemtime( $admin_css_path )
+			);
+		}
 	}
 }

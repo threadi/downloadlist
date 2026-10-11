@@ -58,6 +58,7 @@ import {
 import { SortableItem } from "./sortableItem";
 import { getActualDate } from "./components";
 import { useSelect, dispatch } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
 import {sortByTitle} from "./sort/title";
 import {sortBySize} from "./sort/size";
 import {sortByDate} from "./sort/date";
@@ -91,142 +92,129 @@ wp.domReady(() => {
  * @return {WPElement} Element to render.
  */
 export default function Edit( object ) {
-	let files = ( !object.attributes.files ? [] : object.attributes.files )
+	const isPreview = !! object.attributes.preview;
 
-	// collect the fileIds as array
-	let fileIds = [];
-	{files.map((file) => {
-		fileIds.push(file.id);
-	})}
+	// get the files saved in the block (only their IDs are used).
+	const attributeFiles = Array.isArray( object.attributes.files ) ? object.attributes.files.filter( ( file ) => file && file.id > 0 ) : [];
 
-	// if we use a download list, get its files.
-	if( !object.attributes.preview ) {
-		// get the attachments which are assigned to the chosen list.
-		let list_files = useSelect((select) => {
-			return select('core').getEntityRecords( 'postType', 'attachment', {
-				per_page: -1,
-				dl_icon_lists: [object.attributes.list],
-				_fields: 'id'
-			} );
-		}, [object.attributes.list]) || [];
-		if( list_files.length > 0 && 'manual' !== object.attributes.order ) {
-			fileIds = [];
-			{list_files.map((file) => {
-				fileIds.push(file.id);
-			})}
-		}
-	}
+	// collect the fileIds as array.
+	let fileIds = attributeFiles.map( ( file ) => file.id );
 
 	/**
 	 * Revert preview-setting if block is selected.
 	 */
-	if( object.isSelected && object.attributes.preview ) {
-		object.attributes.preview = false;
+	useEffect( () => {
+		if ( object.isSelected && object.attributes.preview ) {
+			object.setAttributes( { preview: false } );
+		}
+	}, [ object.isSelected ] );
+
+	// if we use a download list, get its files (hooks are always called in the same order, also in preview).
+	const list_files = useSelect( ( select ) => {
+		if ( isPreview || ! object.attributes.list ) {
+			return [];
+		}
+		return select( 'core' ).getEntityRecords( 'postType', 'attachment', {
+			per_page: -1,
+			dl_icon_lists: [ object.attributes.list ],
+			_fields: 'id'
+		} );
+	}, [ isPreview, object.attributes.list ] ) || [];
+	if ( list_files.length > 0 && 'manual' !== object.attributes.order ) {
+		fileIds = list_files.map( ( file ) => file.id );
 	}
 
 	/**
-	 * Run AJAX-request to get the data of each selected file, but not in preview-mode.
+	 * Get the data of each selected file from our endpoint, but not in preview-mode.
 	 *
-	 * @type {*[]}
+	 * The attribute "date" is not saved, it is only used to reload the data after changes.
 	 */
-	let allowed_file_types = [];
-	let iconsets = [];
-	if( !object.attributes.preview ) {
-		// set actual date if it is not present.
-		if (!object.attributes.date) {
-			object.attributes.date = getActualDate()
+	const fileIdsKey = fileIds.join( ',' );
+	const { attachments, attachmentsFailed } = useSelect( ( select ) => {
+		if ( isPreview || 0 === fileIds.length ) {
+			return { attachments: [], attachmentsFailed: false };
 		}
+		const query = {
+			post_ids: fileIds,
+			date: object.attributes.date || 0,
+			per_page: fileIds.length
+		};
+		const store = select( 'core' );
+		return {
+			attachments: store.getEntityRecords( 'downloadlist/v1', 'files', query ),
+			attachmentsFailed: store.hasResolutionFailed ? store.hasResolutionFailed( 'getEntityRecords', [ 'downloadlist/v1', 'files', query ] ) : false
+		};
+	}, [ isPreview, fileIdsKey, object.attributes.date ] );
 
-		// send request to our custom endpoint to get the data of the files.
-		let attachments = useSelect((select) => {
-			return select('core').getEntityRecords('downloadlist/v1', 'files', {
-				post_ids: fileIds,
-				date: object.attributes.date,
-				per_page: fileIds.length
-			}, []) || null;
-		});
-		if (attachments) {
-			// loop through the results.
-			files = [];
-			let objectFiles = [];
-			attachments.map((newFile) => {
-				// collect the file-data for @SortableItem.
-				files.push(newFile)
-				// and add the file data for the file list for the block-settings.
-				objectFiles.push({id: newFile.id})
-			});
+	// use the loaded data of the files, or only their IDs while loading.
+	let files = attributeFiles;
+	const filesLoaded = Array.isArray( attachments );
+	if ( filesLoaded ) {
+		files = [ ...attachments ];
 
-			/**
-			 * Sort the files list if download list is used.
-			 */
-			if( object.attributes.list > 0 && object.attributes.order && object.attributes.orderby ) {
-				if ( 'title' === object.attributes.order ) {
-					files = sortByTitle( files, object.attributes.orderby );
-				}
-				if ( 'size' === object.attributes.order ) {
-					files = sortBySize( files, object.attributes.orderby );
-				}
-				if ( 'date' === object.attributes.order ) {
-					files = sortByDate( files, object.attributes.orderby );
-				}
+		/**
+		 * Sort the files list if download list is used.
+		 */
+		if( object.attributes.list > 0 && object.attributes.order && object.attributes.orderby ) {
+			if ( 'title' === object.attributes.order ) {
+				files = sortByTitle( files, object.attributes.orderby );
 			}
-
-			// save a clean file list only with the id-property per file
-			// -> case 1: update from version 1.x from this plugin
-			// -> case 2: a file is not available anymore
-			if (objectFiles.length > 0 && JSON.stringify(objectFiles) !== JSON.stringify(object.attributes.files)) {
-				object.attributes.files = objectFiles;
+			if ( 'size' === object.attributes.order ) {
+				files = sortBySize( files, object.attributes.orderby );
+			}
+			if ( 'date' === object.attributes.order ) {
+				files = sortByDate( files, object.attributes.orderby );
 			}
 		}
-
-		// useSelect to retrieve all post types
-		const iconsets_array = useSelect((select) => {
-			return select('core').getEntityRecords('taxonomy', 'dl_icon_set', {per_page: -1, hide_empty: true})
-		}, []) || [];
-
-		// Options in SelectControl expected format [{label: ..., value: ...}]
-		iconsets = iconsets_array.map(
-			// Format the options for display in the <SelectControl/>
-			(icon) => ({
-				label: icon.name,
-				value: icon.slug
-			})
-		);
-
-		// check if chosen iconset does exist.
-		if (0 < object.attributes.iconset.length && iconsets_array.length > 0) {
-			let found = false;
-			for (let i = 0; i < iconsets_array.length; i++) {
-				if (object.attributes.iconset === iconsets_array[i].slug) {
-					found = true;
-				}
-			}
-			if (false === found) {
-				object.attributes.iconset = '';
-			}
-		}
-
-		// if no iconset is set, use the default iconset.
-		if (0 === object.attributes.iconset.length && iconsets_array.length > 0) {
-			for (let i = 0; i < iconsets_array.length; i++) {
-				if (1 === iconsets_array[i].meta.default) {
-					object.attributes.iconset = iconsets_array[i].slug;
-				}
-			}
-		}
-
-		// retrieve all possible file types from our custom endpoint.
-		let allowed_file_types_server_result = useSelect((select) => {
-			return select('core').getEntityRecords('downloadlist/v1', 'filetypes', {
-				per_page: -1,
-				iconset: object.attributes.iconset
-			});
-		}, [object.attributes.iconset]) || [];
-
-		allowed_file_types = allowed_file_types_server_result.map(
-			(filetype) => filetype.value
-		);
 	}
+
+	// get all iconsets.
+	const iconsets_array = useSelect( ( select ) => {
+		if ( isPreview ) {
+			return [];
+		}
+		// "view" context: editors without the capability to edit the terms can read them too.
+		return select( 'core' ).getEntityRecords( 'taxonomy', 'dl_icon_set', { per_page: -1, hide_empty: true, context: 'view' } );
+	}, [ isPreview ] ) || [];
+
+	// Options in SelectControl expected format [{label: ..., value: ...}]
+	const iconsets = iconsets_array.map(
+		// Format the options for display in the <SelectControl/>
+		( icon ) => ( {
+			label: icon.name,
+			value: icon.slug
+		} )
+	);
+
+	// get the iconset to use: the chosen one, if it exists, or the default iconset.
+	// The attribute is not changed here, the server uses the default iconset in the same way.
+	let iconset = object.attributes.iconset || '';
+	if ( iconsets_array.length > 0 ) {
+		if ( iconset.length > 0 && ! iconsets_array.some( ( item ) => item.slug === iconset ) ) {
+			iconset = '';
+		}
+		if ( 0 === iconset.length ) {
+			const default_iconset = iconsets_array.find( ( item ) => item.meta && 1 === item.meta.default );
+			if ( default_iconset ) {
+				iconset = default_iconset.slug;
+			}
+		}
+	}
+
+	// retrieve all possible file types from our custom endpoint.
+	const allowed_file_types_server_result = useSelect( ( select ) => {
+		if ( isPreview || ! iconset ) {
+			return [];
+		}
+		return select( 'core' ).getEntityRecords( 'downloadlist/v1', 'filetypes', {
+			per_page: -1,
+			iconset: iconset
+		} );
+	}, [ isPreview, iconset ] ) || [];
+
+	const allowed_file_types = allowed_file_types_server_result.map(
+		( filetype ) => filetype.value
+	);
 
 	/**
 	 * Define sensors for sortable via dnd-kit.
@@ -251,24 +239,23 @@ export default function Edit( object ) {
 	);
 
 	// get the download lists.
-	const download_lists = useSelect((select) => {
-		return select('core').getEntityRecords( 'taxonomy', 'dl_icon_lists' );
-	});
+	const download_lists = useSelect( ( select ) => {
+		return select( 'core' ).getEntityRecords( 'taxonomy', 'dl_icon_lists', { per_page: -1, context: 'view' } );
+	}, [] );
 
 	// generate download list for options.
-	let lists_to_use = [];
-	let active_list = false;
-	if( download_lists !== null ) {
-		download_lists.map((list) => {
-			if( list.slug === object.attributes.list ) {
-				active_list = list;
-			}
-			lists_to_use.push({
-				'label': list.name,
-				'value': list.id,
-			})
-		});
-	}
+	const lists_to_use = Array.isArray( download_lists ) ? download_lists.map( ( list ) => ( {
+		'label': list.name,
+		'value': list.id,
+	} ) ) : [];
+
+	/**
+	 * Return only the IDs of the given files, as only they are saved in the block.
+	 *
+	 * @param list
+	 * @returns {{id: *}[]}
+	 */
+	const getFileIds = ( list ) => list.map( ( file ) => ( { id: file.id } ) );
 
 	/**
 	 * Save the new position on drag end
@@ -277,19 +264,24 @@ export default function Edit( object ) {
 	 */
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
-		if (active?.id !== over?.id) {
-			let active_index = files.findIndex(function(slide) {
-				return slide.id === active.id
-			});
-			let over_index = files.findIndex(function(slide) {
-				return slide.id === over.id
-			});
-			let _files = arrayMove(files, active_index, over_index);
-			object.setAttributes({
-				files: _files,
-				order: 'manual'
-			})
+
+		// bail if the item has been dropped outside the list or on its own position.
+		if ( ! active || ! over || active.id === over.id ) {
+			return;
 		}
+
+		const active_index = files.findIndex( ( file ) => file.id === active.id );
+		const over_index = files.findIndex( ( file ) => file.id === over.id );
+
+		// bail if one of the positions could not be found.
+		if ( -1 === active_index || -1 === over_index ) {
+			return;
+		}
+
+		object.setAttributes({
+			files: getFileIds( arrayMove( files, active_index, over_index ) ),
+			order: 'manual'
+		})
 	};
 
 	/**
@@ -456,7 +448,7 @@ export default function Edit( object ) {
 	 */
 	function sortFilesByTitle() {
 		let orderby = getSortDirectionByTitle(files);
-		object.setAttributes({ order: 'title', orderby: orderby, files: sortByTitle( files, orderby ), date: getActualDate() })
+		object.setAttributes({ order: 'title', orderby: orderby, files: getFileIds( sortByTitle( [ ...files ], orderby ) ), date: getActualDate() })
 	}
 
 	/**
@@ -468,7 +460,7 @@ export default function Edit( object ) {
 	function getSortDirectionByTitle(files) {
 		const c = [];
 		for (let i = 1; i < files.length; i++) {
-			c.push(files[i - 1].title.localeCompare(files[i].title, undefined, {numeric: true, sensitivity: 'base'}));
+			c.push( String( files[i - 1].title || '' ).localeCompare( String( files[i].title || '' ), undefined, {numeric: true, sensitivity: 'base'} ) );
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';
@@ -482,7 +474,7 @@ export default function Edit( object ) {
 	 */
 	function sortFilesByFileSize() {
 		let orderby = getSortDirectionBySize(files);
-		object.setAttributes({ order: 'size', orderby: orderby, files: sortBySize( files, orderby ), date: getActualDate() })
+		object.setAttributes({ order: 'size', orderby: orderby, files: getFileIds( sortBySize( [ ...files ], orderby ) ), date: getActualDate() })
 	}
 
 	/**
@@ -494,7 +486,7 @@ export default function Edit( object ) {
 	function getSortDirectionBySize(file_array) {
 		const c = [];
 		for (let i = 1; i < file_array.length; i++) {
-			c.push(file_array[i - 1].filesizeInBytes - file_array[i].filesizeInBytes);
+			c.push( ( file_array[i - 1].filesizeInBytes || 0 ) - ( file_array[i].filesizeInBytes || 0 ) );
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';
@@ -508,7 +500,7 @@ export default function Edit( object ) {
 	 */
 	function sortFilesByDate() {
 		let orderby = getSortDirectionByDate(files);
-		object.setAttributes({ order: 'date', orderby: orderby, files: sortByDate( files, orderby ), date: getActualDate() })
+		object.setAttributes({ order: 'date', orderby: orderby, files: getFileIds( sortByDate( [ ...files ], orderby ) ), date: getActualDate() })
 	}
 
 	/**
@@ -520,7 +512,7 @@ export default function Edit( object ) {
 	function getSortDirectionByDate(file_array) {
 		const c = [];
 		for (let i = 1; i < file_array.length; i++) {
-			c.push(file_array[i - 1].date - file_array[i].date);
+			c.push( ( file_array[i - 1].date || 0 ) - ( file_array[i].date || 0 ) );
 		}
 
 		if (c.every((n) => n <= 0)) return 'ascending';
@@ -535,29 +527,24 @@ export default function Edit( object ) {
 	 * @param newFiles
 	 */
 	function addFiles( newFiles ) {
-		{newFiles.map((newFile) => {
-			let doNotAdd = false;
-			{files.map((file) => {
-				if( file.id === newFile.id ) {
-					// do not add
-					doNotAdd = true;
-				}
-			})}
-			if( !doNotAdd ) {
-				files.push({
-					id: newFile.id
-				})
+		const list = getFileIds( attributeFiles );
+		newFiles.forEach( ( newFile ) => {
+			if ( newFile && newFile.id > 0 && ! list.some( ( file ) => file.id === newFile.id ) ) {
+				list.push( { id: newFile.id } );
 			}
-		})}
-		object.setAttributes({files: files, date: getActualDate()})
+		} );
+		object.setAttributes( { files: list, date: getActualDate() } );
 	}
 
 	/**
 	 * Add class name for used iconset.
 	 */
 	const blockProps = useBlockProps( {
-		className: 'iconset-' + object.attributes.iconset,
+		className: 'iconset-' + iconset,
 	} );
+
+	// sorting is only possible if the data of the files are loaded.
+	const sortDisabled = ! filesLoaded || files.length <= 1;
 
 	/**
 	 * Collect return for the edit-function
@@ -579,7 +566,7 @@ export default function Edit( object ) {
 							/>
 						</MediaUploadCheck>
 					}
-					{lists_to_use &&
+					{Array.isArray( download_lists ) &&
 						<Dropdown
 							renderToggle={ ( { isOpen, onToggle } ) => (
 								<ToolbarButton className="has-text" onClick={ onToggle } icon={plus} text={ object.attributes.list > 0 ? __( 'Using a download list', 'download-list-block-with-icons' ) : __( 'Choose a download list', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
@@ -599,7 +586,7 @@ export default function Edit( object ) {
 										{__('Deselect download list', 'download-list-block-with-icons')}
 									</MenuItem>
 									<MenuItem
-										onClick={ () => location.href=window.downloadlist_config.list_url }
+										onClick={ () => window.location.href=window.downloadlist_config.list_url }
 									>
 										{__('Manage download lists', 'download-list-block-with-icons')}
 									</MenuItem>
@@ -611,19 +598,19 @@ export default function Edit( object ) {
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 5h10v2H12m0 12v-2h10v2m-10-8h10v2H12m-3 0v2l-3.33 4H9v2H3v-2l3.33-4H3v-2M7 3H5c-1.1 0-2 .9-2 2v6h2V9h2v2h2V5a2 2 0 0 0-2-2m0 4H5V5h2Z"/></svg>}
 						label={__('Sort files by title', 'download-list-block-with-icons')}
-						disabled={ ( object.attributes.files && object.attributes.files.length <= 1 ) || !object.attributes.files }
+						disabled={ sortDisabled }
 						onClick={ () => sortFilesByTitle() }
 					/>
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21H3v-2h4v-1H5a2 2 0 0 1-2-2v-1c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2m0-6H5v1h2M5 3h2a2 2 0 0 1 2 2v4c0 1.11-.89 2-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2m0 6h2V5H5m7 0h10v2H12m0 12v-2h10v2m-10-8h10v2H12Z"/></svg>}
 						label={__('Sort files by filesize', 'download-list-block-with-icons')}
-						disabled={ ( object.attributes.files && object.attributes.files.length <= 1 ) || !object.attributes.files }
+						disabled={ sortDisabled }
 						onClick={ () => sortFilesByFileSize() }
 					/>
 					<ToolbarButton
 						icon={<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M20 17h3l-4 4l-4-4h3V3h2zM8 5c-3.86 0-7 3.13-7 7s3.13 7 7 7c3.86 0 7-3.13 7-7s-3.13-7-7-7m0 2.15c2.67 0 4.85 2.17 4.85 4.85c0 2.68-2.17 4.85-4.85 4.85c-2.68 0-4.85-2.17-4.85-4.85c0-2.68 2.17-4.85 4.85-4.85M7 9v3.69l3.19 1.84l.75-1.3l-2.44-1.41V9"/></svg>}
 						label={__('Sort files by date', 'download-list-block-with-icons')}
-						disabled={ ( object.attributes.files && object.attributes.files.length <= 1 ) || !object.attributes.files }
+						disabled={ sortDisabled }
 						onClick={ () => sortFilesByDate() }
 					/>
 				</BlockControls>
@@ -641,7 +628,7 @@ export default function Edit( object ) {
 							<SelectControl
 								label={__('Choose an iconset', 'download-list-block-with-icons')}
 								options={ iconsets }
-								value={ object.attributes.iconset }
+								value={ iconset }
 								onChange={(value) => onChangeIconSet( value, object )}
 								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'download-list-block-with-icons' ) }</ExternalLink>}
 								__next40pxDefaultSize
@@ -761,7 +748,10 @@ export default function Edit( object ) {
 					</PanelBody>
 				</InspectorControls>
 			}
-			<div { ...useBlockProps()}>
+			<div>
+				{attachmentsFailed &&
+					<p>{ __( 'The files could not be loaded. Please reload the page.', 'download-list-block-with-icons' ) }</p>
+				}
 				{files &&
 					<DndContext
 						sensors={sensors}
@@ -770,7 +760,7 @@ export default function Edit( object ) {
 					>
 						<SortableContext items={ files } strategy={verticalListSortingStrategy}>
 							{files.map((file, index) => (
-								<SortableItem key={index} file={file} index={index} files={files} object={object} />
+								<SortableItem key={file.id} file={file} index={index} files={files} object={object} />
 							))}
 						</SortableContext>
 					</DndContext>
@@ -789,7 +779,7 @@ export default function Edit( object ) {
 					</MediaUploadCheck>
 				}
 				{files.length === 0 && object.attributes.list > 0 &&
-					<Button variant="primary" className="has-text" onClick={ () => location.href=window.downloadlist_config.list_url } icon={plus} text={ __( 'Assign files to this download list', 'download-list-block-with-icons' ) } size="small"></Button>
+					<Button variant="primary" className="has-text" onClick={ () => window.location.href=window.downloadlist_config.list_url } icon={plus} text={ __( 'Assign files to this download list', 'download-list-block-with-icons' ) } size="small"></Button>
 				}
 			</div>
 		</div>

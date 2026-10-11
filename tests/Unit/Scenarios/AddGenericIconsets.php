@@ -14,21 +14,24 @@ use DownloadListWithIcons\Tests\DownloadListTestCase;
  */
 class AddGenericIconsets extends DownloadListTestCase {
 	/**
-	 * Test if the returning variable is a string.
+	 * Test that missing generic icon entries are added and existing ones are not added twice.
 	 *
 	 * @return void
 	 */
 	public function test_add_generic_iconsets(): void {
-		// get the generic iconsets before.
-		$generic_iconsets_before = \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts();
+		// remove the generic icon entries.
+		foreach ( \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts() as $post_id ) {
+			wp_delete_post( $post_id, true );
+		}
+		$this->assertEmpty( \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts() );
 
 		// generate them.
 		\DownloadListWithIcons\Plugin\Helper::add_generic_iconsets();
+		$generic_iconsets = \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts();
+		$this->assertNotEmpty( $generic_iconsets );
 
-		// get the generic iconsets after.
-		$generic_iconsets_after = \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts();
-
-		// test it.
-		$this->assertNotEquals( $generic_iconsets_before, $generic_iconsets_after );
+		// generate them again: nothing must be added.
+		\DownloadListWithIcons\Plugin\Helper::add_generic_iconsets();
+		$this->assertEquals( $generic_iconsets, \DownloadListWithIcons\Iconsets\Iconsets::get_instance()->get_generic_sets_cpts() );
 	}
 }

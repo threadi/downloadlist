@@ -3,47 +3,89 @@ name: Testing
 on:
   pull_request:
     branches:
-      - master
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
+  checks:
+    name: Code checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check composer.json and composer.lock
+        run: composer validate --strict --no-check-publish --no-check-version
+
+      - name: Install dependencies
+        # also runs Mozart, which copies easy-transients-for-wordpress to app/Dependencies.
+        run: composer install --no-interaction --no-progress
+
+      - name: Run PHPStan check
+        run: vendor/bin/phpstan analyse --no-progress
+
+      - name: Run WordPress Coding Standard checks
+        run: vendor/bin/phpcs .
+
+      - name: PHP Compatibility check
+        run: vendor/bin/phpcs -p app --standard=PHPCompatibilityWP --runtime-set testVersion 8.2-
+
   phpunit:
-    name: Run tests
+    name: PHPUnit (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
     strategy:
+      # let the other PHP versions finish if one of them fails.
+      fail-fast: false
       matrix:
-        php-version: ['8.5', '8.4', '8.3', '8.2']
+        php-version: ['8.2', '8.3', '8.4', '8.5']
     services:
       database:
-        image: mysql:latest
+        # a fixed LTS version, so a new major release does not break the tests unnoticed.
+        image: mysql:8.4
         env:
           MYSQL_DATABASE: wordpress_tests
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
+        # wait until the server accepts connections before the steps start.
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     steps:
-      - name: Check out source code
-        uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: Run package installs and builds
-        run: |
-            composer install
-            npm i
-            npm run build
-            mkdir -p css/fontawesome/
-            mkdir -p css/webfonts/
-            cp node_modules/@fortawesome/fontawesome-free/css/all.css css/fontawesome/fontawesome6.css
-            cp -r node_modules/@fortawesome/fontawesome-free/webfonts/ css/
-            mkdir -p css/bootstrap/fonts/
-            cp node_modules/bootstrap-icons/font/bootstrap-icons.css css/bootstrap/bootstrap-icons.css
-            cp -r node_modules/bootstrap-icons/font/fonts/ css/bootstrap/
-
+      # set up PHP first, so composer resolves the dependencies for the PHP version under test.
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: ${{ matrix.php-version }}
           tools: phpunit-polyfills:1.1
           extensions: mbstring, xml, zip, intl, pdo, mysql
           coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # the tests register the block, which needs the compiled block and the icon fonts.
+      - name: Build block and copy icon fonts
+        run: |
+          npm ci
+          npm run build
 
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion

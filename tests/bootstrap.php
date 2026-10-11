@@ -2,8 +2,13 @@
 /**
  * PHPUnit bootstrap file.
  *
- * @package Easy_Language
+ * @package download-list-block-with-icons
  */
+
+// run only on the command line, never via a web server.
+if ( 'cli' !== PHP_SAPI ) {
+	exit;
+}
 
 define( 'TESTS_PLUGIN_DIR', dirname( __DIR__ ) );
 define( 'UNIT_TESTS_DATA_PLUGIN_DIR', TESTS_PLUGIN_DIR . '/tests/Data/' );

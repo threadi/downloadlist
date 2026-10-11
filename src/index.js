@@ -41,6 +41,8 @@ registerBlockType( 'downloadlist/list', {
 			{
 				type: 'block',
 				blocks: [ 'core/file', 'core/audio', 'core/video' ],
+				// only files from the media library can be used in the list.
+				isMatch: ( { id } ) => !! id,
 				transform: ( { id } ) => {
 					return createBlock( 'downloadlist/list', {
 						'files': [{

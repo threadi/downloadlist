@@ -28,4 +28,23 @@ class Taxonomies extends DownloadListTestCase {
 			$this->assertEquals( $taxonomy_name, $taxonomy_obj->name );
 		}
 	}
+
+	/**
+	 * Test that the default marker of an iconset is kept on updates without our form (e.g. quick edit or REST API).
+	 *
+	 * @return void
+	 */
+	public function test_default_iconset_is_kept_on_update_without_form(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		// get the default iconset.
+		$term = get_term_by( 'slug', 'dashicons', 'dl_icon_set' );
+		$this->assertInstanceOf( \WP_Term::class, $term );
+		\DownloadListWithIcons\Iconsets\Iconsets::get_instance()->set_default_iconset( $term->term_id );
+
+		// update the term without our form.
+		wp_update_term( $term->term_id, 'dl_icon_set', array( 'name' => 'Dashicons' ) );
+
+		$this->assertEquals( 1, get_term_meta( $term->term_id, 'default', true ) );
+	}
 }

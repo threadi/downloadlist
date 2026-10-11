@@ -7,10 +7,10 @@
  */
 export function sortByDate( list, orderby ) {
 	if( 'descending' === orderby ) {
-		list.sort((a, b) => a.date - b.date)
+		list.sort((a, b) => (a.date || 0) - (b.date || 0))
 	}
 	else {
-		list.sort((a, b) => b.date - a.date)
+		list.sort((a, b) => (b.date || 0) - (a.date || 0))
 	}
 	return list;
 }

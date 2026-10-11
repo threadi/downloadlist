@@ -74,6 +74,7 @@ class Init {
 
 		// initialize updates.
 		Updates::get_instance()->init();
+		Installer::get_instance()->init();
 
 		// initialize the settings.
 		Settings::get_instance()->init();
@@ -103,7 +104,7 @@ class Init {
 		add_action( 'init', array( $this, 'register_block' ) );
 		add_filter( 'render_block', array( $this, 'enqueue_styles' ), 10, 2 );
 		add_action( 'cli_init', array( $this, 'add_cli' ) );
-		add_action( 'after_setup_theme', array( $this, 'add_image_size' ) );
+		add_action( 'init', array( $this, 'add_image_size' ), 20 );
 		add_filter( 'wp_prepare_attachment_for_js', array( $this, 'prepare_attachment_for_js' ), 10, 2 );
 		add_filter( 'term_updated_messages', array( $this, 'updated_shows_messages' ) );
 		add_filter( 'ajax_query_attachments_args', array( $this, 'change_ajax_query_attachments_args' ) );
@@ -131,7 +132,10 @@ class Init {
 				'render_callback' => array( $this, 'render_block' ),
 				'attributes'      => array(
 					'files'                  => array(
-						'type' => 'array',
+						'type'  => 'array',
+						'items' => array(
+							'type' => 'object',
+						),
 					),
 					'hideFileSize'           => array(
 						'type'    => 'boolean',
@@ -179,7 +183,7 @@ class Init {
 					),
 					'downloadLinkTarget'     => array(
 						'type'    => 'string',
-						'default' => get_option( 'downloadlist_link_browser_target' ),
+						'default' => get_option( 'downloadlist_download_button_browser_target' ),
 					),
 					'downloadLinkTargetName' => array(
 						'type'    => 'string',
@@ -223,6 +227,8 @@ class Init {
 			'downloadlistJsVars',
 			array(
 				'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
+				'date_format'        => (string) get_option( 'date_format' ),
+				'time_format'        => (string) get_option( 'time_format' ),
 			)
 		);
 	}
@@ -236,11 +242,6 @@ class Init {
 	 * @return string
 	 */
 	public function enqueue_styles( string $block_content, array $block ): string {
-		// bail if script is already enqueued.
-		if ( wp_script_is( 'downloadlist-iconsets' ) ) {
-			return $block_content;
-		}
-
 		// bail if no block name is set.
 		if ( empty( $block['blockName'] ) ) {
 			return $block_content;
@@ -251,21 +252,19 @@ class Init {
 			return $block_content;
 		}
 
-		// use default iconset if none is set.
+		// use default iconset if none is set (like the block attribute does).
 		if ( empty( $block['attrs']['iconset'] ) ) {
-			$block['attrs']['iconset'] = get_option( 'downloadlist_iconset' );
-		}
-
-		// bail if no iconset is configured.
-		if ( empty( $block['attrs']['iconset'] ) ) {
-			return $block_content;
+			$block['attrs']['iconset'] = get_option( 'downloadlist_iconset', 'dashicons' );
 		}
 
 		// get iconset object.
 		$iconsets_obj = Iconsets::get_instance();
 
-		// get the object of the used iconset.
-		$iconset = $iconsets_obj->get_iconset_by_slug( $block['attrs']['iconset'] );
+		// get the object of the used iconset, use the default iconset if it does not exist (like render_block() does).
+		$iconset = $iconsets_obj->get_iconset_by_slug( (string) $block['attrs']['iconset'] );
+		if ( ! $iconset ) {
+			$iconset = $iconsets_obj->get_preset_default_iconset();
+		}
 
 		// bail if no iconset could be loaded.
 		if ( ! $iconset ) {
@@ -366,7 +365,7 @@ class Init {
 		$iconset     = '';
 		$iconset_obj = null;
 		if ( ! empty( $attributes['iconset'] ) ) {
-			$iconset     = 'iconset-' . $attributes['iconset'];
+			$iconset     = 'iconset-' . sanitize_html_class( (string) $attributes['iconset'] );
 			$iconset_obj = Iconsets::get_instance()->get_iconset_by_slug( $attributes['iconset'] );
 			// if no iconset could be detected, get the default iconset.
 			if ( false === $iconset_obj ) {
@@ -374,7 +373,7 @@ class Init {
 				if ( ! $iconset_obj ) {
 					$iconset = 'iconset-generic';
 				} else {
-					$iconset = 'iconset-' . $iconset_obj->get_slug();
+					$iconset = 'iconset-' . sanitize_html_class( $iconset_obj->get_slug() );
 				}
 			}
 		} else {
@@ -383,9 +382,19 @@ class Init {
 			if ( ! $iconset_obj ) {
 				$iconset = 'iconset-generic';
 			} else {
-				$iconset = 'iconset-' . $iconset_obj->get_slug();
+				$iconset = 'iconset-' . sanitize_html_class( $iconset_obj->get_slug() );
 			}
 		}
+
+		// remove invalid entries from the list of files (block attributes could be changed by any editor).
+		$attributes['files'] = array_values(
+			array_filter(
+				(array) $attributes['files'],
+				function ( $file ) {
+					return is_array( $file ) && ! empty( $file['id'] ) && absint( $file['id'] ) > 0;
+				}
+			)
+		);
 
 		/**
 		 * Get all files assigned to a given download list.
@@ -413,7 +422,7 @@ class Init {
 			}
 
 			// get the list of files as simple ID-array.
-			$files = wp_list_pluck( $attributes['files'], 'id' );
+			$files = array_map( 'absint', wp_list_pluck( $attributes['files'], 'id' ) );
 
 			// check each file found in db which is assigned to the chosen download list.
 			foreach ( $additional_files->get_posts() as $file_id ) {
@@ -435,22 +444,17 @@ class Init {
 				$index = absint( $index );
 
 				// get data about the assigned term.
-				$term = wp_get_object_terms( $file['id'], 'dl_icon_lists' );
+				$term = wp_get_object_terms( absint( $file['id'] ), 'dl_icon_lists' );
 
 				// bail if term is set.
-				if ( ! empty( $term ) ) {
+				if ( ! empty( $term ) && ! is_wp_error( $term ) ) {
 					// get the meta-data like JS (like human-readable filesize).
-					$file_meta = wp_prepare_attachment_for_js( $file['id'] );
-
-					// bail if this is not an array.
-					if ( ! is_array( $file_meta ) ) {
-						continue;
-					}
+					$file_meta = wp_prepare_attachment_for_js( absint( $file['id'] ) );
 
 					// add the file data for sorting.
-					$attributes['files'][ $index ]['title'] = $file_meta['title'];
-					$attributes['files'][ $index ]['date']  = $file_meta['date'];
-					$attributes['files'][ $index ]['size']  = $file_meta['filesizeInBytes'];
+					$attributes['files'][ $index ]['title'] = is_array( $file_meta ) ? $file_meta['title'] : '';
+					$attributes['files'][ $index ]['date']  = is_array( $file_meta ) ? $file_meta['date'] : 0;
+					$attributes['files'][ $index ]['size']  = is_array( $file_meta ) ? absint( $file_meta['filesizeInBytes'] ) : 0;
 
 					continue;
 				}
@@ -460,7 +464,7 @@ class Init {
 			}
 
 			// sort the resulting list.
-			if ( 'title' === $attributes['order'] ) {
+			if ( isset( $attributes['order'] ) && 'title' === $attributes['order'] ) {
 				usort(
 					$attributes['files'],
 					function ( $a, $b ) {
@@ -468,7 +472,7 @@ class Init {
 					}
 				);
 			}
-			if ( 'size' === $attributes['order'] ) {
+			if ( isset( $attributes['order'] ) && 'size' === $attributes['order'] ) {
 				usort(
 					$attributes['files'],
 					function ( $a, $b ) {
@@ -476,7 +480,7 @@ class Init {
 					}
 				);
 			}
-			if ( 'date' === $attributes['order'] ) {
+			if ( isset( $attributes['order'] ) && 'date' === $attributes['order'] ) {
 				usort(
 					$attributes['files'],
 					function ( $a, $b ) {
@@ -484,10 +488,13 @@ class Init {
 					}
 				);
 			}
-			if ( 'ascending' === $attributes['orderby'] ) {
+			if ( isset( $attributes['orderby'] ) && 'ascending' === $attributes['orderby'] ) {
 				$attributes['files'] = array_reverse( $attributes['files'], true );
 			}
 		}
+
+		// load all attachments of this list with one query instead of one query per file.
+		_prime_post_caches( array_map( 'absint', wp_list_pluck( $attributes['files'], 'id' ) ), false, true );
 
 		// get the possible mime labels.
 		$mime_labels = $this->get_mime_labels();
@@ -506,7 +513,7 @@ class Init {
 		// get the configured files for this Block.
 		foreach ( $attributes['files'] as $file ) {
 			// get the file-id.
-			$file_id = $file['id'];
+			$file_id = absint( $file['id'] );
 
 			// get the mimetype.
 			$mimetype = get_post_mime_type( $file_id );
@@ -517,7 +524,7 @@ class Init {
 			}
 
 			// split the mimetype to get type and subtype.
-			list( $type, $subtype ) = Helper::get_type_and_subtype_from_mimetype( $mimetype );
+			list( $type, $subtype ) = array_pad( Helper::get_type_and_subtype_from_mimetype( $mimetype ), 2, '' );
 
 			// get the post.
 			$attachment = get_post( $file_id );
@@ -560,13 +567,13 @@ class Init {
 			// get the file date, if enabled.
 			$file_date = '';
 			if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
-				$file_date = '<br>' . gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) strtotime( $attachment->post_date ) );
+				$file_date = '<br>' . esc_html( (string) get_post_time( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), false, $attachment, true ) );
 			}
 
 			// get the file format label, if enabled.
 			$file_format_label = '';
 			if ( ! empty( $attributes['showFileFormatLabel'] ) ) {
-				$file_format_label = '<br>' . $mime_labels[ $attachment->post_mime_type ];
+				$file_format_label = '<br>' . esc_html( $mime_labels[ $attachment->post_mime_type ] ?? $attachment->post_mime_type );
 			}
 
 			// get the download URL of the file.
@@ -589,7 +596,7 @@ class Init {
 			 * @param string $download_link_attribute The value.
 			 * @param array $file The attributes for single file.
 			 */
-			$download_link_attribute = apply_filters( 'downloadlist_link_download_attribute', $download_link_attribute, $file );
+			$download_link_attribute = $this->get_download_attribute( apply_filters( 'downloadlist_link_download_attribute', $download_link_attribute, $file ) );
 
 			// if we have a link target set, use this.
 			$link_target = '';
@@ -627,6 +634,11 @@ class Init {
 			 */
 			$rel_attribute = apply_filters( 'downloadlist_rel_attribute', $rel_attribute, $file );
 
+			// add "noopener" for links which open in a named window (browsers do this only for "_blank" by themselves).
+			if ( ! empty( $link_target ) && ! in_array( $link_target, array( '_self', '_parent', '_top' ), true ) && ! str_contains( (string) $rel_attribute, 'noopener' ) ) {
+				$rel_attribute = trim( $rel_attribute . ' noopener' );
+			}
+
 			// get individual styles for this file from used iconset.
 			if ( $iconset_obj instanceof Iconset_Base ) {
 				$styles .= $iconset_obj->get_style_for_file( $file_id );
@@ -642,10 +654,10 @@ class Init {
 				 * Filter the download attribute for the download button.
 				 *
 				 * @since 3.6.0 Available since 3.6.0.
-				 * @param string $download_button The value.
+				 * @param string $download_button_attribute The value.
 				 * @param array $file The attributes for single file.
 				 */
-				$download_button = apply_filters( 'downloadlist_download_button_download_attribute', $download_button, $file );
+				$download_button_attribute = $this->get_download_attribute( apply_filters( 'downloadlist_download_button_download_attribute', $download_button_attribute, $file ) );
 
 				// get the link target for the download button.
 				$download_target_attribute = '';
@@ -697,6 +709,37 @@ class Init {
 
 		// return resulting output.
 		return $output;
+	}
+
+	/**
+	 * Return the download attribute for a link as escaped HTML.
+	 *
+	 * Allowed are an empty string, " download" and " download="filename"".
+	 *
+	 * @param mixed $attribute The attribute (could be changed by filters).
+	 * @return string
+	 */
+	private function get_download_attribute( mixed $attribute ): string {
+		// bail if no string is given.
+		if ( ! is_string( $attribute ) ) {
+			return '';
+		}
+
+		// get the plain value.
+		$attribute = trim( $attribute );
+
+		// return just the attribute if no file name is given.
+		if ( 'download' === $attribute ) {
+			return ' download';
+		}
+
+		// return the attribute with the given file name.
+		if ( preg_match( '/^download=(["\'])(.*)\1$/s', $attribute, $matches ) ) {
+			return ' download="' . esc_attr( $matches[2] ) . '"';
+		}
+
+		// return nothing in any other case.
+		return '';
 	}
 
 	/**

@@ -7,7 +7,7 @@
  * @param string $rel_attribute The value for the rel attribute.
  * @param string $download_target_attribute The value for the target attribute.
  *
- * @version: 3.7.0
+ * @version: 4.2.0
  * @package download-list-block-with-icons
  */
 
@@ -15,4 +15,4 @@
 defined( 'ABSPATH' ) || exit;
 
 ?>
-<a href="<?php echo esc_url( $url ); ?>" class="download-button button button-secondary" target="<?php echo esc_attr( $download_target_attribute ); ?>" <?php echo esc_attr( $download_button_attribute ) . ( ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : '' ); ?>><?php echo esc_html__( 'Download', 'download-list-block-with-icons' ); ?></a>
+<a href="<?php echo esc_url( $url ); ?>" class="download-button button button-secondary"<?php echo ! empty( $download_target_attribute ) ? ' target="' . esc_attr( $download_target_attribute ) . '"' : ''; ?><?php echo $download_button_attribute; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the complete attribute is escaped in Init::get_download_attribute(). ?><?php echo ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : ''; ?>><?php echo esc_html__( 'Download', 'download-list-block-with-icons' ); ?></a>

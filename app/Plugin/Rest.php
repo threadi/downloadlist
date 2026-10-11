@@ -75,6 +75,17 @@ class Rest {
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
+				'args'                => array(
+					'post_ids' => array(
+						'type'     => 'array',
+						'items'    => array(
+							'type'    => 'integer',
+							'minimum' => 1,
+						),
+						'maxItems' => 1000,
+						'default'  => array(),
+					),
+				),
 			)
 		);
 		register_rest_route(
@@ -86,6 +97,12 @@ class Rest {
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
+				'args'                => array(
+					'iconset' => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+				),
 			)
 		);
 	}
@@ -102,15 +119,25 @@ class Rest {
 		$post_ids = $request->get_param( 'post_ids' );
 
 		// bail if no IDs are given.
-		if ( empty( $post_ids ) ) {
+		if ( empty( $post_ids ) || ! is_array( $post_ids ) ) {
 			return array();
 		}
 
 		// get the file data.
 		$file_data = array();
-		foreach ( $post_ids as $post_id ) {
+		foreach ( array_unique( array_map( 'absint', $post_ids ) ) as $post_id ) {
+			// bail if this is not an attachment.
+			if ( 'attachment' !== get_post_type( $post_id ) ) {
+				continue;
+			}
+
+			// bail if the user is not allowed to read this attachment (e.g. attached to a private post).
+			if ( ! current_user_can( 'read_post', $post_id ) ) {
+				continue;
+			}
+
 			// get the JS-data of this attachment.
-			$js = wp_prepare_attachment_for_js( absint( $post_id ) );
+			$js = wp_prepare_attachment_for_js( $post_id );
 
 			// bail if it is empty.
 			if ( empty( $js ) ) {
@@ -139,7 +166,7 @@ class Rest {
 	 * @noinspection PhpUnused
 	 */
 	public function get_filetypes( WP_REST_Request $request ): array {
-		$iconset = sanitize_text_field( $request->get_param( 'iconset' ) );
+		$iconset = sanitize_text_field( (string) $request->get_param( 'iconset' ) );
 
 		// bail if no iconset is given.
 		if ( empty( $iconset ) ) {

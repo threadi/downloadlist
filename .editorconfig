@@ -12,3 +12,8 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = tab
+
+# YAML does not allow tabs for indentation (e.g. GitHub workflows).
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2

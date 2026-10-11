@@ -108,7 +108,21 @@ class Icons {
 			'taxonomies'          => array( 'dl_icon_set' ),
 			'publicly_queryable'  => false,
 			'show_in_rest'        => false,
-			'capability_type'     => 'post',
+			// icons are part of the iconsets, which only administrators can manage.
+			'map_meta_cap'        => true,
+			'capabilities'        => array(
+				'edit_posts'             => 'manage_options',
+				'edit_others_posts'      => 'manage_options',
+				'edit_published_posts'   => 'manage_options',
+				'edit_private_posts'     => 'manage_options',
+				'publish_posts'          => 'manage_options',
+				'delete_posts'           => 'manage_options',
+				'delete_others_posts'    => 'manage_options',
+				'delete_published_posts' => 'manage_options',
+				'delete_private_posts'   => 'manage_options',
+				'read_private_posts'     => 'manage_options',
+				'create_posts'           => 'manage_options',
+			),
 			'rewrite'             => array(
 				'slug' => 'downloadlist_icons',
 			),
@@ -143,13 +157,22 @@ class Icons {
 		}
 
 		// get the values from request.
-		$icon      = absint( filter_input( INPUT_POST, 'icon', FILTER_SANITIZE_NUMBER_INT ) );
-		$file_type = sanitize_text_field( wp_unslash( filter_input( INPUT_POST, 'file_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
-		$unicode   = sanitize_text_field( wp_unslash( filter_input( INPUT_POST, 'unicode', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ) );
+		$icon      = isset( $_POST['icon'] ) ? absint( wp_unslash( $_POST['icon'] ) ) : 0;
+		$file_type = isset( $_POST['file_type'] ) ? sanitize_text_field( wp_unslash( $_POST['file_type'] ) ) : '';
 
-		// save assigned icon-file.
-		if ( 1 === $icon ) {
-			update_post_meta( $post_id, 'icon', 1 );
+		// a unicode consists only of hexadecimal characters (e.g. "f101"), a leading backslash is optional.
+		$unicode = isset( $_POST['unicode'] ) ? (string) preg_replace( '/[^0-9a-fA-F]/', '', sanitize_text_field( wp_unslash( $_POST['unicode'] ) ) ) : '';
+
+		// allow only file types from our list.
+		if ( ! in_array( $file_type, Helper::get_mime_types(), true ) ) {
+			$file_type = '';
+		}
+
+		// save assigned icon-file, if it is an image. Remove it if none is chosen.
+		if ( $icon > 0 && str_starts_with( (string) get_post_mime_type( $icon ), 'image/' ) ) {
+			update_post_meta( $post_id, 'icon', $icon );
+		} else {
+			delete_post_meta( $post_id, 'icon' );
 		}
 
 		// save assigned file-type.
@@ -173,9 +196,9 @@ class Icons {
 		// get iconset.
 		$iconset_terms = wp_get_object_terms( $post_id, 'dl_icon_set' );
 		if ( is_array( $iconset_terms ) && ! empty( $iconset_terms ) ) {
-			// regenerate icons and style of the chosen iconset.
+			// regenerate icons of the chosen iconset and the styles of all iconsets (they share one file).
 			Helper::regenerate_icons( $iconset_terms[0]->term_id );
-			Helper::generate_css( $iconset_terms[0]->term_id );
+			Helper::generate_css();
 		}
 	}
 
@@ -351,7 +374,7 @@ class Icons {
 		}
 
 		// reduce the count with the amount of generic sets.
-		$counts->publish -= count( Iconsets::get_instance()->get_generic_sets_cpts() );
+		$counts->publish = max( 0, absint( $counts->publish ) - count( Iconsets::get_instance()->get_generic_sets_cpts( array( 'publish' ) ) ) );
 
 		// return resulting object.
 		return $counts;

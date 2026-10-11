@@ -31,23 +31,18 @@ class GenerateCss extends DownloadListTestCase {
 	 * @return void
 	 */
 	public function test_generate_complete_css(): void {
-		// sleep for 2 seconds to allow to check if the CSS file has been generated.
-		sleep( 2 );
-
-		// get the filesystem object.
-		$wp_filesystem = \DownloadListWithIcons\Plugin\Helper::get_wp_filesystem();
-
 		// get the style file path.
 		$style_path = \DownloadListWithIcons\Plugin\Helper::get_style_path();
 
-		// get the date of the file there.
-		$file_date_before = $wp_filesystem->mtime( $style_path );
+		// remove the file, so it is sure that it is generated again.
+		wp_delete_file( $style_path );
+		$this->assertFileDoesNotExist( $style_path );
 
 		// generate CSS.
 		\DownloadListWithIcons\Plugin\Helper::generate_css();
 
 		// test it.
 		$this->assertFileExists( $style_path );
-		$this->assertNotEquals( $file_date_before, $wp_filesystem->mtime( $style_path ) );
+		$this->assertNotEmpty( file_get_contents( $style_path ) );
 	}
 }

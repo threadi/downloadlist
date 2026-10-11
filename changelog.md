@@ -1,5 +1,63 @@
 # Changelog
 
+## [4.2.0] - unreleased
+
+### Security
+
+- Only users who can see the notices of this plugin can dismiss them (the request checked only the nonce)
+- REST API endpoint for file data returns only files the user is allowed to read
+- File types of custom icons are checked against the list of known file types
+- Values in the generated CSS file are escaped
+- Download attributes from hooks are escaped as complete attribute
+
+### Added
+
+- Own setting for the browser target of the download button (it used the setting of the link before)
+- Confirmation for the WP CLI command `reset_plugin` (use `--yes` to skip it)
+- Support for network activation and uninstallation in multisites
+- Hook `downloadlist_enqueue_all_iconsets` to load the styles of all iconsets on every page (e.g. for download lists loaded via AJAX)
+
+### Changed
+
+- Icon fonts are only loaded in frontend for the iconsets used on the page
+- The unicode of custom icons accepts only hexadecimal characters (e.g. `f101`)
+- Inheriting settings also updates blocks in groups, columns, custom post types, synced patterns and templates
+- Reset of the plugin keeps the download lists
+- Uninstallation also removes the download lists, the meta data of the iconsets and the generated icon files
+- `Helper::generate_css()` always generates the styles for all iconsets, its parameter is deprecated
+- The hook `downloadlist_prevent_icon_generation` is not used for the file name suffix anymore, use `downloadlist_icon_filename_suffix`
+- The file of Font Awesome is now named `fontawesome.css`
+- GitHub workflows use pinned actions, minimal permissions, a smoke test in Playground and an SBOM
+- Now requires WordPress 6.6 or newer
+- Templates `list-start.php`, `list-item.php`, `list-item-not-linked.php` and `button-download.php` changed (version 4.2.0)
+
+### Fixed
+
+- Fixed fatal error during uninstallation (missing autoloader)
+- Fixed backslashes in posts being removed after inheriting the settings to the blocks or after adding the block via settings
+- Fixed migration tasks of updates not running on websites without development mode
+- Fixed the image of custom icons not being saved
+- Fixed styles of all other iconsets getting lost after saving an icon or iconset
+- Fixed custom iconsets using icons and file types of all custom iconsets
+- Fixed custom iconsets using only 10 icons
+- Fixed duplicate generic icon entries on each activation or reset (existing duplicates are removed during update)
+- Fixed default iconset losing its marker on quick-edit or REST API updates
+- Fixed font URLs with query strings and fields of iconsets, which could not be emptied
+- Fixed PHP warnings for file format labels of not listed file types
+- Fixed hook `downloadlist_download_button_download_attribute` not working
+- Fixed templates in embeds
+- Fixed image sizes of iconsets not being registered
+- Fixed possible fatal error in frontend if `get_plugin_data()` is not loaded
+- Fixed block editor errors after transforming a file block and on dropping a file outside the list
+- Fixed sorting of files in block editor before their data are loaded
+- Fixed file dates in block editor for users without access to the site settings
+- Fixed progress dialog for inheriting settings if a request fails
+- Fixed "How to use" link for German websites
+- Fixed icons with font codes being invisible if no font size is set at the iconset
+- Fixed editors without administrator rights not seeing iconsets and download lists in the block
+- Fixed chosen default iconset being reset on activation
+- Removed shipped translation files, translations are provided by translate.wordpress.org
+
 ## [4.1.4] - 03.10.2026
 
 ### Changed

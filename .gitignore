@@ -14,5 +14,20 @@ vendor/
 
 # local build-file
 build/build.properties
-languages/*.json
 block/
+
+# icon fonts, copied from node_modules by "npm run build"
+/css/bootstrap/
+/css/fontawesome/
+/css/webfonts/
+
+# output of the release workflow and of the local build
+/dist/
+/releases/
+*.spdx.json
+release-notes.md
+smoke-result.txt
+build/*.txt
+
+# caches
+.phpunit.result.cache

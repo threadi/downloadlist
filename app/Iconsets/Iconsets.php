@@ -59,7 +59,7 @@ class Iconsets {
 	public function init(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_styles' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_styles' ) );
-		add_action( 'enqueue_block_assets', array( $this, 'enqueue_styles_run' ), 10, 0 );
+		add_action( 'enqueue_block_assets', array( $this, 'enqueue_styles_in_editor' ), 10, 0 );
 		add_action( 'admin_action_downloadlist_iconset_default', array( $this, 'set_default_by_request' ) );
 		add_action( 'pre_get_posts', array( $this, 'hide_generated_iconsets' ) );
 	}
@@ -70,16 +70,19 @@ class Iconsets {
 	 * @return void
 	 */
 	public function register_styles(): void {
-		if ( false === file_exists( Helper::get_style_path() ) ) {
+		// generate the style file if it does not exist. Try it only once per hour, e.g. if uploads is not writable.
+		$style_path = Helper::get_style_path();
+		if ( false === file_exists( $style_path ) && false === get_transient( 'downloadlist_css_generation_tried' ) ) {
+			set_transient( 'downloadlist_css_generation_tried', 1, HOUR_IN_SECONDS );
 			Helper::generate_css();
 		}
 
-		// get global styles.
+		// get global styles. Use the time of the last generation as version, so browsers load a changed file.
 		wp_register_style(
 			'downloadlist-iconsets',
 			Helper::get_style_url(),
 			array(),
-			Helper::get_file_version( Helper::get_style_path() ),
+			file_exists( $style_path ) ? (string) filemtime( $style_path ) : DL_VERSION,
 		);
 
 		// get iconset-styles.
@@ -155,12 +158,14 @@ class Iconsets {
 	/**
 	 * Return generic custom post types.
 	 *
+	 * @param array<int,string> $post_status List of post status to search for.
+	 *
 	 * @return array<int,int>
 	 */
-	public function get_generic_sets_cpts(): array {
+	public function get_generic_sets_cpts( array $post_status = array( 'any', 'trash' ) ): array {
 		$query = array(
 			'post_type'      => 'dl_icons',
-			'post_status'    => array( 'any', 'trash' ),
+			'post_status'    => $post_status,
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
 			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
@@ -172,11 +177,6 @@ class Iconsets {
 			),
 		);
 		$posts = new WP_Query( $query );
-
-		// bail on no results.
-		if ( 0 === $posts->found_posts ) {
-			return array();
-		}
 
 		// get the resulting entries.
 		$list = array();
@@ -233,6 +233,11 @@ class Iconsets {
 	 * @return void
 	 */
 	public function enqueue_styles_run( array $iconsets = array() ): void {
+		// make sure the styles are registered.
+		if ( ! wp_style_is( 'downloadlist-iconsets', 'registered' ) ) {
+			$this->register_styles();
+		}
+
 		// enqueue the main styles.
 		wp_enqueue_style( 'downloadlist-iconsets' );
 
@@ -245,9 +250,39 @@ class Iconsets {
 		foreach ( $iconsets as $iconset_obj ) {
 			// add the files of this iconset in the frontend.
 			foreach ( $iconset_obj->get_style_files() as $file ) {
+				// bail if handle is empty.
+				if ( empty( $file['handle'] ) ) {
+					continue;
+				}
 				wp_enqueue_style( 'downloadlist-' . $file['handle'] );
 			}
 		}
+	}
+
+	/**
+	 * Enqueue the styles of all iconsets in the block editor.
+	 *
+	 * In frontend the styles are enqueued only if the block is used (see Init::enqueue_styles()).
+	 *
+	 * @return void
+	 */
+	public function enqueue_styles_in_editor(): void {
+		$false = false;
+		/**
+		 * Load the styles of all iconsets on every page in frontend, e.g. if download lists are loaded via AJAX.
+		 *
+		 * @since 4.2.0 Available since 4.2.0.
+		 * @param bool $false Set to true to load the styles of all iconsets.
+		 */
+		$load_all = apply_filters( 'downloadlist_enqueue_all_iconsets', $false );
+
+		// bail if this is not the backend (enqueue_block_assets runs also in frontend).
+		if ( ! is_admin() && ! $load_all ) {
+			return;
+		}
+
+		// enqueue all iconsets.
+		$this->enqueue_styles_run();
 	}
 
 	/**
@@ -260,13 +295,14 @@ class Iconsets {
 
 		// bail if capability is missing.
 		if ( ! current_user_can( Settings::get_instance()->get_settings_obj()->get_capability() ) ) {
-			return;
+			wp_die( esc_html__( 'Sorry, you are not allowed to do this.', 'download-list-block-with-icons' ), 403 );
 		}
 
 		// get the term-ID from request.
 		$term_id = ! empty( $_GET['term_id'] ) ? absint( $_GET['term_id'] ) : 0;
 
-		if ( $term_id > 0 ) {
+		// set it only if it is an iconset.
+		if ( $term_id > 0 && get_term( $term_id, 'dl_icon_set' ) instanceof \WP_Term ) {
 			// set this term-ID as default.
 			$this->set_default_iconset( $term_id );
 		}
@@ -288,29 +324,29 @@ class Iconsets {
 			return;
 		}
 
-		// add filter for generic iconsets.
-		$query->set(
-			'meta_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
-			array(
-				array(
-					'key'     => 'generic-downloadlist',
-					'compare' => 'NOT EXISTS',
-				),
-			)
+		// add filter for generic iconsets (keep an existing meta query).
+		$meta_query = $query->get( 'meta_query' );
+		if ( ! is_array( $meta_query ) ) {
+			$meta_query = array();
+		}
+		$meta_query[] = array(
+			'key'     => 'generic-downloadlist',
+			'compare' => 'NOT EXISTS',
 		);
+		$query->set( 'meta_query', $meta_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary meta lookup.
 
-		// add a filter for slugs, which are marked as generic iconsets.
-		$query->set(
-			'tax_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
-			array(
-				array(
-					'taxonomy' => 'dl_icon_set',
-					'terms'    => $this->get_generic_sets_as_slug_array(),
-					'field'    => 'slug',
-					'operator' => 'NOT IN',
-				),
-			)
+		// add a filter for slugs, which are marked as generic iconsets (keep an existing tax query).
+		$tax_query = $query->get( 'tax_query' );
+		if ( ! is_array( $tax_query ) ) {
+			$tax_query = array();
+		}
+		$tax_query[] = array(
+			'taxonomy' => 'dl_icon_set',
+			'terms'    => $this->get_generic_sets_as_slug_array(),
+			'field'    => 'slug',
+			'operator' => 'NOT IN',
 		);
+		$query->set( 'tax_query', $tax_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
 	}
 
 	/**

@@ -23,39 +23,13 @@ Run `npm start` to compile the Block Editor-Scripts for tests.
 
 ## Translations
 
-I recommend to use [PoEdit](https://poedit.net/) to translate texts for this plugin.
-
-### generate pot-file
-
-Run in main directory:
-
-`wp i18n make-pot . languages/download-list-block-with-icons.pot --exclude=docs,css,src,svn`
-
-### update translation-file
-
-1. Open .po-file of the language in PoEdit.
-2. Go to "Translate" > "Update from POT-file".
-3. After this the new entries are added to the language-file.
-
-### export translation-file
-
-1. Open .po-file of the language in PoEdit.
-2. Go to File > Save.
-3. Upload the generated .mo-file and the .po-file to the plugin-folder languages/
-
-### generate json-translation-files
-
-Run in main directory:
-
-`wp i18n make-json languages --no-purge`
-
-OR use ant in build/-directory: `ant json-translations`
+The translations are managed on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/download-list-block-with-icons/). The repository contains no language files.
 
 ## Build blocks
 
 ### Requirements
 
-`npm install`
+`npm ci`
 
 ### Run for development
 
@@ -64,6 +38,8 @@ OR use ant in build/-directory: `ant json-translations`
 ### Run for release
 
 `npm run build`
+
+This also copies the icon fonts of Font Awesome and Bootstrap Icons from node_modules to css/.
 
 Hint: will be called by ant-command mentioned above.
 
@@ -91,11 +67,13 @@ Hint: this check runs against the VIP-GO-platform which is not our target for th
 
 ## Check PHP compatibility
 
-`vendor/bin/phpcs -p app --standard=PHPCompatibilityWP`
+`vendor/bin/phpcs -p app --standard=PHPCompatibilityWP --runtime-set testVersion 8.2-`
 
 ### Generate documentation
 
-`vendor/bin/wp-documentor parse classes --format=markdown --output=docs/hooks.md --prefix=downloadlist_ --exclude=Section.php --exclude=Tab.php --exclude=Import.php --exclude=Export.php --exclude=Field_Base.php --exclude=Settings.php --exclude=Page.php`
+`vendor/bin/wp-documentor parse app --format=markdown --output=docs/hooks.md --prefix=downloadlist_ --exclude=Transients.php`
+
+The GitHub workflow "Hook documentation" does this automatically on pull requests.
 
 ## Check with the plugin "Plugin Check"
 
@@ -104,7 +82,7 @@ This runs the plugin check as the plugin check in the WordPress repository does 
 Hint: run this not in the development environment, it would also check all dependencies that is unnecessary.
 Use a normal WordPress installation with an installed PCP plugin.
 
-`wp plugin check --error-severity=7 --warning-severity=6 --include-low-severity-errors --categories=plugin_repo --format=json --slug=personio-integration-light .`
+`wp plugin check --error-severity=7 --warning-severity=6 --include-low-severity-errors --categories=plugin_repo --format=json --slug=download-list-block-with-icons .`
 
 ## PHP Unit tests
 
@@ -112,8 +90,15 @@ Use a normal WordPress installation with an installed PCP plugin.
 
 Be sure to have run `composer install` or `composer update` before.
 
-Then: `composer test-install`
+Then set the password of the database user `root` and run the installation:
+
+`WP_TESTS_DB_PASSWORD='your-password' composer test-install`
 
 ### Run
 
 `composer test`
+
+## Release via GitHub
+
+Push a tag with the version number (e.g. `4.2.0`). The workflow "Build release zip" builds the zip, checks it with Plugin Check, runs a smoke test in WordPress Playground and creates the release with the notes from changelog.md. The changelog needs a section for this version.
+
