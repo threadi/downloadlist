@@ -135,6 +135,26 @@ Version | Description
 
 Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 268](Plugin/Helper.php#L268-L275)
 
+### `downloadlist_preview_image_size`
+
+*Filter the image size used for preview images.*
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$size` | `string` | The image size.
+`$attachment_id` | `int` | The ID of the attachment.
+`$width` | `int` | The width of the preview.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`4.2.0` | Available since 4.2.0.
+
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 374](Plugin/Helper.php#L374-L382)
+
 ### `downloadlist_generate_classname`
 
 *Filter the string name of a mime type.*
@@ -151,7 +171,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 366](Plugin/Helper.php#L366-L373)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 612](Plugin/Helper.php#L612-L619)
 
 ### `downloadlist_generate_classname`
 
@@ -169,7 +189,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 375](Plugin/Helper.php#L375-L382)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 621](Plugin/Helper.php#L621-L628)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -187,7 +207,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 395](Plugin/Helper.php#L395-L401)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 641](Plugin/Helper.php#L641-L647)
 
 ### `downloadlist_icon_filename_suffix`
 
@@ -205,7 +225,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 453](Plugin/Helper.php#L453-L459)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 699](Plugin/Helper.php#L699-L705)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -224,7 +244,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 488](Plugin/Helper.php#L488-L495)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 734](Plugin/Helper.php#L734-L741)
 
 ### `downloadlist_file_version`
 
@@ -243,7 +263,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 659](Plugin/Helper.php#L659-L667)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 905](Plugin/Helper.php#L905-L913)
 
 ### `downloadlist_link_download_attribute`
 
@@ -254,7 +274,7 @@ Argument | Type | Description
 `$download_link_attribute` |  | 
 `$file` |  | 
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 599](Plugin/Init.php#L599-L599)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 644](Plugin/Init.php#L644-L644)
 
 ### `downloadlist_link_target_attribute`
 
@@ -273,7 +293,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 613](Plugin/Init.php#L613-L620)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 658](Plugin/Init.php#L658-L665)
 
 ### `downloadlist_rel_attribute`
 
@@ -292,7 +312,7 @@ Version | Description
 ------- | -----------
 `3.5.0` | Available since 3.5.0
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 628](Plugin/Init.php#L628-L635)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 673](Plugin/Init.php#L673-L680)
 
 ### `downloadlist_download_button_download_attribute`
 
@@ -303,7 +323,7 @@ Argument | Type | Description
 `$download_button_attribute` |  | 
 `$file` |  | 
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 660](Plugin/Init.php#L660-L660)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 705](Plugin/Init.php#L705-L705)
 
 ### `downloadlist_download_button_target_attribute`
 
@@ -322,7 +342,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 674](Plugin/Init.php#L674-L681)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 719](Plugin/Init.php#L719-L726)
 
 ### `downloadlist_mime_labels`
 
@@ -340,7 +360,7 @@ Version | Description
 ------- | -----------
 `4.0.0` | Available since 4.0.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 862](Plugin/Init.php#L862-L868)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 932](Plugin/Init.php#L932-L938)
 
 ### `downloadlist_api_return_file_data`
 

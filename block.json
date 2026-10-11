@@ -115,6 +115,34 @@
 		"showFileFormatLabel": {
 			"type": "boolean",
 			"default": false
+		},
+		"showPreview": {
+			"type": "boolean",
+			"default": false
+		},
+		"previewWidth": {
+			"type": "integer",
+			"default": 48
+		},
+		"mediaBorderWidth": {
+			"type": "integer",
+			"default": 0
+		},
+		"mediaBorderColor": {
+			"type": "string",
+			"default": ""
+		},
+		"mediaBorderRadius": {
+			"type": "integer",
+			"default": 0
+		},
+		"mediaPadding": {
+			"type": "integer",
+			"default": 0
+		},
+		"mediaBackground": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"example": {

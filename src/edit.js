@@ -3,7 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -21,8 +21,11 @@ import {
 	MediaUploadCheck,
 	InspectorControls,
 	BlockControls,
-	useBlockProps
+	useBlockProps,
+	__experimentalColorGradientSettingsDropdown as ColorGradientSettingsDropdown,
+	__experimentalUseMultipleOriginColorsAndGradients as useMultipleOriginColorsAndGradients
 } from '@wordpress/block-editor';
+import { getBlockType } from '@wordpress/blocks';
 import {
 	Button,
 	PanelBody,
@@ -34,7 +37,11 @@ import {
 	Dropdown,
 	MenuGroup,
 	MenuItemsChoice,
-	MenuItem
+	MenuItem,
+	RangeControl,
+	Notice,
+	__experimentalToolsPanel as ToolsPanel,
+	__experimentalToolsPanelItem as ToolsPanelItem
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
 import {
@@ -199,6 +206,49 @@ export default function Edit( object ) {
 				iconset = default_iconset.slug;
 			}
 		}
+	}
+
+	// show previews if enabled, or if the list used the iconset of the former plugin "File-Preview" which is not available anymore.
+	const showPreview = !! object.attributes.showPreview || ( 'preview' === object.attributes.iconset && iconsets_array.length > 0 && ! iconsets_array.some( ( item ) => 'preview' === item.slug ) );
+
+	// count the PDF files without generated preview image (they show their icon).
+	// count the files without preview image by their reason (they show their icon).
+	const hasPreview = ( file ) => file.downloadlist_preview && ( file.downloadlist_preview.thumbnail || file.downloadlist_preview.medium );
+	const countWithoutPreview = ( types ) => showPreview && filesLoaded ? files.filter( ( file ) => types.includes( file.downloadlist_preview_type ) && ! hasPreview( file ) ).length : 0;
+	const pdfsWithoutPreview = countWithoutPreview( [ 'pdf' ] );
+	const mediaWithoutCover = countWithoutPreview( [ 'audio', 'video' ] );
+	const filesWithoutPreviewType = countWithoutPreview( [ 'none' ] );
+	// wp_localize_script() transfers true as "1" and false as "".
+	const pdfPreviewSupported = ! window.downloadlistJsVars || '1' === String( window.downloadlistJsVars.pdf_preview );
+
+	// collect the hints about files without preview image.
+	const previewHints = [];
+	if ( pdfsWithoutPreview > 0 ) {
+		previewHints.push(
+			sprintf(
+				/* translators: %d: number of PDF files. */
+				_n( '%d PDF file has no preview image and is shown with its icon.', '%d PDF files have no preview image and are shown with their icon.', pdfsWithoutPreview, 'download-list-block-with-icons' ),
+				pdfsWithoutPreview
+			) + ' ' + ( pdfPreviewSupported ? __( 'They were probably uploaded before this server could generate previews. Regenerate their thumbnails, e.g. with the plugin "Regenerate Thumbnails" or with "wp media regenerate".', 'download-list-block-with-icons' ) : __( 'This server cannot generate preview images of PDF files. Ask your hosting for Imagick with Ghostscript and a policy which allows PDF files.', 'download-list-block-with-icons' ) )
+		);
+	}
+	if ( mediaWithoutCover > 0 ) {
+		previewHints.push(
+			sprintf(
+				/* translators: %d: number of audio and video files. */
+				_n( '%d audio or video file has no cover image and is shown with its icon.', '%d audio or video files have no cover image and are shown with their icon.', mediaWithoutCover, 'download-list-block-with-icons' ),
+				mediaWithoutCover
+			) + ' ' + __( 'WordPress takes the cover from MP3 files during the upload. You can also set it as featured image when editing the file in the media library.', 'download-list-block-with-icons' )
+		);
+	}
+	if ( filesWithoutPreviewType > 0 ) {
+		previewHints.push(
+			sprintf(
+				/* translators: %d: number of files. */
+				_n( '%d file has a file type without preview image and is shown with its icon.', '%d files have a file type without preview image and are shown with their icon.', filesWithoutPreviewType, 'download-list-block-with-icons' ),
+				filesWithoutPreviewType
+			)
+		);
 	}
 
 	// retrieve all possible file types from our custom endpoint.
@@ -539,8 +589,11 @@ export default function Edit( object ) {
 	/**
 	 * Add class name for used iconset.
 	 */
+	const mediaFrame = getMediaFrame( object.attributes, showPreview );
+	const colorGradientSettings = useMultipleOriginColorsAndGradients();
 	const blockProps = useBlockProps( {
-		className: 'iconset-' + iconset,
+		className: 'iconset-' + iconset + mediaFrame.className,
+		style: mediaFrame.style,
 	} );
 
 	// sorting is only possible if the data of the files are loaded.
@@ -631,6 +684,29 @@ export default function Edit( object ) {
 								value={ iconset }
 								onChange={(value) => onChangeIconSet( value, object )}
 								help={<ExternalLink href={ window.downloadlist_config.iconsets_url }>{ __( 'Manage Iconsets', 'download-list-block-with-icons' ) }</ExternalLink>}
+								__next40pxDefaultSize
+							/>
+						}
+						<CheckboxControl
+							label={__('Show preview images', 'download-list-block-with-icons')}
+							checked={ object.attributes.showPreview }
+							onChange={ value => object.setAttributes( { showPreview: value } ) }
+							help={ object.attributes.showPreview && ! pdfPreviewSupported && 0 === pdfsWithoutPreview ? __( 'This server cannot generate preview images of PDF files. Ask your hosting for Imagick with Ghostscript and a policy which allows PDF files.', 'download-list-block-with-icons' ) : __( 'Files without preview keep their icon.', 'download-list-block-with-icons' ) }
+							__nextHasNoMarginBottom
+						/>
+						{previewHints.length > 0 &&
+							<Notice status="info" isDismissible={ false } className="downloadlist-preview-hints">
+								{ previewHints.map( ( hint, index ) => <p key={ index }>{ hint }</p> ) }
+							</Notice>
+						}
+						{object.attributes.showPreview &&
+							<RangeControl
+								label={__('Size of preview images and icon frames in pixel', 'download-list-block-with-icons')}
+								value={ object.attributes.previewWidth }
+								onChange={ value => object.setAttributes( { previewWidth: value || 48 } ) }
+								min={ 16 }
+								max={ 600 }
+								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
 						}
@@ -748,6 +824,72 @@ export default function Edit( object ) {
 					</PanelBody>
 				</InspectorControls>
 			}
+			{
+				<InspectorControls group="styles">
+					<ToolsPanel
+						className="downloadlist-media-frame-panel"
+						label={ __( 'Frame for icons and previews', 'download-list-block-with-icons' ) }
+						panelId={ object.clientId }
+						resetAll={ () => object.setAttributes( getMediaFrameDefaults() ) }
+						__experimentalFirstVisibleItemClass="first"
+						__experimentalLastVisibleItemClass="last"
+					>
+						<ColorGradientSettingsDropdown
+							panelId={ object.clientId }
+							__experimentalIsRenderedInSidebar
+							{ ...colorGradientSettings }
+							gradients={ [] }
+							disableCustomGradients
+							settings={ [
+								{
+									colorValue: object.attributes.mediaBorderColor || undefined,
+									onColorChange: ( value ) => object.setAttributes( {
+										mediaBorderColor: value || '',
+										// a frame color needs a frame width to be visible.
+										mediaBorderWidth: value && ! object.attributes.mediaBorderWidth ? 1 : object.attributes.mediaBorderWidth,
+									} ),
+									label: __( 'Frame color', 'download-list-block-with-icons' ),
+									resetAllFilter: () => ( { mediaBorderColor: getMediaFrameDefaults().mediaBorderColor } ),
+								},
+								{
+									colorValue: object.attributes.mediaBackground || undefined,
+									onColorChange: ( value ) => object.setAttributes( { mediaBackground: value || '' } ),
+									label: __( 'Background color', 'download-list-block-with-icons' ),
+									resetAllFilter: () => ( { mediaBackground: getMediaFrameDefaults().mediaBackground } ),
+								},
+							] }
+						/>
+						{ [
+							{ name: 'mediaBorderWidth', label: __( 'Frame width in pixel', 'download-list-block-with-icons' ), min: 0, max: 20 },
+							{ name: 'mediaBorderRadius', label: __( 'Frame radius in pixel', 'download-list-block-with-icons' ), min: 0, max: 100 },
+							{ name: 'mediaPadding', label: __( 'Inner spacing in pixel', 'download-list-block-with-icons' ), min: 0, max: 50 },
+							{ name: 'previewWidth', label: __( 'Size of preview images and icon frames in pixel', 'download-list-block-with-icons' ), min: 16, max: 600 },
+						].map( ( control ) => (
+							<ToolsPanelItem
+								key={ control.name }
+								panelId={ object.clientId }
+								label={ control.label }
+								hasValue={ () => object.attributes[ control.name ] !== getMediaFrameDefaults()[ control.name ] }
+								onDeselect={ () => object.setAttributes( { [ control.name ]: getMediaFrameDefaults()[ control.name ] } ) }
+								resetAllFilter={ () => ( { [ control.name ]: getMediaFrameDefaults()[ control.name ] } ) }
+								isShownByDefault
+							>
+								<RangeControl
+									label={ control.label }
+									value={ object.attributes[ control.name ] }
+									onChange={ ( value ) => object.setAttributes( { [ control.name ]: undefined === value ? getMediaFrameDefaults()[ control.name ] : value } ) }
+									min={ control.min }
+									max={ control.max }
+									allowReset
+									resetFallbackValue={ getMediaFrameDefaults()[ control.name ] }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) ) }
+					</ToolsPanel>
+				</InspectorControls>
+			}
 			<div>
 				{attachmentsFailed &&
 					<p>{ __( 'The files could not be loaded. Please reload the page.', 'download-list-block-with-icons' ) }</p>
@@ -760,7 +902,7 @@ export default function Edit( object ) {
 					>
 						<SortableContext items={ files } strategy={verticalListSortingStrategy}>
 							{files.map((file, index) => (
-								<SortableItem key={file.id} file={file} index={index} files={files} object={object} />
+								<SortableItem key={file.id} file={file} index={index} files={files} object={object} showPreview={showPreview} />
 							))}
 						</SortableContext>
 					</DndContext>
@@ -784,4 +926,68 @@ export default function Edit( object ) {
 			</div>
 		</div>
 	);
+}
+
+/**
+ * Return the class name and the CSS variables for the frame of icons and preview images.
+ *
+ * Must match Helper::get_media_frame() in PHP.
+ *
+ * @param attributes  The block attributes.
+ * @param showPreview Whether previews are shown.
+ * @returns {{hasFrame: boolean, className: string, style: object}}
+ */
+function getMediaFrame( attributes, showPreview ) {
+	const clamp = ( value, min, max ) => Math.max( min, Math.min( max, parseInt( value, 10 ) || 0 ) );
+	const size = attributes.previewWidth ? clamp( attributes.previewWidth, 16, 600 ) : 48;
+	const borderWidth = clamp( attributes.mediaBorderWidth, 0, 20 );
+	const borderRadius = clamp( attributes.mediaBorderRadius, 0, 300 );
+	const padding = clamp( attributes.mediaPadding, 0, 100 );
+	const borderColor = attributes.mediaBorderColor || '';
+	const background = attributes.mediaBackground || '';
+	const hasFrame = borderWidth > 0 || borderRadius > 0 || padding > 0 || '' !== background;
+
+	// bail if no frame is used.
+	if ( ! showPreview && ! hasFrame ) {
+		return { hasFrame, className: '', style: {} };
+	}
+
+	// collect the CSS variables.
+	const style = { '--downloadlist-media-size': size + 'px' };
+	if ( borderWidth > 0 ) {
+		style[ '--downloadlist-media-border-width' ] = borderWidth + 'px';
+		if ( '' !== borderColor ) {
+			style[ '--downloadlist-media-border-color' ] = borderColor;
+		}
+	}
+	if ( borderRadius > 0 ) {
+		style[ '--downloadlist-media-border-radius' ] = borderRadius + 'px';
+	}
+	if ( padding > 0 ) {
+		style[ '--downloadlist-media-padding' ] = padding + 'px';
+	}
+	if ( '' !== background ) {
+		style[ '--downloadlist-media-background' ] = background;
+	}
+	return { hasFrame, className: ' has-media-frame', style };
+}
+
+/**
+ * Return the default values of the frame for icons and preview images.
+ *
+ * These are the defaults of the block, which come from the plugin settings.
+ *
+ * @returns {object}
+ */
+function getMediaFrameDefaults() {
+	const attributes = getBlockType( 'downloadlist/list' )?.attributes || {};
+	const getDefault = ( name, fallback ) => undefined !== attributes[ name ]?.default ? attributes[ name ].default : fallback;
+	return {
+		mediaBorderColor: getDefault( 'mediaBorderColor', '' ),
+		mediaBorderWidth: getDefault( 'mediaBorderWidth', 0 ),
+		mediaBorderRadius: getDefault( 'mediaBorderRadius', 0 ),
+		mediaPadding: getDefault( 'mediaPadding', 0 ),
+		mediaBackground: getDefault( 'mediaBackground', '' ),
+		previewWidth: getDefault( 'previewWidth', 48 ),
+	};
 }

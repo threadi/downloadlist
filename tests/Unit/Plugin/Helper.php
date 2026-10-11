@@ -73,4 +73,86 @@ class Helper extends DownloadListTestCase {
 
 		$this->assertEquals( 1, get_term_meta( $term->term_id, 'default', true ) );
 	}
+
+	/**
+	 * Test the detection which file types could have a preview.
+	 *
+	 * @return void
+	 */
+	public function test_get_preview_type(): void {
+		$this->assertSame( 'image', \DownloadListWithIcons\Plugin\Helper::get_preview_type( 'image/jpeg' ) );
+		$this->assertSame( 'pdf', \DownloadListWithIcons\Plugin\Helper::get_preview_type( 'application/pdf' ) );
+		$this->assertSame( 'audio', \DownloadListWithIcons\Plugin\Helper::get_preview_type( 'audio/mpeg' ) );
+		$this->assertSame( 'video', \DownloadListWithIcons\Plugin\Helper::get_preview_type( 'video/mp4' ) );
+		$this->assertSame( 'none', \DownloadListWithIcons\Plugin\Helper::get_preview_type( 'application/zip' ) );
+		$this->assertSame( 'none', \DownloadListWithIcons\Plugin\Helper::get_preview_type( '' ) );
+	}
+
+	/**
+	 * Test that lists without frame options and without previews get no frame (compatibility with existing lists).
+	 *
+	 * @return void
+	 */
+	public function test_get_media_frame_without_options(): void {
+		$frame = \DownloadListWithIcons\Plugin\Helper::get_media_frame( array(), false );
+		$this->assertSame( '', $frame['class'] );
+		$this->assertSame( '', $frame['style'] );
+
+		// a frame color without frame width has no effect.
+		$frame = \DownloadListWithIcons\Plugin\Helper::get_media_frame( array( 'mediaBorderColor' => '#ff0000' ), false );
+		$this->assertSame( '', $frame['class'] );
+	}
+
+	/**
+	 * Test the CSS variables of the frame.
+	 *
+	 * @return void
+	 */
+	public function test_get_media_frame_with_options(): void {
+		$frame = \DownloadListWithIcons\Plugin\Helper::get_media_frame(
+			array(
+				'previewWidth'      => 64,
+				'mediaBorderWidth'  => 1,
+				'mediaBorderColor'  => '#dddddd',
+				'mediaBorderRadius' => 8,
+				'mediaPadding'      => 6,
+				'mediaBackground'   => '#f5f5f5',
+			),
+			false
+		);
+		$this->assertSame( ' has-media-frame', $frame['class'] );
+		$this->assertSame( '--downloadlist-media-size:64px;--downloadlist-media-border-width:1px;--downloadlist-media-border-color:#dddddd;--downloadlist-media-border-radius:8px;--downloadlist-media-padding:6px;--downloadlist-media-background:#f5f5f5;', $frame['style'] );
+
+		// previews alone use the tile with the given size.
+		$frame = \DownloadListWithIcons\Plugin\Helper::get_media_frame( array( 'previewWidth' => 5000 ), true );
+		$this->assertSame( ' has-media-frame', $frame['class'] );
+		$this->assertSame( '--downloadlist-media-size:600px;', $frame['style'] );
+
+		// invalid colors are not used.
+		$frame = \DownloadListWithIcons\Plugin\Helper::get_media_frame(
+			array(
+				'mediaBorderWidth' => 2,
+				'mediaBorderColor' => 'red;background:url(https://example.com/x.png)',
+			),
+			false
+		);
+		$this->assertStringNotContainsString( 'border-color', $frame['style'] );
+		$this->assertStringNotContainsString( 'url(', $frame['style'] );
+	}
+
+	/**
+	 * Test the sanitizing of colors.
+	 *
+	 * @return void
+	 */
+	public function test_sanitize_css_color(): void {
+		$this->assertSame( '#fff', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( '#fff' ) );
+		$this->assertSame( '#11223344', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( ' #11223344 ' ) );
+		$this->assertSame( 'rgba(0, 0, 0, 0.5)', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( 'rgba(0, 0, 0, 0.5)' ) );
+		$this->assertSame( 'var(--wp--preset--color--primary)', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( 'var(--wp--preset--color--primary)' ) );
+		$this->assertSame( '', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( 'red' ) );
+		$this->assertSame( '', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( '#fff;color:red' ) );
+		$this->assertSame( '', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( 'rgb(0,0,0);x:url(a)' ) );
+		$this->assertSame( '', \DownloadListWithIcons\Plugin\Helper::sanitize_css_color( '"><script>' ) );
+	}
 }

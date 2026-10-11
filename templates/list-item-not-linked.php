@@ -16,6 +16,7 @@
  * @param string $file_format_label The mime label.
  * @param string $file_date The file date.
  * @param string $link_target The value for the target attribute.
+ * @param string $preview The HTML of the preview image (empty if no preview should be shown).
  *
  * @version: 4.2.0
  * @package download-list-block-with-icons
@@ -25,5 +26,5 @@
 defined( 'ABSPATH' ) || exit;
 
 ?>
-<li class="attachment-<?php echo absint( $file_id ); ?> file_<?php echo esc_attr( $type ); ?> file_<?php echo esc_attr( $subtype ); ?> <?php echo esc_attr( $hide_icon ); ?>"><?php echo esc_html( $attachment->post_title ); ?><?php echo wp_kses_post( $filesize ) . wp_kses_post( $download_button ) . wp_kses_post( $description ) . wp_kses_post( $file_format_label ) . wp_kses_post( $file_date ); ?>
+<li class="attachment-<?php echo absint( $file_id ); ?> file_<?php echo esc_attr( $type ); ?> file_<?php echo esc_attr( $subtype ); ?> <?php echo esc_attr( $hide_icon ); ?><?php echo ! empty( $preview ) ? ' has-preview' : ''; ?>"><?php echo ! empty( $preview ) ? $preview : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Helper::get_preview_image(). ?><?php echo esc_html( $attachment->post_title ); ?><?php echo wp_kses_post( $filesize ) . wp_kses_post( $download_button ) . wp_kses_post( $description ) . wp_kses_post( $file_format_label ) . wp_kses_post( $file_date ); ?>
 </li>

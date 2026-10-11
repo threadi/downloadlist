@@ -129,4 +129,235 @@ class Init extends DownloadListTestCase {
 		$this->assertIsString( $html );
 		$this->assertStringNotContainsString( '<li', $html );
 	}
+
+	/**
+	 * Test that a preview image is shown for files with preview, if enabled.
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_preview(): void {
+		$attachment_id = self::factory()->attachment->create_upload_object( UNIT_TESTS_DATA_PLUGIN_DIR . '/test-image.png' );
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+
+		// without the option no preview is shown.
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block( array( 'files' => array( array( 'id' => $attachment_id ) ) ) );
+		$this->assertStringNotContainsString( 'downloadlist-preview', $html );
+		$this->assertStringNotContainsString( 'has-preview', $html );
+
+		// with the option the preview is shown with the given width.
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block(
+			array(
+				'files'        => array( array( 'id' => $attachment_id ) ),
+				'showPreview'  => true,
+				'previewWidth' => 64,
+			)
+		);
+		$this->assertStringContainsString( 'class="downloadlist-preview"', $html );
+		$this->assertStringContainsString( 'width="64"', $html );
+		$this->assertStringContainsString( 'loading="lazy"', $html );
+		$this->assertStringContainsString( 'has-preview', $html );
+	}
+
+	/**
+	 * Test the frame for icons and previews on the list.
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_media_frame(): void {
+		$attachment_id = self::factory()->attachment->create_upload_object( UNIT_TESTS_DATA_PLUGIN_DIR . '/test-image.png' );
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+
+		// lists without frame options keep their markup.
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block( array( 'files' => array( array( 'id' => $attachment_id ) ) ) );
+		$this->assertStringNotContainsString( 'has-media-frame', $html );
+		$this->assertStringNotContainsString( 'style="', $html );
+
+		// with frame options the list gets the class and the CSS variables.
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block(
+			array(
+				'files'            => array( array( 'id' => $attachment_id ) ),
+				'mediaBorderWidth' => 1,
+				'mediaBorderColor' => '#dddddd',
+				'mediaPadding'     => 6,
+			)
+		);
+		$this->assertStringContainsString( 'has-media-frame', $html );
+		$this->assertStringContainsString( 'style="--downloadlist-media-size:48px;--downloadlist-media-border-width:1px;--downloadlist-media-border-color:#dddddd;--downloadlist-media-padding:6px;"', $html );
+	}
+
+	/**
+	 * Test that files without preview keep their icon, if previews are enabled.
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_preview_for_file_without_preview(): void {
+		$attachment_id = self::factory()->attachment->create_object(
+			array(
+				'file'           => 'archive.zip',
+				'post_mime_type' => 'application/zip',
+				'post_title'     => 'Archive',
+			)
+		);
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block(
+			array(
+				'files'       => array( array( 'id' => $attachment_id ) ),
+				'showPreview' => true,
+			)
+		);
+		$this->assertStringNotContainsString( 'downloadlist-preview', $html );
+		$this->assertStringNotContainsString( 'has-preview', $html );
+		$this->assertStringContainsString( 'file_zip', $html );
+	}
+
+	/**
+	 * Test that lists with the iconset of the former plugin "File-Preview" show previews.
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_former_preview_iconset(): void {
+		$attachment_id = self::factory()->attachment->create_upload_object( UNIT_TESTS_DATA_PLUGIN_DIR . '/test-image.png' );
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block(
+			array(
+				'files'   => array( array( 'id' => $attachment_id ) ),
+				'iconset' => 'preview',
+			)
+		);
+		$this->assertStringContainsString( 'class="downloadlist-preview"', $html );
+	}
+
+	/**
+	 * Test that the generated preview of a PDF file is used (like WordPress saves it with Imagick and Ghostscript).
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_preview_of_pdf(): void {
+		$attachment_id = self::factory()->attachment->create_object(
+			array(
+				'file'           => '2026/10/document.pdf',
+				'post_mime_type' => 'application/pdf',
+				'post_title'     => 'Document',
+			)
+		);
+
+		// set the metadata WordPress saves after generating the preview of the first page.
+		wp_update_attachment_metadata(
+			$attachment_id,
+			array(
+				'sizes' => array(
+					'full'      => array(
+						'file'      => 'document-pdf.jpg',
+						'width'     => 1088,
+						'height'    => 1408,
+						'mime-type' => 'image/jpeg',
+					),
+					'thumbnail' => array(
+						'file'      => 'document-pdf-116x150.jpg',
+						'width'     => 116,
+						'height'    => 150,
+						'mime-type' => 'image/jpeg',
+					),
+				),
+			)
+		);
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block(
+			array(
+				'files'        => array( array( 'id' => $attachment_id ) ),
+				'showPreview'  => true,
+				'previewWidth' => 58,
+			)
+		);
+
+		// the small preview is used (not the full size) with the height in the right proportion.
+		$this->assertStringContainsString( 'document-pdf-116x150.jpg', $html );
+		$this->assertStringContainsString( 'width="58" height="75"', $html );
+		$this->assertStringContainsString( 'has-preview', $html );
+	}
+
+	/**
+	 * Test that the cover image of an audio file is used as preview.
+	 *
+	 * @return void
+	 */
+	public function test_render_block_with_cover_of_audio_file(): void {
+		$cover_id = self::factory()->attachment->create_upload_object( UNIT_TESTS_DATA_PLUGIN_DIR . '/test-image.png' );
+		$audio_id = self::factory()->attachment->create_object(
+			array(
+				'file'           => '2026/10/song.mp3',
+				'post_mime_type' => 'audio/mpeg',
+				'post_title'     => 'Song',
+			)
+		);
+
+		WP_Block_Supports::get_instance()::$block_to_render = array(
+			'blockName' => 'downloadlist/list',
+		);
+		$attributes = array(
+			'files'       => array( array( 'id' => $audio_id ) ),
+			'showPreview' => true,
+		);
+
+		// without cover the icon is used.
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block( $attributes );
+		$this->assertStringNotContainsString( 'downloadlist-preview', $html );
+
+		// with cover the cover is used.
+		set_post_thumbnail( $audio_id, $cover_id );
+		$html = \DownloadListWithIcons\Plugin\Init::get_instance()->render_block( $attributes );
+		$this->assertStringContainsString( 'class="downloadlist-preview"', $html );
+		$this->assertStringContainsString( 'has-preview', $html );
+	}
+
+	/**
+	 * Test that the REST API returns the preview data for the block editor.
+	 *
+	 * @return void
+	 */
+	public function test_add_preview_data(): void {
+		$image_id = self::factory()->attachment->create_upload_object( UNIT_TESTS_DATA_PLUGIN_DIR . '/test-image.png' );
+		$zip_id   = self::factory()->attachment->create_object(
+			array(
+				'file'           => 'archive.zip',
+				'post_mime_type' => 'application/zip',
+			)
+		);
+
+		$files = \DownloadListWithIcons\Plugin\Init::get_instance()->add_preview_data(
+			array(
+				array(
+					'id'   => $image_id,
+					'mime' => 'image/png',
+				),
+				array(
+					'id'   => $zip_id,
+					'mime' => 'application/zip',
+				),
+			)
+		);
+
+		$this->assertSame( 'image', $files[0]['downloadlist_preview_type'] );
+		$this->assertIsArray( $files[0]['downloadlist_preview']['thumbnail'] );
+		$this->assertSame( 'none', $files[1]['downloadlist_preview_type'] );
+		$this->assertFalse( $files[1]['downloadlist_preview']['thumbnail'] );
+	}
 }
