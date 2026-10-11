@@ -7,7 +7,7 @@
  * @param string $list_class Additional classes for the list (e.g. for frames of icons and preview images).
  * @param string $list_style Inline style for the list (CSS variables for frames of icons and preview images).
  *
- * @version: 4.2.0
+ * @version: 5.0.0
  * @package download-list-block-with-icons
  */
 

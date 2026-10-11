@@ -118,9 +118,9 @@ class Updates {
 				$this->version410();
 			}
 
-			// run this on an update from the version before 4.2.0.
-			if ( version_compare( $db_plugin_version, '4.2.0', '<' ) ) {
-				$this->version415();
+			// run this on an update from the version before 5.0.0.
+			if ( version_compare( $db_plugin_version, '5.0.0', '<' ) ) {
+				$this->version500();
 			}
 
 			// save new plugin-version in the database.
@@ -201,7 +201,7 @@ class Updates {
 	}
 
 	/**
-	 * Run on an update to 4.2.0 or newer.
+	 * Run on an update to 5.0.0 or newer.
 	 *
 	 * - Use an own setting for the target of the download button (it shared the setting of the link before).
 	 * - Remove duplicate generic icon entries, which have been added on each activation or reset before.
@@ -209,7 +209,7 @@ class Updates {
 	 *
 	 * @return void
 	 */
-	private function version415(): void {
+	private function version500(): void {
 		// add the new settings with their default values (existing settings are not changed).
 		Settings::get_instance()->get_settings_obj()->activation();
 

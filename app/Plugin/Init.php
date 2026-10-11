@@ -16,7 +16,6 @@ use DownloadListWithIcons\Iconsets\Iconset_Base;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use DownloadListWithIcons\Plugin\Admin\Admin;
 use WP_Post;
-use WP_Query;
 use WP_Term;
 use WP_Term_Query;
 
@@ -202,6 +201,18 @@ class Init {
 						'type'    => 'integer',
 						'default' => 0,
 					),
+					'folder'                 => array(
+						'type'    => 'integer',
+						'default' => 0,
+					),
+					'folderTaxonomy'         => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+					'folderSubfolders'       => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
 					'order'                  => array(
 						'type'    => 'string',
 						'default' => '',
@@ -258,7 +269,7 @@ class Init {
 				'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
 				'date_format'        => (string) get_option( 'date_format' ),
 				'time_format'        => (string) get_option( 'time_format' ),
-				'pdf_preview'        => is_admin() ? Helper::is_pdf_preview_supported() : true,
+				'pdf_preview'        => ! is_admin() || Helper::is_pdf_preview_supported(),
 			)
 		);
 	}
@@ -377,9 +388,12 @@ class Init {
 	 * @noinspection PhpUnused
 	 */
 	public function render_block( array $attributes ): string {
-		// bail if no files are given.
-		if ( empty( $attributes['files'] ) ) {
+		// bail if no files are given and no download list or folder is used as source.
+		if ( empty( $attributes['files'] ) && false === Helper::get_list_source( $attributes ) ) {
 			return '';
+		}
+		if ( empty( $attributes['files'] ) ) {
+			$attributes['files'] = array();
 		}
 
 		// collect the output.
@@ -439,38 +453,23 @@ class Init {
 		);
 
 		/**
-		 * Get all files assigned to a given download list.
+		 * Get all files assigned to a given download list or folder.
 		 * Add missing files in file list depending on order setting.
 		 */
-		if ( ! empty( $attributes['list'] ) ) {
-			$query            = array(
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'posts_per_page' => -1,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary meta lookup; admin/sync context.
-					array(
-						'taxonomy' => 'dl_icon_lists',
-						'field'    => 'term_id',
-						'terms'    => $attributes['list'],
-					),
-				),
-				'fields'         => 'ids',
-			);
-			$additional_files = new WP_Query( $query );
+		$source = Helper::get_list_source( $attributes );
+		if ( false !== $source ) {
+			$source_files = Helper::get_source_file_ids( $source );
 
 			// if result is empty, do not show anything.
-			if ( 0 === $additional_files->found_posts ) {
+			if ( empty( $source_files ) ) {
 				return '';
 			}
 
 			// get the list of files as simple ID-array.
 			$files = array_map( 'absint', wp_list_pluck( $attributes['files'], 'id' ) );
 
-			// check each file found in db which is assigned to the chosen download list.
-			foreach ( $additional_files->get_posts() as $file_id ) {
-				// get the int value.
-				$file_id = absint( $file_id ); // @phpstan-ignore argument.type
-
+			// check each file found in db which is assigned to the chosen download list or folder.
+			foreach ( $source_files as $file_id ) {
 				// bail if file exist in list.
 				if ( in_array( $file_id, $files, true ) ) {
 					continue;
@@ -480,23 +479,29 @@ class Init {
 				$attributes['files'][] = array( 'id' => $file_id );
 			}
 
-			// check each file in list if it is assigned to the chosen download list.
+			// check each file in list if it is assigned to the chosen download list or folder.
 			foreach ( $attributes['files'] as $index => $file ) {
 				// format the index.
 				$index = absint( $index );
 
-				// get data about the assigned term.
-				$term = wp_get_object_terms( absint( $file['id'] ), 'dl_icon_lists' );
+				// check if the file is still assigned: to any download list (as before) or to the chosen folder.
+				if ( 'dl_icon_lists' === $source['taxonomy'] ) {
+					$term     = wp_get_object_terms( absint( $file['id'] ), 'dl_icon_lists' );
+					$assigned = ! empty( $term ) && ! is_wp_error( $term );
+				} else {
+					$assigned = in_array( absint( $file['id'] ), $source_files, true );
+				}
 
-				// bail if term is set.
-				if ( ! empty( $term ) && ! is_wp_error( $term ) ) {
-					// get the meta-data like JS (like human-readable filesize).
+				// bail if the file is assigned.
+				if ( $assigned ) {
+					// get the metadata like JS (like human-readable filesize).
 					$file_meta = wp_prepare_attachment_for_js( absint( $file['id'] ) );
 
 					// add the file data for sorting.
+					// (the file size is missing, if the file does not exist in the uploads directory, e.g. if it is offloaded).
 					$attributes['files'][ $index ]['title'] = is_array( $file_meta ) ? $file_meta['title'] : '';
 					$attributes['files'][ $index ]['date']  = is_array( $file_meta ) ? $file_meta['date'] : 0;
-					$attributes['files'][ $index ]['size']  = is_array( $file_meta ) ? absint( $file_meta['filesizeInBytes'] ) : 0;
+					$attributes['files'][ $index ]['size']  = is_array( $file_meta ) && isset( $file_meta['filesizeInBytes'] ) ? absint( $file_meta['filesizeInBytes'] ) : 0; // @phpstan-ignore isset.offset
 
 					continue;
 				}
@@ -576,7 +581,7 @@ class Init {
 				continue;
 			}
 
-			// get the meta-data like JS (like human-readable filesize).
+			// get the metadata like JS (like human-readable filesize).
 			$file_meta = wp_prepare_attachment_for_js( $file_id );
 
 			// get custom attachment title, if set.

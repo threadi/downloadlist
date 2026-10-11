@@ -85,7 +85,7 @@ Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 61](Plugin/Helper.php#
 
 Argument | Type | Description
 -------- | ---- | -----------
-`$path` |  | 
+`$path` |  |
 
 Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 88](Plugin/Helper.php#L88-L88)
 
@@ -95,7 +95,7 @@ Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 88](Plugin/Helper.php#
 
 Argument | Type | Description
 -------- | ---- | -----------
-`$url` |  | 
+`$url` |  |
 
 Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 108](Plugin/Helper.php#L108-L108)
 
@@ -151,7 +151,7 @@ Argument | Type | Description
 
 Version | Description
 ------- | -----------
-`4.2.0` | Available since 4.2.0.
+`5.0.0` | Available since 5.0.0.
 
 Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 374](Plugin/Helper.php#L374-L382)
 
@@ -181,7 +181,7 @@ Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 612](Plugin/Helper.php
 
 Argument | Type | Description
 -------- | ---- | -----------
-`$subtype` |  | 
+`$subtype` |  |
 
 **Changelog**
 
@@ -271,8 +271,8 @@ Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 905](Plugin/Helper.php
 
 Argument | Type | Description
 -------- | ---- | -----------
-`$download_link_attribute` |  | 
-`$file` |  | 
+`$download_link_attribute` |  |
+`$file` |  |
 
 Source: [app/Plugin/Init.php](Plugin/Init.php), [line 644](Plugin/Init.php#L644-L644)
 
@@ -320,8 +320,8 @@ Source: [app/Plugin/Init.php](Plugin/Init.php), [line 673](Plugin/Init.php#L673-
 
 Argument | Type | Description
 -------- | ---- | -----------
-`$download_button_attribute` |  | 
-`$file` |  | 
+`$download_button_attribute` |  |
+`$file` |  |
 
 Source: [app/Plugin/Init.php](Plugin/Init.php), [line 705](Plugin/Init.php#L705-L705)
 
@@ -484,7 +484,7 @@ Argument | Type | Description
 
 Version | Description
 ------- | -----------
-`4.2.0` | Available since 4.2.0.
+`5.0.0` | Available since 5.0.0.
 
 Source: [app/Iconsets/Iconsets.php](Iconsets/Iconsets.php), [line 271](Iconsets/Iconsets.php#L271-L277)
 

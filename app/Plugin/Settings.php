@@ -172,8 +172,13 @@ class Settings {
 		// the general tab.
 		$general_tab = $settings_page->add_tab( 'downloadlist_general', 10 );
 		$general_tab->set_name( 'downloadlist_general' );
-		$general_tab->set_title( __( 'General Settings', 'download-list-block-with-icons' ) );
+		$general_tab->set_title( __( 'Block settings', 'download-list-block-with-icons' ) );
 		$settings_page->set_default_tab( $general_tab );
+
+		// the tab for the settings of the plugin itself.
+		$plugin_tab = $settings_page->add_tab( 'downloadlist_plugin', 15 );
+		$plugin_tab->set_name( 'downloadlist_plugin' );
+		$plugin_tab->set_title( __( 'Settings', 'download-list-block-with-icons' ) );
 
 		// the task tab.
 		$tasks_tab = $settings_page->add_tab( 'downloadlist_tasks', 20 );
@@ -208,6 +213,11 @@ class Settings {
 		$general_tab_icons->set_title( __( 'Icons', 'download-list-block-with-icons' ) );
 		$general_tab_icons->set_setting( $this->get_settings_obj() );
 
+		// the styles section.
+		$general_tab_styles = $general_tab->add_section( 'styles', 25 );
+		$general_tab_styles->set_title( __( 'Styles', 'download-list-block-with-icons' ) );
+		$general_tab_styles->set_setting( $this->get_settings_obj() );
+
 		// the link section.
 		$general_tab_link = $general_tab->add_section( 'link', 30 );
 		$general_tab_link->set_title( __( 'Link', 'download-list-block-with-icons' ) );
@@ -222,6 +232,11 @@ class Settings {
 		$general_tab_advanced = $general_tab->add_section( 'advanced', 50 );
 		$general_tab_advanced->set_title( __( 'Advanced settings', 'download-list-block-with-icons' ) );
 		$general_tab_advanced->set_setting( $this->get_settings_obj() );
+
+		// the section for folder plugins.
+		$plugin_tab_folders = $plugin_tab->add_section( 'folders', 10 );
+		$plugin_tab_folders->set_title( __( 'Folders in the media library', 'download-list-block-with-icons' ) );
+		$plugin_tab_folders->set_setting( $this->get_settings_obj() );
 
 		// the tasks section.
 		$tasks_tab_tasks = $tasks_tab->add_section( 'tasks', 10 );
@@ -284,7 +299,7 @@ class Settings {
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_width' );
-		$setting->set_section( $general_tab_icons );
+		$setting->set_section( $general_tab_styles );
 		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'mediaBorderWidth' );
@@ -298,7 +313,7 @@ class Settings {
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_color' );
-		$setting->set_section( $general_tab_icons );
+		$setting->set_section( $general_tab_styles );
 		$setting->set_type( 'string' );
 		$setting->set_default( '' );
 		$setting->add_custom_var( 'block-name', 'mediaBorderColor' );
@@ -312,7 +327,7 @@ class Settings {
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_radius' );
-		$setting->set_section( $general_tab_icons );
+		$setting->set_section( $general_tab_styles );
 		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'mediaBorderRadius' );
@@ -325,7 +340,7 @@ class Settings {
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_padding' );
-		$setting->set_section( $general_tab_icons );
+		$setting->set_section( $general_tab_styles );
 		$setting->set_type( 'integer' );
 		$setting->set_default( 0 );
 		$setting->add_custom_var( 'block-name', 'mediaPadding' );
@@ -338,7 +353,7 @@ class Settings {
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_background' );
-		$setting->set_section( $general_tab_icons );
+		$setting->set_section( $general_tab_styles );
 		$setting->set_type( 'string' );
 		$setting->set_default( '' );
 		$setting->add_custom_var( 'block-name', 'mediaBackground' );
@@ -349,6 +364,23 @@ class Settings {
 		$field->set_placeholder( '#f5f5f5' );
 		$field->set_sanitize_callback( array( $this, 'sanitize_color' ) );
 		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_folder_support' );
+		$setting->set_section( $plugin_tab_folders );
+		$setting->set_default( 1 );
+		$field = new Checkbox( $this->get_settings_obj() );
+		$field->set_title( __( 'Use folders as source of download lists', 'download-list-block-with-icons' ) );
+		$field->set_description( $this->get_folder_support_description() );
+		$setting->set_field( $field );
+
+		// add the detected folder plugins to the description, after all plugins have registered their taxonomies.
+		add_action(
+			'admin_init',
+			function () use ( $field ) {
+				$field->set_description( $this->get_folder_support_description( true ) );
+			}
+		);
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_text' );
@@ -1022,6 +1054,38 @@ class Settings {
 	public function show_info(): void {
 		/* translators: %1$s will be replaced by a URL. */
 		echo '<p>' . wp_kses_post( sprintf( __( 'Set the default settings for new download list blocks here. Under <a href="%1$s">Tasks</a>, you can also inherit these settings to all existing blocks.', 'download-list-block-with-icons' ), $this->get_url( 'downloadlist_tasks' ) ) ) . '</p>';
+
+		// show a hint for folders of folder plugins, if one is used.
+		$folder_taxonomies = Helper::get_folder_taxonomies();
+		if ( ! empty( $folder_taxonomies ) ) {
+			/* translators: %1$s will be replaced by the name of the folder plugin, e.g. "Folderly". */
+			echo '<p>' . esc_html( sprintf( __( 'A download list block can also show all files of a folder from %1$s. Choose the folder in the toolbar of the block with "Choose a download list or folder".', 'download-list-block-with-icons' ), implode( ', ', $folder_taxonomies ) ) ) . '</p>';
+		}
+	}
+
+	/**
+	 * Return the description for the setting to use folders of folder plugins.
+	 *
+	 * @param bool $with_plugins True to add the detected folder plugins (only possible after "init").
+	 *
+	 * @return string
+	 */
+	private function get_folder_support_description( bool $with_plugins = false ): string {
+		$description = __( 'If a plugin for folders in the media library like Folderly, HappyFiles or Folders is used, a download list block can show all files of one of its folders. Lists which use a folder show no files while this is disabled.', 'download-list-block-with-icons' );
+
+		// bail if the detected folder plugins should not be shown.
+		if ( ! $with_plugins ) {
+			return $description;
+		}
+
+		// get the detected folder plugins, also if the support is disabled.
+		$taxonomies = Helper::get_folder_taxonomies( true );
+		if ( empty( $taxonomies ) ) {
+			return $description . ' ' . __( 'No such plugin has been found in this project.', 'download-list-block-with-icons' );
+		}
+
+		/* translators: %1$s will be replaced by the names of the folder plugins. */
+		return $description . ' ' . sprintf( __( 'Found in this project: %1$s', 'download-list-block-with-icons' ), implode( ', ', array_map( 'esc_html', $taxonomies ) ) );
 	}
 
 	/**

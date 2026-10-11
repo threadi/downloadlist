@@ -105,6 +105,84 @@ class Rest {
 				),
 			)
 		);
+		register_rest_route(
+			'downloadlist/v1',
+			'/folders/',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_folders' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+		register_rest_route(
+			'downloadlist/v1',
+			'/folderfiles/',
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_folder_files' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+				'args'                => array(
+					'taxonomy'   => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+					'folder'     => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+						'default' => 0,
+					),
+					'subfolders' => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Return the folders of all folder plugins for the media library.
+	 *
+	 * @return array<int,array<string,int|string>>
+	 * @noinspection PhpUnused
+	 */
+	public function get_folders(): array {
+		return Helper::get_folders();
+	}
+
+	/**
+	 * Return the IDs of the files in the requested folder.
+	 *
+	 * @param WP_REST_Request $request The request-object.
+	 * @return array<int,array<string,int>>
+	 * @noinspection PhpUnused
+	 */
+	public function get_folder_files( WP_REST_Request $request ): array {
+		// get the source.
+		$source = Helper::get_list_source(
+			array(
+				'folder'           => absint( $request->get_param( 'folder' ) ),
+				'folderTaxonomy'   => (string) $request->get_param( 'taxonomy' ),
+				'folderSubfolders' => (bool) $request->get_param( 'subfolders' ),
+			)
+		);
+
+		// bail if the folder is not valid.
+		if ( false === $source ) {
+			return array();
+		}
+
+		// return the IDs of the files as records.
+		return array_map(
+			function ( $file_id ) {
+				return array( 'id' => $file_id );
+			},
+			Helper::get_source_file_ids( $source )
+		);
 	}
 
 	/**

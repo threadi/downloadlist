@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.0] - unreleased
+## [5.0.0] - 11.10.2026
 
 ### Security
 
@@ -14,6 +14,7 @@
 
 - Optional preview images for images, PDF files and audio or video files with cover image, with the width as setting per block and as default in the plugin settings
 - Optional border for icons and preview images with frame width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
+- Folders of folder plugins for the media library (e.g., Folderly, HappyFiles, Folders) could be used as source of a download list block, optionally with their subfolders; can be disabled in the new tab "Settings"
 - New tab "Usage" in the plugin settings, which lists all posts, pages, patterns and templates with a download list, with the number of lists and files and links to edit them
 - Hints in the block editor for files without preview image and their reason
 - Lists with the iconset of the plugin "File-Preview for Download List Block with Icons" show the preview images now without this plugin
@@ -34,10 +35,13 @@
 - The file of Font Awesome is now named `fontawesome.css`
 - GitHub workflows use pinned actions, minimal permissions, a smoke test in Playground and an SBOM
 - Now requires WordPress 6.6 or newer
-- Templates `list-start.php`, `list-item.php`, `list-item-not-linked.php` and `button-download.php` changed (version 4.2.0)
+- The tab "General Settings" is now named "Block settings", the frame settings have their own section "Styles"
+- Templates `list-start.php`, `list-item.php`, `list-item-not-linked.php` and `button-download.php` changed (version 5.0.0)
 
 ### Fixed
 
+- Blocks using a download list showed nothing if their files were not saved in the block
+- Download lists could show a PHP warning for files, which do not exist in the uploads directory
 - Fixed fatal error during uninstallation (missing autoloader)
 - Fixed backslashes in posts being removed after inheriting the settings to the blocks or after adding the block via settings
 - Fixed migration tasks of updates not running on websites without development mode

@@ -1,6 +1,6 @@
 {
 	"name": "downloadlist",
-	"version": "4.2.0",
+	"version": "5.0.0",
 	"description": "Provides a Gutenberg block to manage a download list with file type specific icons.",
 	"author": "threadi",
 	"license": "GPL-2.0-or-later",
@@ -15,7 +15,7 @@
 		"packages-update": "wp-scripts packages-update"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "~34.2.0",
+		"@wordpress/scripts": "~35.0.0",
 		"@wp-playground/cli": "3.1.55",
 		"classnames": "^2.5.1"
 	},

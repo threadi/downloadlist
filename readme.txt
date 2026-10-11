@@ -22,6 +22,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Optional preview images for images, PDF files and audio or video files with cover image
 - Optional frame for icons and preview images with color, radius, inner spacing and background
 - Overview of all posts, pages, patterns and templates which use the block
+- Show all files of a folder from folder plugins like Folderly, HappyFiles or Folders
 - Drag & Drop sorting for the list
 - Remove files from list
 
@@ -92,6 +93,10 @@ WordPress generates the preview of the first page of a PDF file during the uploa
 
 Images, PDF files with generated preview and audio or video files with a cover image. WordPress takes the cover from MP3 files during the upload; you can also set it as featured image when editing the file in the media library. All other files are shown with their icon. The block shows a hint for each case.
 
+= Can I show the files of a folder from my media folder plugin? =
+
+Yes, if the plugin saves its folders as taxonomy for the media library, as for example Folderly, HappyFiles or Folders do. Choose the folder in the toolbar of the block with "Choose a download list or folder". New files in this folder are shown automatically. Plugins which save their folders in their own database tables, like FileBird or Real Media Library, are not supported yet. Developers can add other folder taxonomies with the filter `downloadlist_folder_taxonomies`. You can disable the use of folders under Settings > Download List Block with Icons > Settings.
+
 = Are the preview images protected like my files? =
 
 No. The preview images are saved in the uploads directory and are public, even if a plugin protects the files themselves. Do not enable the previews for confidential documents.
@@ -106,6 +111,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added optional preview images for images, PDF files and audio or video files with cover image
 - Added optional frame for icons and preview images
 - Added overview of all objects using the block in the plugin settings
+- Added folders of folder plugins for the media library as source of download lists
 - Security: only users who can see notices of this plugin can dismiss them
 - Security: REST API returns data of files only if the user is allowed to read them
 - Security: stricter checks of file types and CSS values of custom icons

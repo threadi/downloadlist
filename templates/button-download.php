@@ -7,7 +7,7 @@
  * @param string $rel_attribute The value for the rel attribute.
  * @param string $download_target_attribute The value for the target attribute.
  *
- * @version: 4.2.0
+ * @version: 5.0.0
  * @package download-list-block-with-icons
  */
 

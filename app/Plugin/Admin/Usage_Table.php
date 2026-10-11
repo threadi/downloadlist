@@ -10,6 +10,7 @@ namespace DownloadListWithIcons\Plugin\Admin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
+use DownloadListWithIcons\Plugin\Helper;
 use WP_List_Table;
 use WP_Post;
 use WP_Query;
@@ -289,8 +290,11 @@ class Usage_Table extends WP_List_Table {
 			}
 		}
 
-		// if no download list is used, count the existing files.
-		if ( empty( $attributes['list'] ) ) {
+		// get the download list or folder used as source.
+		$source = Helper::get_list_source( $attributes );
+
+		// if no source is used, count the existing files.
+		if ( false === $source ) {
 			return count(
 				array_filter(
 					array_unique( $file_ids ),
@@ -301,36 +305,23 @@ class Usage_Table extends WP_List_Table {
 			);
 		}
 
-		// get the files of the download list.
-		$query = new WP_Query(
-			array(
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary lookup; admin context.
-					array(
-						'taxonomy' => 'dl_icon_lists',
-						'field'    => 'term_id',
-						'terms'    => absint( $attributes['list'] ),
-					),
-				),
-			)
-		);
+		// get the files of the source.
+		$source_files = Helper::get_source_file_ids( $source );
 
-		// bail if the download list has no files: the block shows nothing in this case.
-		if ( empty( $query->get_posts() ) ) {
+		// bail if the source has no files: the block shows nothing in this case.
+		if ( empty( $source_files ) ) {
 			return 0;
 		}
-		foreach ( $query->get_posts() as $file_id ) {
-			$file_ids[] = absint( $file_id ); // @phpstan-ignore argument.type
+
+		// count the files of a folder.
+		if ( 'dl_icon_lists' !== $source['taxonomy'] ) {
+			return count( $source_files );
 		}
 
 		// count the files which are assigned to a download list (like the block does).
 		return count(
 			array_filter(
-				array_unique( $file_ids ),
+				array_unique( array_merge( $file_ids, $source_files ) ),
 				function ( $file_id ) {
 					$terms = wp_get_object_terms( $file_id, 'dl_icon_lists', array( 'fields' => 'ids' ) );
 					return ! empty( $terms ) && ! is_wp_error( $terms );
