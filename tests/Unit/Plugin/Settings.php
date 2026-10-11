@@ -45,6 +45,9 @@ class Settings extends DownloadListTestCase {
 		// the block in the group must have the setting.
 		$this->assertStringContainsString( '"hideFileSize":true', $new_content );
 
+		// numbers must be saved as numbers (the attribute is an integer).
+		$this->assertStringContainsString( '"previewWidth":48', $new_content );
+
 		// the marker for the running process must be removed.
 		$this->assertFalse( get_option( 'downloadlist_inheriting_running' ) );
 	}

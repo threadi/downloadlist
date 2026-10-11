@@ -14,6 +14,7 @@ use DownloadListWithIcons\Dependencies\easyTransientsForWordPress\Transients;
 use DownloadListWithIcons\Iconsets\Iconsets;
 use easySettingsForWordPress\Fields\Button;
 use easySettingsForWordPress\Fields\Checkbox;
+use easySettingsForWordPress\Fields\Number;
 use easySettingsForWordPress\Fields\Select;
 use easySettingsForWordPress\Fields\SelectPostTypeObject;
 use easySettingsForWordPress\Fields\Text;
@@ -246,6 +247,99 @@ class Settings {
 		$field->set_title( __( 'Choose an iconset', 'download-list-block-with-icons' ) );
 		$field->set_description( '<a href="' . esc_url( Iconsets::get_instance()->get_edit_link() ) . '">' . __( 'Manage Iconsets', 'download-list-block-with-icons' ) . '</a>' );
 		$field->set_options( $iconsets );
+		$setting->set_field( $field );
+
+		// add setting.
+		$preview_setting = $this->get_settings_obj()->add_setting( 'downloadlist_show_preview' );
+		$preview_setting->set_section( $general_tab_icons );
+		$preview_setting->set_default( 0 );
+		$preview_setting->add_custom_var( 'block-name', 'showPreview' );
+		$preview_setting->add_custom_var( 'block-format', 'bool' );
+		$field = new Checkbox( $this->get_settings_obj() );
+		$field->set_title( __( 'Show preview images', 'download-list-block-with-icons' ) );
+		$field->set_description( $this->get_preview_description() );
+		$preview_setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_preview_width' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'integer' );
+		$setting->set_default( 48 );
+		$setting->add_custom_var( 'block-name', 'previewWidth' );
+		$setting->add_custom_var( 'block-format', 'int' );
+		$field = new Number( $this->get_settings_obj() );
+		$field->set_title( __( 'Size of preview images and icon frames in pixel', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'Used for preview images and for icons with a frame.', 'download-list-block-with-icons' ) );
+		$field->set_min( 16 );
+		$field->set_max( 600 );
+		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_width' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'integer' );
+		$setting->set_default( 0 );
+		$setting->add_custom_var( 'block-name', 'mediaBorderWidth' );
+		$setting->add_custom_var( 'block-format', 'int' );
+		$field = new Number( $this->get_settings_obj() );
+		$field->set_title( __( 'Frame width in pixel', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'Draws a frame around icons and preview images. 0 shows no frame.', 'download-list-block-with-icons' ) );
+		$field->set_min( 0 );
+		$field->set_max( 20 );
+		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_color' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'string' );
+		$setting->set_default( '' );
+		$setting->add_custom_var( 'block-name', 'mediaBorderColor' );
+		$setting->add_custom_var( 'block-format', 'string' );
+		$field = new Text( $this->get_settings_obj() );
+		$field->set_title( __( 'Frame color', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'A hex color like #dddddd. Leave empty to use the text color.', 'download-list-block-with-icons' ) );
+		$field->set_placeholder( '#dddddd' );
+		$field->set_sanitize_callback( array( $this, 'sanitize_color' ) );
+		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_border_radius' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'integer' );
+		$setting->set_default( 0 );
+		$setting->add_custom_var( 'block-name', 'mediaBorderRadius' );
+		$setting->add_custom_var( 'block-format', 'int' );
+		$field = new Number( $this->get_settings_obj() );
+		$field->set_title( __( 'Frame radius in pixel', 'download-list-block-with-icons' ) );
+		$field->set_min( 0 );
+		$field->set_max( 300 );
+		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_padding' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'integer' );
+		$setting->set_default( 0 );
+		$setting->add_custom_var( 'block-name', 'mediaPadding' );
+		$setting->add_custom_var( 'block-format', 'int' );
+		$field = new Number( $this->get_settings_obj() );
+		$field->set_title( __( 'Inner spacing of the frame in pixel', 'download-list-block-with-icons' ) );
+		$field->set_min( 0 );
+		$field->set_max( 100 );
+		$setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_media_background' );
+		$setting->set_section( $general_tab_icons );
+		$setting->set_type( 'string' );
+		$setting->set_default( '' );
+		$setting->add_custom_var( 'block-name', 'mediaBackground' );
+		$setting->add_custom_var( 'block-format', 'string' );
+		$field = new Text( $this->get_settings_obj() );
+		$field->set_title( __( 'Background color of the frame', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'A hex color like #f5f5f5. Leave empty for no background.', 'download-list-block-with-icons' ) );
+		$field->set_placeholder( '#f5f5f5' );
+		$field->set_sanitize_callback( array( $this, 'sanitize_color' ) );
 		$setting->set_field( $field );
 
 		// add setting.
@@ -740,9 +834,26 @@ class Settings {
 	}
 
 	/**
+	 * Sanitize a color setting: allow only colors we can use in our styles.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 *
+	 * @return string
+	 */
+	public function sanitize_color( mixed $value ): string {
+		// bail if value is not a string.
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		// return the sanitized color.
+		return Helper::sanitize_css_color( $value );
+	}
+
+	/**
 	 * Return the values of the settings of this plugin as block attributes.
 	 *
-	 * @return array<string,bool|string>
+	 * @return array<string,bool|int|string>
 	 */
 	private function get_block_values(): array {
 		$values = array();
@@ -763,6 +874,9 @@ class Settings {
 				case 'bool':
 					$value = 1 === absint( $value );
 					break;
+				case 'int':
+					$value = absint( $value );
+					break;
 				default:
 					$value = is_scalar( $value ) ? (string) $value : '';
 					break;
@@ -777,7 +891,7 @@ class Settings {
 	 * Set the given values on all download list blocks in the given list, including nested blocks.
 	 *
 	 * @param array<int|string,array<string,mixed>> $blocks The parsed blocks.
-	 * @param array<string,bool|string>             $values The values to set.
+	 * @param array<string,bool|int|string>         $values The values to set.
 	 * @param bool                                  $changed Will be set to true if one of our blocks has been found.
 	 *
 	 * @return array<int|string,array<string,mixed>>
@@ -808,9 +922,9 @@ class Settings {
 	/**
 	 * Set the given values on all download list blocks in the given list of inner blocks, including their inner blocks.
 	 *
-	 * @param array<array<mixed>>       $blocks The inner blocks.
-	 * @param array<string,bool|string> $values The values to set.
-	 * @param bool                      $changed Will be set to true if one of our blocks has been found.
+	 * @param array<array<mixed>>           $blocks The inner blocks.
+	 * @param array<string,bool|int|string> $values The values to set.
+	 * @param bool                          $changed Will be set to true if one of our blocks has been found.
 	 *
 	 * @return array<array<mixed>>
 	 */
@@ -835,6 +949,24 @@ class Settings {
 			$changed                   = true;
 		}
 		return $blocks;
+	}
+
+	/**
+	 * Return the description for the setting of the preview images.
+	 *
+	 * @return string
+	 */
+	private function get_preview_description(): string {
+		$description  = __( 'Shows a preview image instead of the icon for files with a preview, e.g. images and PDF files. Files without preview keep their icon.', 'download-list-block-with-icons' );
+		$description .= ' ' . __( 'Hint: the preview images are public in the uploads directory, even if the files are protected by another plugin.', 'download-list-block-with-icons' );
+
+		// add a hint if this server could not generate previews of PDF files (only shown in backend).
+		if ( is_admin() && ! Helper::is_pdf_preview_supported() ) {
+			$description .= '<br><strong>' . __( 'This server cannot generate preview images of PDF files. Ask your hosting for Imagick with Ghostscript and a policy which allows PDF files.', 'download-list-block-with-icons' ) . '</strong>';
+		}
+
+		// return the description.
+		return $description;
 	}
 
 	/**

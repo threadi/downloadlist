@@ -19,6 +19,8 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Choose files from media library
 - Output chosen files as list with file-type-specific icon, download-link, title, size and description from media library
 - Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons, Themify-Icons)
+- Optional preview images for images, PDF files and audio or video files with cover image
+- Optional frame for icons and preview images with color, radius, inner spacing and background
 - Drag & Drop sorting for the list
 - Remove files from list
 
@@ -81,6 +83,18 @@ The file will probably have a file type that does not follow the WordPress stand
 * Use the iconset specific hook "downloadlist_*_icons" to add the list of icons. Check beforehand with the developer of your chosen icon set if the icon you want is included there.
 * Use another icon set, which supports the file type if necessary.
 
+= Why is no preview shown for my PDF files? =
+
+WordPress generates the preview of the first page of a PDF file during the upload. This requires Imagick with Ghostscript on your hosting. PDF files uploaded before have no preview: regenerate them e.g. with the plugin "Regenerate Thumbnails" or with `wp media regenerate`. Files without preview are shown with their icon.
+
+= Which files get a preview image? =
+
+Images, PDF files with generated preview and audio or video files with a cover image. WordPress takes the cover from MP3 files during the upload; you can also set it as featured image when editing the file in the media library. All other files are shown with their icon. The block shows a hint for each case.
+
+= Are the preview images protected like my files? =
+
+No. The preview images are saved in the uploads directory and are public, even if a plugin protects the files themselves. Do not enable the previews for confidential documents.
+
 = Does the plugin also support Elementor or other PageBuilders? =
 
 No. The plugin is intended solely for the Gutenberg editor and will not be extended to other PageBuilders.
@@ -88,6 +102,8 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 == Changelog ==
 
 = @@VersionNumber@@ =
+- Added optional preview images for images, PDF files and audio or video files with cover image
+- Added optional frame for icons and preview images
 - Security: only users who can see notices of this plugin can dismiss them
 - Security: REST API returns data of files only if the user is allowed to read them
 - Security: stricter checks of file types and CSS values of custom icons

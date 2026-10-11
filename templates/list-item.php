@@ -16,6 +16,7 @@
  * @param string $file_date The file date.
  * @param string $file_format_label The mime label.
  * @param string $link_target The value for the target attribute.
+ * @param string $preview The HTML of the preview image (empty if no preview should be shown).
  *
  * @version: 4.2.0
  * @package download-list-block-with-icons
@@ -25,7 +26,7 @@
 defined( 'ABSPATH' ) || exit;
 
 ?>
-<li class="attachment-<?php echo absint( $file_id ); ?> file_<?php echo esc_attr( $type ); ?> file_<?php echo esc_attr( $subtype ); ?> <?php echo esc_attr( $hide_icon ); ?>"><a href="<?php echo esc_url( $url ); ?>"<?php echo $download_link_attribute; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the complete attribute is escaped in Init::get_download_attribute(). ?>
+<li class="attachment-<?php echo absint( $file_id ); ?> file_<?php echo esc_attr( $type ); ?> file_<?php echo esc_attr( $subtype ); ?> <?php echo esc_attr( $hide_icon ); ?><?php echo ! empty( $preview ) ? ' has-preview' : ''; ?>"><?php echo ! empty( $preview ) ? $preview : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Helper::get_preview_image(). ?><a href="<?php echo esc_url( $url ); ?>"<?php echo $download_link_attribute; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the complete attribute is escaped in Init::get_download_attribute(). ?>
 <?php
 echo ! empty( $rel_attribute ) ? ' rel="' . esc_attr( $rel_attribute ) . '"' : ''; if ( ! empty( $link_target ) ) {
 	?>

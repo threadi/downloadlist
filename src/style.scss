@@ -29,6 +29,52 @@
 		 display: none
 	 }
  }
+ // icons and preview images in a tile of the same size, optionally with frame, spacing and background.
+ &.has-media-frame li {
+	 min-height: var(--downloadlist-media-size, 48px);
+	 padding-left: calc(var(--downloadlist-media-size, 48px) + 12px);
+	 position: relative;
+	 &:not(:last-child) {
+		 margin-bottom: 8px;
+	 }
+	 &:before, .downloadlist-preview {
+		 background: var(--downloadlist-media-background, transparent);
+		 border: var(--downloadlist-media-border-width, 0px) solid var(--downloadlist-media-border-color, currentColor);
+		 border-radius: var(--downloadlist-media-border-radius, 0px);
+		 box-sizing: border-box;
+		 height: var(--downloadlist-media-size, 48px);
+		 left: 0;
+		 margin: 0;
+		 max-width: none;
+		 padding: var(--downloadlist-media-padding, 0px);
+		 position: absolute;
+		 top: 0;
+		 width: var(--downloadlist-media-size, 48px);
+	 }
+	 // the icon centered in its tile.
+	 &:before {
+		 align-items: center;
+		 display: flex;
+		 font-size: calc((var(--downloadlist-media-size, 48px) - 2 * var(--downloadlist-media-padding, 0px) - 2 * var(--downloadlist-media-border-width, 0px)) * .75) !important;
+		 justify-content: center;
+		 line-height: 1;
+		 overflow: hidden;
+	 }
+	 // the preview image fitted into its tile.
+	 .downloadlist-preview {
+		 object-fit: contain;
+	 }
+	 &.has-preview:before {
+		 display: none;
+	 }
+	 &.hide-icon:not(.has-preview) {
+		 min-height: 0;
+		 padding-left: 0;
+		 &:before {
+			 display: none;
+		 }
+	 }
+ }
  .download-button {
 	 float: right;
  }

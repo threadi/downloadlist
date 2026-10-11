@@ -205,10 +205,14 @@ class Updates {
 	 *
 	 * - Use an own setting for the target of the download button (it shared the setting of the link before).
 	 * - Remove duplicate generic icon entries, which have been added on each activation or reset before.
+	 * - Add the new settings for preview images.
 	 *
 	 * @return void
 	 */
 	private function version415(): void {
+		// add the new settings with their default values (existing settings are not changed).
+		Settings::get_instance()->get_settings_obj()->activation();
+
 		// copy the value of the shared setting to the new setting for the download button.
 		if ( false === get_option( 'downloadlist_download_button_browser_target', false ) ) {
 			add_option( 'downloadlist_download_button_browser_target', (string) get_option( 'downloadlist_link_browser_target', '' ) );

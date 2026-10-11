@@ -1,6 +1,20 @@
 version: 2
+
 updates:
+  # GitHub Actions
   - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  # PHP / Composer
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+
+  # JavaScript / npm und Yarn
+  - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly

@@ -112,6 +112,7 @@ class Init {
 		// use our own hooks.
 		add_filter( 'downloadlist_generate_classname', array( $this, 'generate_classname' ) );
 		add_filter( 'downloadlist_api_return_file_data', array( $this, 'add_mime_label' ) );
+		add_filter( 'downloadlist_api_return_file_data', array( $this, 'add_preview_data' ) );
 	}
 
 	/**
@@ -217,6 +218,34 @@ class Init {
 						'type'    => 'boolean',
 						'default' => 1 === absint( get_option( 'downloadlist_show_file_format_labels' ) ),
 					),
+					'showPreview'            => array(
+						'type'    => 'boolean',
+						'default' => 1 === absint( get_option( 'downloadlist_show_preview' ) ),
+					),
+					'previewWidth'           => array(
+						'type'    => 'integer',
+						'default' => absint( get_option( 'downloadlist_preview_width', 48 ) ),
+					),
+					'mediaBorderColor'       => array(
+						'type'    => 'string',
+						'default' => (string) get_option( 'downloadlist_media_border_color', '' ),
+					),
+					'mediaBorderWidth'       => array(
+						'type'    => 'integer',
+						'default' => absint( get_option( 'downloadlist_media_border_width', 0 ) ),
+					),
+					'mediaBorderRadius'      => array(
+						'type'    => 'integer',
+						'default' => absint( get_option( 'downloadlist_media_border_radius', 0 ) ),
+					),
+					'mediaPadding'           => array(
+						'type'    => 'integer',
+						'default' => absint( get_option( 'downloadlist_media_padding', 0 ) ),
+					),
+					'mediaBackground'        => array(
+						'type'    => 'string',
+						'default' => (string) get_option( 'downloadlist_media_background', '' ),
+					),
 				),
 			)
 		);
@@ -229,6 +258,7 @@ class Init {
 				'downloadlist_nonce' => wp_create_nonce( 'downloadlist-edit-attachment' ),
 				'date_format'        => (string) get_option( 'date_format' ),
 				'time_format'        => (string) get_option( 'time_format' ),
+				'pdf_preview'        => is_admin() ? Helper::is_pdf_preview_supported() : true,
 			)
 		);
 	}
@@ -385,6 +415,18 @@ class Init {
 				$iconset = 'iconset-' . sanitize_html_class( $iconset_obj->get_slug() );
 			}
 		}
+
+		// show previews for lists which used the iconset of the plugin "File-Preview for Download List Block with Icons".
+		$show_preview = ! empty( $attributes['showPreview'] );
+		if ( ! empty( $attributes['iconset'] ) && 'preview' === $attributes['iconset'] && ! Iconsets::get_instance()->get_iconset_by_slug( 'preview' ) ) {
+			$show_preview = true;
+		}
+		$preview_width = ! empty( $attributes['previewWidth'] ) ? absint( $attributes['previewWidth'] ) : 48;
+
+		// get the frame for icons and preview images (empty if not used).
+		$media_frame = Helper::get_media_frame( $attributes, $show_preview );
+		$list_class  = $media_frame['class'];
+		$list_style  = $media_frame['style'];
 
 		// remove invalid entries from the list of files (block attributes could be changed by any editor).
 		$attributes['files'] = array_values(
@@ -569,6 +611,9 @@ class Init {
 			if ( ! empty( $attributes['showFileDates'] ) && ! empty( $attachment->post_date ) ) {
 				$file_date = '<br>' . esc_html( (string) get_post_time( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), false, $attachment, true ) );
 			}
+
+			// get the preview image, if enabled.
+			$preview = $show_preview ? Helper::get_preview_image( $file_id, $preview_width ) : '';
 
 			// get the file format label, if enabled.
 			$file_format_label = '';
@@ -812,6 +857,31 @@ class Init {
 
 		// return resulting response.
 		return $response;
+	}
+
+	/**
+	 * Add the data of the preview images to the REST API response, so the block editor shows the same previews as the frontend.
+	 *
+	 * @param array<int,mixed> $files List of files.
+	 * @return array<int,mixed>
+	 */
+	public function add_preview_data( array $files ): array {
+		foreach ( $files as $index => $file ) {
+			// bail if this is not a file.
+			if ( ! is_array( $file ) || empty( $file['id'] ) ) {
+				continue;
+			}
+
+			// add the data.
+			$files[ $index ]['downloadlist_preview_type'] = Helper::get_preview_type( isset( $file['mime'] ) ? (string) $file['mime'] : '' );
+			$files[ $index ]['downloadlist_preview']      = array(
+				'thumbnail' => Helper::get_preview_data( absint( $file['id'] ), 'thumbnail' ),
+				'medium'    => Helper::get_preview_data( absint( $file['id'] ), 'medium' ),
+			);
+		}
+
+		// return resulting list of files.
+		return $files;
 	}
 
 	/**

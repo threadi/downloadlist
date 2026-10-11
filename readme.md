@@ -90,9 +90,7 @@ Use a normal WordPress installation with an installed PCP plugin.
 
 Be sure to have run `composer install` or `composer update` before.
 
-Then set the password of the database user `root` and run the installation:
-
-`WP_TESTS_DB_PASSWORD='your-password' composer test-install`
+Then: `composer test-install`
 
 ### Run
 
@@ -100,5 +98,5 @@ Then set the password of the database user `root` and run the installation:
 
 ## Release via GitHub
 
-Push a tag with the version number (e.g. `4.2.0`). The workflow "Build release zip" builds the zip, checks it with Plugin Check, runs a smoke test in WordPress Playground and creates the release with the notes from changelog.md. The changelog needs a section for this version.
+Push a tag with the version number (e.g. `4.1.5`). The workflow "Build release zip" builds the zip, checks it with Plugin Check, runs a smoke test in WordPress Playground and creates the release with the notes from changelog.md. The changelog needs a section for this version.
 

@@ -175,6 +175,7 @@ class Uninstaller {
 
 		// delete the marker for the tries to generate the style file.
 		delete_transient( 'downloadlist_css_generation_tried' );
+		delete_transient( 'downloadlist_pdf_preview_supported' );
 
 		// delete all dismiss-marker of our transients.
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE %s', $wpdb->esc_like( 'downloadlist-dismissed-' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct access necessary for uninstallation.
