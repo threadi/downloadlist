@@ -2,14 +2,8 @@
     "name": "threadi/downloadlist",
 	"version": "4.2.0",
 	"license": "GPL-2.0-or-later",
-	"authors": [
-		{
-			"name": "Thomas Zwirner",
-			"email": "tz@laolaweb.com"
-		}
-	],
 	"type": "wordpress-plugin",
-	"homepage": "https://laolaweb.com",
+	"homepage": "https://plugins.thomaszwirner.de",
 	"minimum-stability": "stable",
 	"scripts": {
 		"post-install-cmd": [
@@ -21,8 +15,8 @@
 			"composer dump-autoload"
 		],
 		"test": "phpunit",
-		"test-install": "bash bin/install-wp-tests.sh wordpress_test root \"${WP_TESTS_DB_PASSWORD}\" 127.0.0.1 latest",
-		"test-install-during-build": "bash bin/install-wp-tests.sh wordpress_test root \"${WP_TESTS_DB_PASSWORD}\" 127.0.0.1 latest false true"
+		"test-install": "bash bin/install-wp-tests.sh wordpress_test root 'debian' 127.0.0.1 latest",
+		"test-install-during-build": "bash bin/install-wp-tests.sh wordpress_test root 'debian' 127.0.0.1 latest false true"
 	},
 	"extra": {
 		"mozart": {
