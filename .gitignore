@@ -31,3 +31,8 @@ build/*.txt
 
 # caches
 .phpunit.result.cache
+
+# results of the Playwright tests
+/playwright-report/
+/test-results/
+/blob-report/

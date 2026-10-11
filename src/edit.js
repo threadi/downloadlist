@@ -43,7 +43,7 @@ import {
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem
 } from '@wordpress/components';
-import { plus } from '@wordpress/icons';
+import { plus, check } from '@wordpress/icons';
 import {
 	DndContext,
 	TouchSensor,
@@ -85,6 +85,16 @@ wp.domReady(() => {
 			name: 'filetypes',
 			kind: 'downloadlist/v1',
 			baseURL: '/downloadlist/v1/filetypes'
+		},
+		{
+			name: 'folders',
+			kind: 'downloadlist/v1',
+			baseURL: '/downloadlist/v1/folders'
+		},
+		{
+			name: 'folderfiles',
+			kind: 'downloadlist/v1',
+			baseURL: '/downloadlist/v1/folderfiles'
 		}
 	])
 });
@@ -116,17 +126,31 @@ export default function Edit( object ) {
 		}
 	}, [ object.isSelected ] );
 
-	// if we use a download list, get its files (hooks are always called in the same order, also in preview).
+	// a folder of a folder plugin is used as source instead of a download list.
+	const usesFolder = ! object.attributes.list && object.attributes.folder > 0 && !! object.attributes.folderTaxonomy;
+
+	// a download list or a folder is used as source of the files.
+	const usesSource = object.attributes.list > 0 || usesFolder;
+
+	// if we use a download list or a folder, get its files (hooks are always called in the same order, also in preview).
 	const list_files = useSelect( ( select ) => {
-		if ( isPreview || ! object.attributes.list ) {
+		if ( isPreview || ! usesSource ) {
 			return [];
+		}
+		if ( usesFolder ) {
+			return select( 'core' ).getEntityRecords( 'downloadlist/v1', 'folderfiles', {
+				taxonomy: object.attributes.folderTaxonomy,
+				folder: object.attributes.folder,
+				subfolders: !! object.attributes.folderSubfolders,
+				date: object.attributes.date || 0
+			} );
 		}
 		return select( 'core' ).getEntityRecords( 'postType', 'attachment', {
 			per_page: -1,
 			dl_icon_lists: [ object.attributes.list ],
 			_fields: 'id'
 		} );
-	}, [ isPreview, object.attributes.list ] ) || [];
+	}, [ isPreview, usesSource, usesFolder, object.attributes.list, object.attributes.folder, object.attributes.folderTaxonomy, object.attributes.folderSubfolders, object.attributes.date ] ) || [];
 	if ( list_files.length > 0 && 'manual' !== object.attributes.order ) {
 		fileIds = list_files.map( ( file ) => file.id );
 	}
@@ -162,7 +186,7 @@ export default function Edit( object ) {
 		/**
 		 * Sort the files list if download list is used.
 		 */
-		if( object.attributes.list > 0 && object.attributes.order && object.attributes.orderby ) {
+		if( usesSource && object.attributes.order && object.attributes.orderby ) {
 			if ( 'title' === object.attributes.order ) {
 				files = sortByTitle( files, object.attributes.orderby );
 			}
@@ -299,6 +323,38 @@ export default function Edit( object ) {
 		'value': list.id,
 	} ) ) : [];
 
+	// get the folders of folder plugins for the media library (e.g. Folderly).
+	const folders = useSelect( ( select ) => {
+		if ( isPreview ) {
+			return [];
+		}
+		return select( 'core' ).getEntityRecords( 'downloadlist/v1', 'folders', { date: object.attributes.date || 0 } );
+	}, [ isPreview, object.attributes.date ] );
+	const foldersLoaded = Array.isArray( folders );
+
+	// group the folders by their plugin (taxonomy) for the options.
+	const folder_groups = [];
+	( foldersLoaded ? folders : [] ).forEach( ( folder ) => {
+		let group = folder_groups.find( ( item ) => item.taxonomy === folder.taxonomy );
+		if ( ! group ) {
+			group = { taxonomy: folder.taxonomy, label: folder.taxonomy_label, choices: [] };
+			folder_groups.push( group );
+		}
+		group.choices.push( {
+			label: '\u2014 '.repeat( folder.depth ) + folder.name + ' (' + folder.count + ')',
+			value: folder.id,
+		} );
+	} );
+
+	// the name of the folder plugins for texts, e.g. "Folderly".
+	const folderPluginNames = folder_groups.map( ( group ) => group.label ).join( ', ' );
+
+	// the chosen folder as value for the options.
+	const chosenFolder = usesFolder ? object.attributes.folderTaxonomy + ':' + object.attributes.folder : '';
+
+	// whether the chosen folder is not available anymore (e.g. the folder plugin has been disabled).
+	const folderMissing = usesFolder && foldersLoaded && ! folders.some( ( folder ) => folder.id === chosenFolder );
+
 	/**
 	 * Return only the IDs of the given files, as only they are saved in the block.
 	 *
@@ -340,7 +396,85 @@ export default function Edit( object ) {
 	 * @param newValue
 	 */
 	function onChangeList( newValue ) {
-		object.setAttributes({ files: [], list: newValue, date: getActualDate() });
+		object.setAttributes({ files: [], list: newValue, folder: 0, folderTaxonomy: '', date: getActualDate() });
+	}
+
+	/**
+	 * On change of the folder.
+	 *
+	 * @param newValue The folder as "taxonomy:term_id".
+	 */
+	function onChangeFolder( newValue ) {
+		const separator = newValue.lastIndexOf( ':' );
+		object.setAttributes({
+			files: [],
+			list: 0,
+			folderTaxonomy: newValue.substring( 0, separator ),
+			folder: parseInt( newValue.substring( separator + 1 ), 10 ),
+			date: getActualDate()
+		});
+	}
+
+	/**
+	 * Return the menu to choose a download list or a folder as source of the files.
+	 *
+	 * @returns {JSX.Element}
+	 */
+	function renderSourceMenu() {
+		return <div className="downloadlist-source-menu">
+			<MenuGroup label={__('Choose download list', 'download-list-block-with-icons')}>
+				<MenuItemsChoice
+					choices={ lists_to_use }
+					onSelect={ ( value ) => onChangeList( value ) }
+					value={ object.attributes.list }>
+				</MenuItemsChoice>
+			</MenuGroup>
+			{folder_groups.map( ( group ) =>
+				<MenuGroup key={ group.taxonomy } label={ sprintf(
+					/* translators: %1$s will be replaced by the name of the folder plugin, e.g. "Folderly". */
+					__( 'Folders from %1$s', 'download-list-block-with-icons' ),
+					group.label
+				) }>
+					<MenuItemsChoice
+						choices={ group.choices }
+						onSelect={ ( value ) => onChangeFolder( value ) }
+						value={ chosenFolder }>
+					</MenuItemsChoice>
+				</MenuGroup>
+			) }
+			<MenuGroup label={__('Options', 'download-list-block-with-icons')}>
+				{usesFolder &&
+					<MenuItem
+						icon={ object.attributes.folderSubfolders ? check : null }
+						isSelected={ !! object.attributes.folderSubfolders }
+						role="menuitemcheckbox"
+						onClick={ () => object.setAttributes( { folderSubfolders: ! object.attributes.folderSubfolders, files: [], date: getActualDate() } ) }
+					>
+						{__('Include files from subfolders', 'download-list-block-with-icons')}
+					</MenuItem>
+				}
+				<MenuItem
+					disabled={ ! usesSource }
+					onClick={ () => onChangeList( 0 ) }
+				>
+					{ usesFolder ? __('Deselect folder', 'download-list-block-with-icons') : __('Deselect download list', 'download-list-block-with-icons')}
+				</MenuItem>
+				<MenuItem
+					onClick={ () => window.location.href=window.downloadlist_config.list_url }
+				>
+					{__('Manage download lists', 'download-list-block-with-icons')}
+				</MenuItem>
+			</MenuGroup>
+		</div>;
+	}
+
+	// the text of the button to choose the source.
+	let sourceButtonText = folder_groups.length > 0 ? __( 'Choose a download list or folder', 'download-list-block-with-icons' ) : __( 'Choose a download list', 'download-list-block-with-icons' );
+	if ( object.attributes.list > 0 ) {
+		sourceButtonText = __( 'Using a download list', 'download-list-block-with-icons' );
+	}
+	if ( usesFolder ) {
+		sourceButtonText = __( 'Using a folder', 'download-list-block-with-icons' );
 	}
 
 	/**
@@ -614,7 +748,7 @@ export default function Edit( object ) {
 								allowedTypes={ allowed_file_types }
 								value={ object.attributes.files }
 								render={ ( { open } ) => (
-									<ToolbarButton disabled={ object.attributes.list > 0 } className="has-text" onClick={ open } icon={plus} text={ __( 'Add files', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
+									<ToolbarButton disabled={ usesSource } className="has-text" onClick={ open } icon={plus} text={ __( 'Add files', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
 								) }
 							/>
 						</MediaUploadCheck>
@@ -622,30 +756,9 @@ export default function Edit( object ) {
 					{Array.isArray( download_lists ) &&
 						<Dropdown
 							renderToggle={ ( { isOpen, onToggle } ) => (
-								<ToolbarButton className="has-text" onClick={ onToggle } icon={plus} text={ object.attributes.list > 0 ? __( 'Using a download list', 'download-list-block-with-icons' ) : __( 'Choose a download list', 'download-list-block-with-icons' ) } size="small"></ToolbarButton>
+								<ToolbarButton className="has-text" onClick={ onToggle } icon={plus} text={ sourceButtonText } size="small"></ToolbarButton>
 							) }
-							renderContent={ () => <div><MenuGroup label={__('Choose download list', 'download-list-block-with-icons')}>
-									<MenuItemsChoice
-										choices={ lists_to_use }
-										onSelect={ ( value ) => onChangeList( value ) }
-										value={ object.attributes.list }>
-									</MenuItemsChoice>
-								</MenuGroup>
-								<MenuGroup label={__('Options', 'download-list-block-with-icons')}>
-									<MenuItem
-										disabled={ 0 === object.attributes.list }
-										onClick={ () => onChangeList( 0 ) }
-									>
-										{__('Deselect download list', 'download-list-block-with-icons')}
-									</MenuItem>
-									<MenuItem
-										onClick={ () => window.location.href=window.downloadlist_config.list_url }
-									>
-										{__('Manage download lists', 'download-list-block-with-icons')}
-									</MenuItem>
-								</MenuGroup>
-							</div>
-							}
+							renderContent={ () => renderSourceMenu() }
 						/>
 					}
 					<ToolbarButton
@@ -907,18 +1020,40 @@ export default function Edit( object ) {
 						</SortableContext>
 					</DndContext>
 				}
-				{files.length === 0 && 0 === object.attributes.list &&
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( newFiles ) => addFiles( newFiles ) }
-							multiple={ true }
-							allowedTypes={ allowed_file_types }
-							value={ object.attributes.files }
-							render={ ( { open } ) => (
-								<Button variant="primary" className="has-text" onClick={ open } icon={plus} text={ __( 'Add your first file', 'download-list-block-with-icons' ) } size="small"></Button>
-							) }
-						/>
-					</MediaUploadCheck>
+				{files.length === 0 && ! usesSource &&
+					<div className="downloadlist-first-actions">
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( newFiles ) => addFiles( newFiles ) }
+								multiple={ true }
+								allowedTypes={ allowed_file_types }
+								value={ object.attributes.files }
+								render={ ( { open } ) => (
+									<Button variant="primary" className="has-text" onClick={ open } icon={plus} text={ __( 'Add your first file', 'download-list-block-with-icons' ) } size="small"></Button>
+								) }
+							/>
+						</MediaUploadCheck>
+						{folder_groups.length > 0 &&
+							<Dropdown
+								renderToggle={ ( { onToggle } ) => (
+									<Button variant="secondary" className="has-text" onClick={ onToggle } icon={plus} text={ sprintf(
+										/* translators: %1$s will be replaced by the name of the folder plugin, e.g. "Folderly". */
+										__( 'Show a folder from %1$s', 'download-list-block-with-icons' ),
+										folderPluginNames
+									) } size="small"></Button>
+								) }
+								renderContent={ () => renderSourceMenu() }
+							/>
+						}
+					</div>
+				}
+				{folderMissing &&
+					<Notice status="warning" isDismissible={ false }>
+						{ __( 'The chosen folder is not available. Maybe the plugin for the folders is not active anymore, or the use of folders is disabled in the settings of this plugin. Choose another folder or a download list.', 'download-list-block-with-icons' ) }
+					</Notice>
+				}
+				{files.length === 0 && usesFolder && ! folderMissing && foldersLoaded &&
+					<p>{ __( 'This folder does not contain any files yet. Move files into this folder in the media library.', 'download-list-block-with-icons' ) }</p>
 				}
 				{files.length === 0 && object.attributes.list > 0 &&
 					<Button variant="primary" className="has-text" onClick={ () => window.location.href=window.downloadlist_config.list_url } icon={plus} text={ __( 'Assign files to this download list', 'download-list-block-with-icons' ) } size="small"></Button>

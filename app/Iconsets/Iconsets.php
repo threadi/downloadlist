@@ -271,7 +271,7 @@ class Iconsets {
 		/**
 		 * Load the styles of all iconsets on every page in frontend, e.g. if download lists are loaded via AJAX.
 		 *
-		 * @since 4.2.0 Available since 4.2.0.
+		 * @since 5.0.0 Available since 5.0.0.
 		 * @param bool $false Set to true to load the styles of all iconsets.
 		 */
 		$load_all = apply_filters( 'downloadlist_enqueue_all_iconsets', $false );

@@ -81,3 +81,17 @@
 .downloadlist-media-frame-panel .block-editor-tools-panel-color-gradient-settings__item + .block-editor-tools-panel-color-gradient-settings__item {
   margin-top: -16px;
 }
+
+// buttons to start an empty list.
+.downloadlist-first-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// the menu to choose a download list or folder could get long with many folders.
+.downloadlist-source-menu {
+  max-height: 60vh;
+  min-width: 260px;
+  overflow-y: auto;
+}

@@ -29,4 +29,5 @@
 /phpcs.xml.dist export-ignore
 /phpstan.neon export-ignore
 /phpunit.xml.dist export-ignore
+/playwright.config.ts export-ignore
 /readme.md export-ignore

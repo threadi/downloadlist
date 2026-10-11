@@ -174,10 +174,49 @@ jobs:
             release-notes.md
           if-no-files-found: error
 
+  # runs in parallel to "build": tests the plugin from the sources in WordPress Playground.
+  playwright:
+    name: Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # the Playground packages in package-lock.json need Node 24.
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --no-progress --optimize-autoloader
+          npm ci
+
+      # the tests need the compiled block and the icon fonts.
+      - name: Build block and copy icon fonts
+        run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # starts WordPress in WordPress Playground, see tests/Playwright/fixtures.ts.
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
   # the only job which may write to the repository - and it runs no code from the repository or from npm.
   release:
     name: Publish the release
-    needs: [build]
+    # the release is only published if the zip has been built and the Playwright tests have passed.
+    needs: [build, playwright]
     # only for a pushed tag, never for a manual run.
     if: github.event_name == 'push'
     runs-on: ubuntu-latest

@@ -18,7 +18,7 @@
  * @param string $link_target The value for the target attribute.
  * @param string $preview The HTML of the preview image (empty if no preview should be shown).
  *
- * @version: 4.2.0
+ * @version: 5.0.0
  * @package download-list-block-with-icons
  */
 

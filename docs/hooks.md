@@ -151,9 +151,29 @@ Argument | Type | Description
 
 Version | Description
 ------- | -----------
-`4.2.0` | Available since 4.2.0.
+`5.0.0` | Available since 5.0.0.
 
 Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 374](Plugin/Helper.php#L374-L382)
+
+### `downloadlist_folder_taxonomies`
+
+*Filter the list of taxonomies which could be used as folders for download lists.*
+
+The key is the name of the taxonomy for attachments, the value its label in the block editor.
+
+**Arguments**
+
+Argument | Type | Description
+-------- | ---- | -----------
+`$taxonomies` | `array<string,string>` | List of taxonomies.
+
+**Changelog**
+
+Version | Description
+------- | -----------
+`5.0.0` | Available since 5.0.0.
+
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 583](Plugin/Helper.php#L583-L591)
 
 ### `downloadlist_generate_classname`
 
@@ -171,7 +191,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 612](Plugin/Helper.php#L612-L619)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 811](Plugin/Helper.php#L811-L818)
 
 ### `downloadlist_generate_classname`
 
@@ -189,7 +209,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 621](Plugin/Helper.php#L621-L628)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 820](Plugin/Helper.php#L820-L827)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -207,7 +227,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 641](Plugin/Helper.php#L641-L647)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 840](Plugin/Helper.php#L840-L846)
 
 ### `downloadlist_icon_filename_suffix`
 
@@ -225,7 +245,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 699](Plugin/Helper.php#L699-L705)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 898](Plugin/Helper.php#L898-L904)
 
 ### `downloadlist_prevent_icon_generation`
 
@@ -244,7 +264,7 @@ Version | Description
 ------- | -----------
 `3.4.0` | Available since 3.4.0
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 734](Plugin/Helper.php#L734-L741)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 933](Plugin/Helper.php#L933-L940)
 
 ### `downloadlist_file_version`
 
@@ -263,7 +283,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 905](Plugin/Helper.php#L905-L913)
+Source: [app/Plugin/Helper.php](Plugin/Helper.php), [line 1103](Plugin/Helper.php#L1103-L1111)
 
 ### `downloadlist_link_download_attribute`
 
@@ -274,7 +294,7 @@ Argument | Type | Description
 `$download_link_attribute` |  | 
 `$file` |  | 
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 644](Plugin/Init.php#L644-L644)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 652](Plugin/Init.php#L652-L652)
 
 ### `downloadlist_link_target_attribute`
 
@@ -293,7 +313,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 658](Plugin/Init.php#L658-L665)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 666](Plugin/Init.php#L666-L673)
 
 ### `downloadlist_rel_attribute`
 
@@ -312,7 +332,7 @@ Version | Description
 ------- | -----------
 `3.5.0` | Available since 3.5.0
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 673](Plugin/Init.php#L673-L680)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 681](Plugin/Init.php#L681-L688)
 
 ### `downloadlist_download_button_download_attribute`
 
@@ -323,7 +343,7 @@ Argument | Type | Description
 `$download_button_attribute` |  | 
 `$file` |  | 
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 705](Plugin/Init.php#L705-L705)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 713](Plugin/Init.php#L713-L713)
 
 ### `downloadlist_download_button_target_attribute`
 
@@ -342,7 +362,7 @@ Version | Description
 ------- | -----------
 `3.6.0` | Available since 3.6.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 719](Plugin/Init.php#L719-L726)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 727](Plugin/Init.php#L727-L734)
 
 ### `downloadlist_mime_labels`
 
@@ -360,7 +380,7 @@ Version | Description
 ------- | -----------
 `4.0.0` | Available since 4.0.0.
 
-Source: [app/Plugin/Init.php](Plugin/Init.php), [line 932](Plugin/Init.php#L932-L938)
+Source: [app/Plugin/Init.php](Plugin/Init.php), [line 940](Plugin/Init.php#L940-L946)
 
 ### `downloadlist_api_return_file_data`
 
@@ -379,7 +399,7 @@ Version | Description
 ------- | -----------
 `3.7.0` | Available since 3.7.0.
 
-Source: [app/Plugin/Rest.php](Plugin/Rest.php), [line 151](Plugin/Rest.php#L151-L158)
+Source: [app/Plugin/Rest.php](Plugin/Rest.php), [line 229](Plugin/Rest.php#L229-L236)
 
 ### `downloadlist_rest_api_filetypes`
 
@@ -394,7 +414,7 @@ Argument | Type | Description
 `$iconsets` | `array` | List of iconsets.
 `$request` | `\WP_REST_Request` | The request.
 
-Source: [app/Plugin/Rest.php](Plugin/Rest.php), [line 196](Plugin/Rest.php#L196-L203)
+Source: [app/Plugin/Rest.php](Plugin/Rest.php), [line 274](Plugin/Rest.php#L274-L281)
 
 ### `downloadlist_plugin_row_meta`
 
@@ -484,7 +504,7 @@ Argument | Type | Description
 
 Version | Description
 ------- | -----------
-`4.2.0` | Available since 4.2.0.
+`5.0.0` | Available since 5.0.0.
 
 Source: [app/Iconsets/Iconsets.php](Iconsets/Iconsets.php), [line 271](Iconsets/Iconsets.php#L271-L277)
 

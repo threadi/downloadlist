@@ -113,7 +113,7 @@ class Helper {
 	 *
 	 * The styles of all iconsets are saved in one file, so it is always generated for all iconsets.
 	 *
-	 * @param int $term_id Deprecated since 4.2.0, the styles are always generated for all iconsets.
+	 * @param int $term_id Deprecated since 5.0.0, the styles are always generated for all iconsets.
 	 * @return void
 	 * @noinspection PhpConditionAlreadyCheckedInspection
 	 * @noinspection PhpUnusedParameterInspection
@@ -286,7 +286,7 @@ class Helper {
 		}
 
 		// rename() replaces the file in one step on local file systems; the other file systems delete it first.
-		$moved = $wp_filesystem instanceof \WP_Filesystem_Direct ? rename( $temp_path, $style_path ) : $wp_filesystem->move( $temp_path, $style_path, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+		$moved = $wp_filesystem instanceof WP_Filesystem_Direct ? rename( $temp_path, $style_path ) : $wp_filesystem->move( $temp_path, $style_path, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 		if ( ! $moved ) {
 			$wp_filesystem->delete( $temp_path );
 			return;
@@ -374,7 +374,7 @@ class Helper {
 		/**
 		 * Filter the image size used for preview images.
 		 *
-		 * @since 4.2.0 Available since 4.2.0.
+		 * @since 5.0.0 Available since 5.0.0.
 		 * @param string $size The image size.
 		 * @param int $attachment_id The ID of the attachment.
 		 * @param int $width The width of the preview.
@@ -467,7 +467,7 @@ class Helper {
 	/**
 	 * Return the class and the inline style for the frames of icons and preview images of a list.
 	 *
-	 * The frames are only used if previews are shown or if one of their options is set. Otherwise the list keeps its
+	 * The frames are only used if previews are shown or if one of their options is set. Otherwise, the list keeps its
 	 * previous look (no class and no style).
 	 *
 	 * @param array<string,mixed> $attributes The block attributes.
@@ -518,9 +518,9 @@ class Helper {
 	}
 
 	/**
-	 * Return the given color, if it is a valid CSS color for our styles. Otherwise return an empty string.
+	 * Return the given color, if it is a valid CSS color for our styles. Otherwise, return an empty string.
 	 *
-	 * Allowed are hex colors, rgb(), rgba(), hsl(), hsla() and colors of the theme as CSS variable.
+	 * Allowed to are hex colors, rgb(), rgba(), hsl(), hsla() and colors of the theme as CSS variable.
 	 *
 	 * @param string $color The color.
 	 *
@@ -546,6 +546,205 @@ class Helper {
 
 		// no valid color.
 		return '';
+	}
+
+	/**
+	 * Return the taxonomies of folder plugins for the media library.
+	 *
+	 * Plugins like Folderly, HappyFiles or Folders save their virtual folders as hierarchical taxonomy
+	 * for attachments. We detect them automatically, so no special code per plugin is necessary.
+	 *
+	 * @param bool $ignore_setting True to get them also if the support for folders is disabled in the settings.
+	 *
+	 * @return array<string,string> List of taxonomy names with their labels.
+	 */
+	public static function get_folder_taxonomies( bool $ignore_setting = false ): array {
+		// bail if the support for folders is disabled.
+		if ( ! $ignore_setting && ! self::is_folder_support_enabled() ) {
+			return array();
+		}
+
+		$taxonomies = array();
+		foreach ( get_object_taxonomies( 'attachment', 'objects' ) as $taxonomy ) {
+			// bail if this is our own taxonomy for download lists.
+			if ( 'dl_icon_lists' === $taxonomy->name ) {
+				continue;
+			}
+
+			// bail if this taxonomy is not hierarchical, as folders are.
+			if ( ! $taxonomy->hierarchical ) {
+				continue;
+			}
+
+			// add the taxonomy with its label.
+			$taxonomies[ $taxonomy->name ] = $taxonomy->label;
+		}
+
+		/**
+		 * Filter the list of taxonomies which could be used as folders for download lists.
+		 *
+		 * The key is the name of the taxonomy for attachments, the value its label in the block editor.
+		 *
+		 * @since 5.0.0 Available since 5.0.0.
+		 * @param array<string,string> $taxonomies List of taxonomies.
+		 */
+		$taxonomies = apply_filters( 'downloadlist_folder_taxonomies', $taxonomies );
+
+		// return only taxonomies which are registered for attachments.
+		return array_filter(
+			$taxonomies,
+			function ( $taxonomy ) {
+				return is_object_in_taxonomy( 'attachment', (string) $taxonomy );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+	}
+
+	/**
+	 * Return whether the support for folders of folder plugins is enabled.
+	 *
+	 * @return bool
+	 */
+	public static function is_folder_support_enabled(): bool {
+		return 1 === absint( get_option( 'downloadlist_folder_support', 1 ) );
+	}
+
+	/**
+	 * Return the source of the files for a block, if it uses a download list or a folder.
+	 *
+	 * @param array<string,mixed> $attributes The block attributes.
+	 *
+	 * @return array{taxonomy: string, term_id: int, include_children: bool}|false
+	 */
+	public static function get_list_source( array $attributes ): array|false {
+		// a download list of this plugin.
+		if ( ! empty( $attributes['list'] ) ) {
+			return array(
+				'taxonomy'         => 'dl_icon_lists',
+				'term_id'          => absint( $attributes['list'] ),
+				'include_children' => true,
+			);
+		}
+
+		// a folder of a folder plugin.
+		if ( ! empty( $attributes['folder'] ) && ! empty( $attributes['folderTaxonomy'] ) && is_string( $attributes['folderTaxonomy'] ) ) {
+			// bail if the folder plugin is not available anymore.
+			if ( ! isset( self::get_folder_taxonomies()[ $attributes['folderTaxonomy'] ] ) ) {
+				return false;
+			}
+
+			return array(
+				'taxonomy'         => $attributes['folderTaxonomy'],
+				'term_id'          => absint( $attributes['folder'] ),
+				'include_children' => ! empty( $attributes['folderSubfolders'] ),
+			);
+		}
+
+		// no source used.
+		return false;
+	}
+
+	/**
+	 * Return the IDs of the files in the given download list or folder.
+	 *
+	 * @param array{taxonomy: string, term_id: int, include_children: bool} $source The source.
+	 *
+	 * @return array<int,int>
+	 */
+	public static function get_source_file_ids( array $source ): array {
+		$query = new WP_Query(
+			array(
+				'post_type'              => 'attachment',
+				'post_status'            => 'inherit',
+				'posts_per_page'         => -1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Necessary lookup of the files in the list.
+					array(
+						'taxonomy'         => $source['taxonomy'],
+						'field'            => 'term_id',
+						'terms'            => $source['term_id'],
+						'include_children' => $source['include_children'],
+					),
+				),
+			)
+		);
+
+		// return the IDs.
+		$ids = array();
+		foreach ( $query->get_posts() as $post_id ) {
+			$ids[] = absint( $post_id ); // @phpstan-ignore argument.type
+		}
+		return $ids;
+	}
+
+	/**
+	 * Return the folders of all folder plugins.
+	 *
+	 * Each folder is returned with its taxonomy, the name and the depth in the tree of folders.
+	 *
+	 * @return array<int,array{id: string, taxonomy: string, taxonomy_label: string, term_id: int, name: string, depth: int, count: int}>
+	 */
+	public static function get_folders(): array {
+		$folders = array();
+		foreach ( self::get_folder_taxonomies() as $taxonomy => $label ) {
+			$terms = get_terms(
+				array(
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+					'orderby'    => 'name',
+				)
+			);
+
+			// bail if no terms could be loaded.
+			if ( ! is_array( $terms ) ) {
+				continue;
+			}
+
+			// group them by their parent.
+			$children = array();
+			foreach ( $terms as $term ) {
+				$children[ $term->parent ][] = $term;
+			}
+
+			// add them as tree, beginning on the top level.
+			self::add_folders( $folders, $children, 0, 0, $taxonomy, $label );
+		}
+		return $folders;
+	}
+
+	/**
+	 * Add the folders with the given parent to the list, followed by their sub folders.
+	 *
+	 * @param array<int,array{id: string, taxonomy: string, taxonomy_label: string, term_id: int, name: string, depth: int, count: int}> $folders The resulting list.
+	 * @param array<int,array<int,WP_Term>>                                                                                              $children The terms grouped by their parent.
+	 * @param int                                                                                                                        $parent_id The parent.
+	 * @param int                                                                                                                        $depth The depth of the folders.
+	 * @param string                                                                                                                     $taxonomy The taxonomy.
+	 * @param string                                                                                                                     $label The label of the taxonomy.
+	 *
+	 * @return void
+	 */
+	private static function add_folders( array &$folders, array $children, int $parent_id, int $depth, string $taxonomy, string $label ): void {
+		// bail if this folder has no sub folders or the tree is too deep (prevents endless loops on broken data).
+		if ( empty( $children[ $parent_id ] ) || $depth > 20 ) {
+			return;
+		}
+
+		foreach ( $children[ $parent_id ] as $term ) {
+			$folders[] = array(
+				'id'             => $taxonomy . ':' . $term->term_id,
+				'taxonomy'       => $taxonomy,
+				'taxonomy_label' => $label,
+				'term_id'        => $term->term_id,
+				'name'           => $term->name,
+				'depth'          => $depth,
+				'count'          => $term->count,
+			);
+			self::add_folders( $folders, $children, $term->term_id, $depth + 1, $taxonomy, $label );
+		}
 	}
 
 	/**
@@ -805,7 +1004,6 @@ class Helper {
 			}
 
 			// check if this term already exists (by its slug, which is also used to add it).
-			$term     = false;
 			$is_new   = false;
 			$term_obj = get_term_by( 'slug', $iconset_obj->get_slug(), 'dl_icon_set' );
 			if ( $term_obj instanceof WP_Term ) {

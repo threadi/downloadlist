@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.2.0] - unreleased
+## [5.0.0] - 11.10.2026
 
 ### Security
 
@@ -13,7 +13,12 @@
 ### Added
 
 - Optional preview images for images, PDF files and audio or video files with cover image, with the width as setting per block and as default in the plugin settings
-- Optional border for icons and preview images with border width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
+- Optional border for icons and preview images with frame width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
+- Folders of folder plugins for the media library (e.g., Folderly, HappyFiles, Folders) could be used as source of a download list block, optionally with their subfolders; can be disabled in the new tab "Settings"
+- Abilities for the Abilities API of WordPress (since WordPress 6.9), e.g. for AI agents: find where a file is shown, get the usage of download lists, get download lists, folders and their files, check for missing preview images; optionally also assign files to download lists, add download lists to posts, inherit the settings and regenerate the styles
+- Settings for the abilities (enabled, mode "Read only" or "All") with a check whether they could be used in the project
+- The descriptions of the abilities, which change content ask AI agents to confirm the change with the user first
+- New tab "Usage" in the plugin settings, which lists all posts, pages, patterns and templates with a download list, with the number of lists and files and links to edit them
 - Hints in the block editor for files without preview image and their reason
 - Lists with the iconset of the plugin "File-Preview for Download List Block with Icons" show the preview images now without this plugin
 - Own setting for the browser target of the download button (it used the setting of the link before)
@@ -31,12 +36,16 @@
 - `Helper::generate_css()` always generates the styles for all iconsets, its parameter is deprecated
 - The hook `downloadlist_prevent_icon_generation` is not used for the file name suffix anymore, use `downloadlist_icon_filename_suffix`
 - The file of Font Awesome is now named `fontawesome.css`
+- Playwright tests for the frontend, the block editor, the settings, the REST API and the abilities, also in the workflow "Testing"
 - GitHub workflows use pinned actions, minimal permissions, a smoke test in Playground and an SBOM
 - Now requires WordPress 6.6 or newer
-- Templates `list-start.php`, `list-item.php`, `list-item-not-linked.php` and `button-download.php` changed (version 4.2.0)
+- The tab "General Settings" is now named "Block settings", the frame settings have their own section "Styles"
+- Templates `list-start.php`, `list-item.php`, `list-item-not-linked.php` and `button-download.php` changed (version 5.0.0)
 
 ### Fixed
 
+- Blocks using a download list showed nothing if their files were not saved in the block
+- Download lists could show a PHP warning for files, which do not exist in the uploads directory
 - Fixed fatal error during uninstallation (missing autoloader)
 - Fixed backslashes in posts being removed after inheriting the settings to the blocks or after adding the block via settings
 - Fixed migration tasks of updates not running on websites without development mode
