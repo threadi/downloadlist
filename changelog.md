@@ -15,6 +15,9 @@
 - Optional preview images for images, PDF files and audio or video files with cover image, with the width as setting per block and as default in the plugin settings
 - Optional border for icons and preview images with frame width, color, radius, inner spacing and background color under Styles in the block, also as default in the plugin settings
 - Folders of folder plugins for the media library (e.g., Folderly, HappyFiles, Folders) could be used as source of a download list block, optionally with their subfolders; can be disabled in the new tab "Settings"
+- Abilities for the Abilities API of WordPress (since WordPress 6.9), e.g. for AI agents: find where a file is shown, get the usage of download lists, get download lists, folders and their files, check for missing preview images; optionally also assign files to download lists, add download lists to posts, inherit the settings and regenerate the styles
+- Settings for the abilities (enabled, mode "Read only" or "All") with a check whether they could be used in the project
+- The descriptions of the abilities, which change content ask AI agents to confirm the change with the user first
 - New tab "Usage" in the plugin settings, which lists all posts, pages, patterns and templates with a download list, with the number of lists and files and links to edit them
 - Hints in the block editor for files without preview image and their reason
 - Lists with the iconset of the plugin "File-Preview for Download List Block with Icons" show the preview images now without this plugin

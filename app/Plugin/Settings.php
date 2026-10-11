@@ -238,6 +238,17 @@ class Settings {
 		$plugin_tab_folders->set_title( __( 'Folders in the media library', 'download-list-block-with-icons' ) );
 		$plugin_tab_folders->set_setting( $this->get_settings_obj() );
 
+		// the section for abilities.
+		$plugin_tab_abilities = $plugin_tab->add_section( 'abilities', 20 );
+		$plugin_tab_abilities->set_title( __( 'Abilities for AI agents and automations', 'download-list-block-with-icons' ) );
+		$plugin_tab_abilities->set_setting( $this->get_settings_obj() );
+
+		// the section with the status of the abilities.
+		$plugin_tab_abilities_status = $plugin_tab->add_section( 'abilities_status', 30 );
+		$plugin_tab_abilities_status->set_title( __( 'Can the abilities be used in this project?', 'download-list-block-with-icons' ) );
+		$plugin_tab_abilities_status->set_callback( array( $this, 'show_abilities_status' ) );
+		$plugin_tab_abilities_status->set_setting( $this->get_settings_obj() );
+
 		// the tasks section.
 		$tasks_tab_tasks = $tasks_tab->add_section( 'tasks', 10 );
 		$tasks_tab_tasks->set_title( __( 'Tasks', 'download-list-block-with-icons' ) );
@@ -381,6 +392,32 @@ class Settings {
 				$field->set_description( $this->get_folder_support_description( true ) );
 			}
 		);
+
+		// add setting.
+		$abilities_setting = $this->get_settings_obj()->add_setting( 'downloadlist_abilities' );
+		$abilities_setting->set_section( $plugin_tab_abilities );
+		$abilities_setting->set_default( 1 );
+		$field = new Checkbox( $this->get_settings_obj() );
+		$field->set_title( __( 'Enable abilities', 'download-list-block-with-icons' ) );
+		$field->set_description( __( 'Offers the functions of this plugin via the Abilities API of WordPress, e.g. for AI agents: find where files are shown, list download lists and folders, check for missing preview images and, if allowed, create download lists. The abilities always run with the rights of the logged-in user.', 'download-list-block-with-icons' ) );
+		$abilities_setting->set_field( $field );
+
+		// add setting.
+		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_abilities_mode' );
+		$setting->set_section( $plugin_tab_abilities );
+		$setting->set_type( 'string' );
+		$setting->set_default( Abilities::MODE_READ );
+		$field = new Select( $this->get_settings_obj() );
+		$field->set_title( __( 'Allowed abilities', 'download-list-block-with-icons' ) );
+		$field->set_description( __( '"Read only" offers only abilities which do not change anything. "All" also allows to assign files to download lists, to add download lists to posts and pages, to inherit the settings to all blocks and to regenerate the styles. These abilities ask AI agents to confirm each change with you first. To enforce this, set your AI client to ask before it uses them.', 'download-list-block-with-icons' ) );
+		$field->set_options(
+			array(
+				Abilities::MODE_READ => __( 'Read only', 'download-list-block-with-icons' ),
+				Abilities::MODE_ALL  => __( 'All', 'download-list-block-with-icons' ),
+			)
+		);
+		$field->add_depend( $abilities_setting, 1 );
+		$setting->set_field( $field );
 
 		// add setting.
 		$setting = $this->get_settings_obj()->add_setting( 'downloadlist_link_text' );
@@ -1086,6 +1123,63 @@ class Settings {
 
 		/* translators: %1$s will be replaced by the names of the folder plugins. */
 		return $description . ' ' . sprintf( __( 'Found in this project: %1$s', 'download-list-block-with-icons' ), implode( ', ', array_map( 'esc_html', $taxonomies ) ) );
+	}
+
+	/**
+	 * Show whether the abilities could be used in this project and what to do for it.
+	 *
+	 * @return void
+	 */
+	public function show_abilities_status(): void {
+		$checks = array();
+
+		// check the Abilities API.
+		if ( ! Abilities::is_api_available() ) {
+			$checks[] = array( false, __( 'The Abilities API is not available. It is part of WordPress since version 6.9. Update WordPress to use the abilities.', 'download-list-block-with-icons' ) );
+		} else {
+			$checks[] = array( true, __( 'The Abilities API of WordPress is available.', 'download-list-block-with-icons' ) );
+		}
+
+		// check the setting.
+		if ( ! Abilities::is_enabled() ) {
+			$checks[] = array( false, __( 'The abilities of this plugin are disabled above.', 'download-list-block-with-icons' ) );
+		} else {
+			$names = Abilities::get_instance()->get_ability_names( Abilities::get_mode() );
+			/* translators: %1$s will be replaced by a list of names. */
+			$checks[] = array( true, sprintf( __( 'Offered abilities: %1$s', 'download-list-block-with-icons' ), '<code>' . implode( '</code>, <code>', array_map( 'esc_html', $names ) ) . '</code>' ) );
+		}
+
+		// check the REST API, which is used by external clients.
+		/* translators: %1$s will be replaced by a URL. */
+		$checks[] = array( true, sprintf( __( 'External clients find the abilities in the REST API under %1$s.', 'download-list-block-with-icons' ), '<code>' . esc_html( rest_url( 'wp-abilities/v1/abilities' ) ) . '</code>' ) );
+
+		// check HTTPS.
+		if ( ! wp_is_using_https() ) {
+			$checks[] = array( false, __( 'This website does not use HTTPS. Connections from external clients would not be encrypted, and application passwords are only available with HTTPS (except in local development environments).', 'download-list-block-with-icons' ) );
+		}
+
+		// check application passwords, which most external clients use to log in.
+		if ( ! wp_is_application_passwords_available() ) {
+			$checks[] = array( false, __( 'Application passwords are not available. Most external clients need them to log in. They could be disabled by another plugin, by the hosting or because this website does not use HTTPS.', 'download-list-block-with-icons' ) );
+		} else {
+			/* translators: %1$s will be replaced by a URL. */
+			$checks[] = array( true, sprintf( __( 'Application passwords are available. You can create one in <a href="%1$s">your profile</a>.', 'download-list-block-with-icons' ), esc_url( admin_url( 'profile.php#application-passwords-section' ) ) ) );
+		}
+
+		// output the checks.
+		echo '<ul class="downloadlist-abilities-status">';
+		foreach ( $checks as $check ) {
+			echo '<li><span class="dashicons ' . ( $check[0] ? 'dashicons-yes-alt' : 'dashicons-warning' ) . '" style="color: ' . ( $check[0] ? '#008a20' : '#d63638' ) . '"></span> ' . wp_kses_post( $check[1] ) . '</li>';
+		}
+		echo '</ul>';
+
+		// show what to do.
+		echo '<p><strong>' . esc_html__( 'How to use the abilities:', 'download-list-block-with-icons' ) . '</strong></p>';
+		echo '<ol>';
+		echo '<li>' . esc_html__( 'Connect your AI client or automation with this website. For AI clients which use the Model Context Protocol (MCP), you need a plugin or tool which makes the Abilities API of WordPress available via MCP. Other tools can use the REST API directly.', 'download-list-block-with-icons' ) . '</li>';
+		echo '<li>' . esc_html__( 'Let the client log in as a user with the necessary rights, e.g. with an application password. The abilities only do what this user is allowed to do.', 'download-list-block-with-icons' ) . '</li>';
+		echo '<li>' . esc_html__( 'Keep "Read only" unless the client should change content. You can change this here at any time.', 'download-list-block-with-icons' ) . '</li>';
+		echo '</ol>';
 	}
 
 	/**

@@ -23,6 +23,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Optional frame for icons and preview images with color, radius, inner spacing and background
 - Overview of all posts, pages, patterns and templates which use the block
 - Show all files of a folder from folder plugins like Folderly, HappyFiles or Folders
+- Abilities for AI agents and automations via the Abilities API of WordPress
 - Drag & Drop sorting for the list
 - Remove files from list
 
@@ -97,6 +98,10 @@ Images, PDF files with generated preview and audio or video files with a cover i
 
 Yes, if the plugin saves its folders as taxonomy for the media library, as for example Folderly, HappyFiles or Folders do. Choose the folder in the toolbar of the block with "Choose a download list or folder". New files in this folder are shown automatically. Plugins which save their folders in their own database tables, like FileBird or Real Media Library, are not supported yet. Developers can add other folder taxonomies with the filter `downloadlist_folder_taxonomies`. You can disable the use of folders under Settings > Download List Block with Icons > Settings.
 
+= Can AI agents work with my download lists? =
+
+Yes, since WordPress 6.9 the plugin offers abilities for the Abilities API of WordPress. An AI agent can e.g. find where a file is shown, list the download lists and folders or check for missing preview images. In the mode "All" it can also assign files to download lists and add download lists to posts. The abilities always run with the rights of the logged-in user. You can disable them or allow only reading abilities under Settings > Download List Block with Icons > Settings, where you also find a check whether they could be used in your project.
+
 = Are the preview images protected like my files? =
 
 No. The preview images are saved in the uploads directory and are public, even if a plugin protects the files themselves. Do not enable the previews for confidential documents.
@@ -112,6 +117,7 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 - Added optional frame for icons and preview images
 - Added overview of all objects using the block in the plugin settings
 - Added folders of folder plugins for the media library as source of download lists
+- Added abilities for the Abilities API of WordPress
 - Security: only users who can see notices of this plugin can dismiss them
 - Security: REST API returns data of files only if the user is allowed to read them
 - Security: stricter checks of file types and CSS values of custom icons

@@ -93,6 +93,9 @@ class Init {
 		// initialize the REST support.
 		Rest::get_instance()->init();
 
+		// initialize the abilities for the Abilities API of WordPress.
+		Abilities::get_instance()->init();
+
 		// initialize the admin support.
 		Admin::get_instance()->init();
 

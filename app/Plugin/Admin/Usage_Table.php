@@ -10,10 +10,9 @@ namespace DownloadListWithIcons\Plugin\Admin;
 // prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
-use DownloadListWithIcons\Plugin\Helper;
+use DownloadListWithIcons\Plugin\Usage;
 use WP_List_Table;
 use WP_Post;
-use WP_Query;
 
 // load the list table class of WordPress, if it is not loaded yet.
 if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -39,7 +38,7 @@ class Usage_Table extends WP_List_Table {
 	 * @return array<int,string>
 	 */
 	public static function get_post_types(): array {
-		return array_values( array_diff( get_post_types_by_support( 'editor' ), array( 'attachment' ) ) );
+		return Usage::get_post_types();
 	}
 
 	/**
@@ -86,19 +85,12 @@ class Usage_Table extends WP_List_Table {
 		}
 
 		// search for all objects with our block in their content.
-		$query = new WP_Query(
+		$query = Usage::get_query(
 			array(
-				'post_type'              => self::get_post_types(),
-				'post_status'            => 'any',
-				's'                      => '<!-- wp:downloadlist/list',
-				'sentence'               => true,
-				'search_columns'         => array( 'post_content' ),
-				'orderby'                => $orderby,
-				'order'                  => $order,
-				'posts_per_page'         => $this->per_page,
-				'paged'                  => $this->get_pagenum(),
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
+				'orderby'        => $orderby,
+				'order'          => $order,
+				'posts_per_page' => $this->per_page,
+				'paged'          => $this->get_pagenum(),
 			)
 		);
 
@@ -232,101 +224,19 @@ class Usage_Table extends WP_List_Table {
 	/**
 	 * Return the number of files for each download list in the given content.
 	 *
-	 * Counts like the output of the block: the files chosen in the block and, if a download list is
-	 * used, the files assigned to this download list.
+	 * Counts like the output of the block: the files chosen in the block and, if a download list or
+	 * folder is used, the files of this download list or folder.
 	 *
 	 * @param string $content The content.
 	 *
 	 * @return array<int,int>
 	 */
 	public static function get_file_counts( string $content ): array {
-		$counts = array();
-		self::collect_file_counts( parse_blocks( $content ), $counts );
-		return $counts;
-	}
-
-	/**
-	 * Collect the number of files of our blocks in the given list of blocks, including nested blocks.
-	 *
-	 * @param array<int|string,mixed> $blocks The parsed blocks.
-	 * @param array<int,int>          $counts The list of counts.
-	 *
-	 * @return void
-	 */
-	private static function collect_file_counts( array $blocks, array &$counts ): void {
-		foreach ( $blocks as $block ) {
-			// bail if this is not a block.
-			if ( ! is_array( $block ) ) {
-				continue;
-			}
-
-			// count the files of our block.
-			if ( isset( $block['blockName'] ) && 'downloadlist/list' === $block['blockName'] ) {
-				$counts[] = self::get_file_count( isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array() );
-			}
-
-			// check the inner blocks.
-			if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
-				self::collect_file_counts( $block['innerBlocks'], $counts );
-			}
-		}
-	}
-
-	/**
-	 * Return the number of files for the given block attributes.
-	 *
-	 * @param array<string,mixed> $attributes The block attributes.
-	 *
-	 * @return int
-	 */
-	private static function get_file_count( array $attributes ): int {
-		// get the IDs of the files chosen in the block.
-		$file_ids = array();
-		if ( ! empty( $attributes['files'] ) && is_array( $attributes['files'] ) ) {
-			foreach ( $attributes['files'] as $file ) {
-				if ( is_array( $file ) && ! empty( $file['id'] ) ) {
-					$file_ids[] = absint( $file['id'] );
-				}
-			}
-		}
-
-		// get the download list or folder used as source.
-		$source = Helper::get_list_source( $attributes );
-
-		// if no source is used, count the existing files.
-		if ( false === $source ) {
-			return count(
-				array_filter(
-					array_unique( $file_ids ),
-					function ( $file_id ) {
-						return 'attachment' === get_post_type( $file_id );
-					}
-				)
-			);
-		}
-
-		// get the files of the source.
-		$source_files = Helper::get_source_file_ids( $source );
-
-		// bail if the source has no files: the block shows nothing in this case.
-		if ( empty( $source_files ) ) {
-			return 0;
-		}
-
-		// count the files of a folder.
-		if ( 'dl_icon_lists' !== $source['taxonomy'] ) {
-			return count( $source_files );
-		}
-
-		// count the files which are assigned to a download list (like the block does).
-		return count(
-			array_filter(
-				array_unique( array_merge( $file_ids, $source_files ) ),
-				function ( $file_id ) {
-					$terms = wp_get_object_terms( $file_id, 'dl_icon_lists', array( 'fields' => 'ids' ) );
-					return ! empty( $terms ) && ! is_wp_error( $terms );
-				}
-			)
+		return array_map(
+			function ( $attributes ) {
+				return count( Usage::get_file_ids( $attributes ) );
+			},
+			Usage::get_blocks( $content )
 		);
 	}
 
