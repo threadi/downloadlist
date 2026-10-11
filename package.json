@@ -27,7 +27,7 @@
 		"@dnd-kit/sortable": "^10.0.0",
 		"@fortawesome/fontawesome-free": "^7.3.1",
 		"@wordpress/i18n": "^6.25.0",
-		"@wordpress/icons": "^15.3.0",
+		"@wordpress/icons": "^18.0.0",
 		"bootstrap-icons": "^1.13.1"
 	}
 }
