@@ -84,6 +84,20 @@ Use a normal WordPress installation with an installed PCP plugin.
 
 `wp plugin check --error-severity=7 --warning-severity=6 --include-low-severity-errors --categories=plugin_repo --format=json --slug=download-list-block-with-icons .`
 
+## Playwright tests
+
+The Playwright tests start WordPress in WordPress Playground, activate the plugin, add test content (files, a download list, a folder taxonomy like folder plugins use it and posts with download lists) and check the frontend, the block editor, the settings, the REST API and the abilities.
+
+Requirements: `composer install`, `npm ci` and `npm run build`. Then install the browser once:
+
+`npx playwright install chromium`
+
+Run the tests:
+
+`npm run test:e2e`
+
+The WordPress version could be set with the environment variable `WP_PLAYGROUND_WP`, e.g. `WP_PLAYGROUND_WP=6.9 npm run test:e2e` (default: `latest`).
+
 ## PHP Unit tests
 
 ### Preparation

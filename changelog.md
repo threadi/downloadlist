@@ -36,6 +36,7 @@
 - `Helper::generate_css()` always generates the styles for all iconsets, its parameter is deprecated
 - The hook `downloadlist_prevent_icon_generation` is not used for the file name suffix anymore, use `downloadlist_icon_filename_suffix`
 - The file of Font Awesome is now named `fontawesome.css`
+- Playwright tests for the frontend, the block editor, the settings, the REST API and the abilities, also in the workflow "Testing"
 - GitHub workflows use pinned actions, minimal permissions, a smoke test in Playground and an SBOM
 - Now requires WordPress 6.6 or newer
 - The tab "General Settings" is now named "Block settings", the frame settings have their own section "Styles"
