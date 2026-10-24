@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "threadi/easy-dialog-for-wordpress",
-            "version": "2.0.4",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/threadi/easy-dialog-for-wordpress.git",
-                "reference": "27a7db4b4816d3e928bf93736081538ad5464cbf"
+                "reference": "e2f8ffddb8cbafc9977d4c23dccd4a154b79c595"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/threadi/easy-dialog-for-wordpress/zipball/27a7db4b4816d3e928bf93736081538ad5464cbf",
-                "reference": "27a7db4b4816d3e928bf93736081538ad5464cbf",
+                "url": "https://api.github.com/repos/threadi/easy-dialog-for-wordpress/zipball/e2f8ffddb8cbafc9977d4c23dccd4a154b79c595",
+                "reference": "e2f8ffddb8cbafc9977d4c23dccd4a154b79c595",
                 "shasum": ""
             },
             "type": "library",
@@ -34,9 +34,9 @@
             "description": "Provides a simple react-driven dialog-modal for the WordPress-backend.",
             "support": {
                 "issues": "https://github.com/threadi/easy-dialog-for-wordpress/issues",
-                "source": "https://github.com/threadi/easy-dialog-for-wordpress/tree/2.0.4"
+                "source": "https://github.com/threadi/easy-dialog-for-wordpress/tree/2.0.5"
             },
-            "time": "2026-10-04T14:34:54+00:00"
+            "time": "2026-10-18T13:02:22+00:00"
         },
         {
             "name": "threadi/easy-settings-for-wordpress",
