@@ -2,7 +2,7 @@
 Contributors: threadi
 Tags: list, download, icons, block
 Requires at least: 6.6
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -21,7 +21,7 @@ Use a Gutenberg Block to manage a download list with file type specific icons. N
 - Ships with multiple iconsets (Bootstrap-Icons, Dashicons, FontAweSome-Icons, Themify-Icons)
 - Optional preview images for images, PDF files and audio or video files with cover image
 - Optional frame for icons and preview images with color, radius, inner spacing and background
-- Overview of all posts, pages, patterns and templates which use the block
+- Overview of all posts, pages, patterns and templates, which use the block
 - Show all files of a folder from folder plugins like Folderly, HappyFiles or Folders
 - Abilities for AI agents and automations via the Abilities API of WordPress
 - Drag & Drop sorting for the list
@@ -113,21 +113,6 @@ No. The plugin is intended solely for the Gutenberg editor and will not be exten
 == Changelog ==
 
 = @@VersionNumber@@ =
-- Added optional preview images for images, PDF files and audio or video files with cover image
-- Added optional frame for icons and preview images
-- Added overview of all objects using the block in the plugin settings
-- Added folders of folder plugins for the media library as source of download lists
-- Added abilities for the Abilities API of WordPress
-- Security: only users who can see notices of this plugin can dismiss them
-- Security: REST API returns data of files only if the user is allowed to read them
-- Security: stricter checks of file types and CSS values of custom icons
-- Fixed uninstallation of the plugin
-- Fixed backslashes in posts after inheriting the settings to the blocks
-- Fixed saving of images for custom icons
-- Fixed styles of other iconsets getting lost after saving an icon
-- Fixed updates of the plugin not running its migration tasks
-- Fixed duplicate entries for generic iconsets
-- Optimized loading of icon fonts: only the used iconset is loaded in frontend
-- Now requires WordPress 6.6 or newer
+- Updated dependencies to be compatible with WordPress 7.2
 
 [older changes](https://github.com/threadi/downloadlist/blob/master/changelog.md)

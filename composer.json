@@ -1,6 +1,6 @@
 {
     "name": "threadi/downloadlist",
-	"version": "5.0.0",
+	"version": "5.0.1",
 	"license": "GPL-2.0-or-later",
 	"type": "wordpress-plugin",
 	"homepage": "https://plugins.thomaszwirner.de",
@@ -51,7 +51,7 @@
 	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^3.4.1",
-		"pronamic/wp-documentor": "^1.4.0",
+		"pronamic/wp-documentor": "^1.4",
 		"automattic/vipwpcs": "^3.1",
 		"phpstan/phpstan": "^2.3",
 		"szepeviktor/phpstan-wordpress": "^2.0",
@@ -65,8 +65,8 @@
 	},
 	"require": {
 		"php": "^8.2",
-		"threadi/easy-dialog-for-wordpress": "^2.0.4",
-		"threadi/easy-settings-for-wordpress": "^3.7.0",
+		"threadi/easy-dialog-for-wordpress": "^2.0.5",
+		"threadi/easy-settings-for-wordpress": "^3.8.4",
 		"threadi/easy-transients-for-wordpress": "^1.4.9"
 	}
 }
