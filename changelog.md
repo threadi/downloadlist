@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.1] - 24.10.2026
+
+### Changed
+
+- Updated dependencies to be compatible with WordPress 7.2
+
 ## [5.0.0] - 11.10.2026
 
 ### Security
