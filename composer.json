@@ -59,7 +59,7 @@
 		"php-stubs/wp-cli-stubs": "^2.12",
 		"coenjacobs/mozart": "~1.1.6",
 		"yoast/phpunit-polyfills": "^1.1",
-		"wp-phpunit/wp-phpunit": "^6.9",
+		"wp-phpunit/wp-phpunit": "^7.1",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.2"
 	},
