@@ -40,16 +40,16 @@
         },
         {
             "name": "threadi/easy-settings-for-wordpress",
-            "version": "3.8.4",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/threadi/easy-settings-for-wordpress.git",
-                "reference": "57e98ca4453480acb7301980ae6593287260df08"
+                "reference": "d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/threadi/easy-settings-for-wordpress/zipball/57e98ca4453480acb7301980ae6593287260df08",
-                "reference": "57e98ca4453480acb7301980ae6593287260df08",
+                "url": "https://api.github.com/repos/threadi/easy-settings-for-wordpress/zipball/d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80",
+                "reference": "d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80",
                 "shasum": ""
             },
             "require": {
@@ -91,9 +91,9 @@
             "description": "Provides a settings wrapper for WordPress plugins and themes.",
             "support": {
                 "issues": "https://github.com/threadi/easy-settings-for-wordpress/issues",
-                "source": "https://github.com/threadi/easy-settings-for-wordpress/tree/3.8.4"
+                "source": "https://github.com/threadi/easy-settings-for-wordpress/tree/3.9.0"
             },
-            "time": "2026-10-24T10:59:47+00:00"
+            "time": "2026-10-27T21:52:06+00:00"
         },
         {
             "name": "threadi/easy-transients-for-wordpress",
