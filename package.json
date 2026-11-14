@@ -16,7 +16,7 @@
 		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.64.0",
+		"@playwright/test": "^1.65.0",
 		"@wordpress/scripts": "~37.1.0",
 		"@wp-playground/cli": "3.1.55",
 		"classnames": "^2.5.1"
