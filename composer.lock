@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "threadi/easy-dialog-for-wordpress",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/threadi/easy-dialog-for-wordpress.git",
-                "reference": "e2f8ffddb8cbafc9977d4c23dccd4a154b79c595"
+                "reference": "a711c22885a4aceca4d8e69a1d832b2f1894610e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/threadi/easy-dialog-for-wordpress/zipball/e2f8ffddb8cbafc9977d4c23dccd4a154b79c595",
-                "reference": "e2f8ffddb8cbafc9977d4c23dccd4a154b79c595",
+                "url": "https://api.github.com/repos/threadi/easy-dialog-for-wordpress/zipball/a711c22885a4aceca4d8e69a1d832b2f1894610e",
+                "reference": "a711c22885a4aceca4d8e69a1d832b2f1894610e",
                 "shasum": ""
             },
             "type": "library",
@@ -34,22 +34,22 @@
             "description": "Provides a simple react-driven dialog-modal for the WordPress-backend.",
             "support": {
                 "issues": "https://github.com/threadi/easy-dialog-for-wordpress/issues",
-                "source": "https://github.com/threadi/easy-dialog-for-wordpress/tree/2.0.5"
+                "source": "https://github.com/threadi/easy-dialog-for-wordpress/tree/2.0.6"
             },
-            "time": "2026-10-18T13:02:22+00:00"
+            "time": "2026-11-09T19:39:11+00:00"
         },
         {
             "name": "threadi/easy-settings-for-wordpress",
-            "version": "3.9.0",
+            "version": "3.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/threadi/easy-settings-for-wordpress.git",
-                "reference": "d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80"
+                "reference": "aeeb4d788bdb672d63b13c9d0562a3070dc0d9a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/threadi/easy-settings-for-wordpress/zipball/d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80",
-                "reference": "d1f965c39f10e1ea0f1e9aba10f1ca44ac5d5c80",
+                "url": "https://api.github.com/repos/threadi/easy-settings-for-wordpress/zipball/aeeb4d788bdb672d63b13c9d0562a3070dc0d9a8",
+                "reference": "aeeb4d788bdb672d63b13c9d0562a3070dc0d9a8",
                 "shasum": ""
             },
             "require": {
@@ -91,9 +91,9 @@
             "description": "Provides a settings wrapper for WordPress plugins and themes.",
             "support": {
                 "issues": "https://github.com/threadi/easy-settings-for-wordpress/issues",
-                "source": "https://github.com/threadi/easy-settings-for-wordpress/tree/3.9.0"
+                "source": "https://github.com/threadi/easy-settings-for-wordpress/tree/3.9.2"
             },
-            "time": "2026-10-27T21:52:06+00:00"
+            "time": "2026-11-07T10:30:35+00:00"
         },
         {
             "name": "threadi/easy-transients-for-wordpress",
